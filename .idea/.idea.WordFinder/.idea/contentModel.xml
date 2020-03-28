@@ -51,7 +51,6 @@
       <e p="client-app\node_modules\webpack-chain" t="IncludeRecursive" />
       <e p="packages" t="ExcludeRecursive" />
       <e p="wordfinder" t="IncludeRecursive">
-        <e p=".gitignore" t="Include" />
         <e p="appsettings.Development.json" t="Include" />
         <e p="appsettings.json" t="Include" />
         <e p="bin" t="ExcludeRecursive" />
