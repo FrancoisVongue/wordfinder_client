@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\User\.nuget\packages\microsoft.net.test.sdk\16.4.0\build\netcoreapp2.1" t="Include">
+      <e p="Microsoft.NET.Test.Sdk.Program.cs" t="Include" />
+    </e>
+    <e p="C:\Users\User\.nuget\packages\microsoft.testplatform.testhost\16.4.0\build\netcoreapp2.1\x64\testhost.dll" t="Include" />
+    <e p="C:\Users\User\.nuget\packages\microsoft.testplatform.testhost\16.4.0\build\netcoreapp2.1\x64\testhost.exe" t="Include" />
+    <e p="C:\Users\User\.nuget\packages\nunit3testadapter\3.15.1\build\netcoreapp2.0\nunit.engine.api.dll" t="Include" />
+    <e p="C:\Users\User\.nuget\packages\nunit3testadapter\3.15.1\build\netcoreapp2.0\nunit.engine.dll" t="Include" />
+    <e p="C:\Users\User\.nuget\packages\nunit3testadapter\3.15.1\build\netcoreapp2.0\NUnit3.TestAdapter.dll" t="Include" />
+    <e p="C:\Users\User\.nuget\packages\nunit3testadapter\3.15.1\build\netcoreapp2.0\NUnit3.TestAdapter.pdb" t="Include" />
+    <e p="C:\Users\User\.Rider2019.3\config\scratches" t="IncludeRecursive" />
+    <e p="C:\Users\User\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\User\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_WordFinder.-1421035433.00" t="ExcludeRecursive" />
+    <e p="F:\practice\wordfinder" t="IncludeFlat">
+      <e p="client-app\node_modules\@types" t="IncludeRecursive">
+        <e p="events" t="IncludeRecursive" />
+        <e p="minimatch" t="IncludeRecursive" />
+        <e p="node" t="IncludeRecursive" />
+      </e>
+      <e p="client-app\node_modules\@vue\cli-plugin-babel" t="IncludeRecursive" />
+      <e p="client-app\node_modules\@vue\cli-plugin-eslint" t="IncludeRecursive" />
+      <e p="client-app\node_modules\@vue\cli-service" t="IncludeRecursive" />
+      <e p="client-app\node_modules\@vue\component-compiler-utils" t="IncludeRecursive" />
+      <e p="client-app\node_modules\address" t="IncludeRecursive" />
+      <e p="client-app\node_modules\axios" t="IncludeRecursive" />
+      <e p="client-app\node_modules\babel-eslint" t="IncludeRecursive" />
+      <e p="client-app\node_modules\chalk" t="IncludeRecursive" />
+      <e p="client-app\node_modules\cli-highlight" t="IncludeRecursive" />
+      <e p="client-app\node_modules\commander" t="IncludeRecursive" />
+      <e p="client-app\node_modules\core-js" t="IncludeRecursive" />
+      <e p="client-app\node_modules\dotenv" t="IncludeRecursive" />
+      <e p="client-app\node_modules\dotenv-expand" t="IncludeRecursive" />
+      <e p="client-app\node_modules\eslint" t="IncludeRecursive" />
+      <e p="client-app\node_modules\eslint-plugin-vue" t="IncludeRecursive" />
+      <e p="client-app\node_modules\javascript-stringify" t="IncludeRecursive" />
+      <e p="client-app\node_modules\normalize.css" t="IncludeRecursive" />
+      <e p="client-app\node_modules\portfinder" t="IncludeRecursive" />
+      <e p="client-app\node_modules\postcss" t="IncludeRecursive" />
+      <e p="client-app\node_modules\postcss-selector-parser" t="IncludeRecursive" />
+      <e p="client-app\node_modules\sass" t="IncludeRecursive" />
+      <e p="client-app\node_modules\sass-loader" t="IncludeRecursive" />
+      <e p="client-app\node_modules\source-map" t="IncludeRecursive" />
+      <e p="client-app\node_modules\terser" t="IncludeRecursive" />
+      <e p="client-app\node_modules\vue" t="IncludeRecursive" />
+      <e p="client-app\node_modules\vue-loader" t="IncludeRecursive" />
+      <e p="client-app\node_modules\vue-router" t="IncludeRecursive" />
+      <e p="client-app\node_modules\vue-template-compiler" t="IncludeRecursive" />
+      <e p="client-app\node_modules\vuex" t="IncludeRecursive" />
+      <e p="client-app\node_modules\webpack-chain" t="IncludeRecursive" />
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="wordfinder" t="IncludeRecursive">
+        <e p=".gitignore" t="Include" />
+        <e p="appsettings.Development.json" t="Include" />
+        <e p="appsettings.json" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Controllers" t="Include">
+          <e p="AccountController.cs" t="Include" />
+          <e p="WordController.cs" t="Include" />
+        </e>
+        <e p="global.json" t="Include" />
+        <e p="Migrations" t="Include">
+          <e p="20200327103625_initial.cs" t="Include" />
+          <e p="20200327103625_initial.Designer.cs" t="Include" />
+          <e p="ApiContextModelSnapshot.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.1" t="Include">
+              <e p="WordFinder.AssemblyInfo.cs" t="Include" />
+              <e p="WordFinder.RazorAssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="launchSettings.json" t="Include" />
+        </e>
+        <e p="Startup.cs" t="Include" />
+        <e p="WordFinder.csproj" t="IncludeRecursive" />
+      </e>
+      <e p="WordFinder.sln" t="IncludeFlat" />
+      <e p="WordFinder_Business" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.1" t="Include">
+              <e p="WordFinder_Business.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="WordFinder_Business.csproj" t="IncludeRecursive" />
+        <e p="WordService.cs" t="Include" />
+      </e>
+      <e p="WordFinder_BusinessTests" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.1" t="Include">
+              <e p="WordFinder_BusinessTests.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="WordFinder_BusinessTests.csproj" t="IncludeRecursive" />
+        <e p="WordServiceTest.cs" t="Include" />
+      </e>
+      <e p="WordFinder_Domain" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Models" t="Include">
+          <e p="Tag.cs" t="Include" />
+          <e p="Topic.cs" t="Include" />
+          <e p="Translation.cs" t="Include" />
+          <e p="User.cs" t="Include" />
+          <e p="Word.cs" t="Include" />
+          <e p="WordTag.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.1" t="Include">
+              <e p="WordFinder_Domain.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="RequestModels" t="Include" />
+        <e p="WordFinder_Domain.csproj" t="IncludeRecursive" />
+      </e>
+      <e p="WordFinder_Repository" t="IncludeRecursive">
+        <e p="ApiContext.cs" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.1" t="Include">
+              <e p="WordFinder_Repository.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="TagConfiguration.cs" t="Include" />
+        <e p="UserConfiguration.cs" t="Include" />
+        <e p="WordConfiguration.cs" t="Include" />
+        <e p="WordFinder_Repository.csproj" t="IncludeRecursive" />
+        <e p="WordTagConfiguration.cs" t="Include" />
+      </e>
+    </e>
+  </component>
+</project>

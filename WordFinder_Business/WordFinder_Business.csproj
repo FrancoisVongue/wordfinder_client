@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\WordFinder_Domain\WordFinder_Domain.csproj" />
+      <ProjectReference Include="..\WordFinder_Repository\WordFinder_Repository.csproj" />
+    </ItemGroup>
+
+</Project>
