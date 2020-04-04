@@ -1,6 +1,6 @@
-import findWordsWindow from '../components/addWordsWindow/findWordsWindow.vue'
+import findWordsWindow from '../components/addWordsWindow/addWordsWindow.vue'
 import findWords from '../components/addWordsWindow/findWords.vue'
-import addTranslation from '../components/addWordsWindow/addTranslation.vue'
+import addTranslation from '../components/addWordsWindow/addWords.vue'
 
 export default { 
   path: '/', 

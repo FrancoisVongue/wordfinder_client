@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\User\.Rider2019.3\config\scratches" t="IncludeRecursive" />
+    <e p="C:\Users\User\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\User\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_WebApplication1.-1077571024.00" t="ExcludeRecursive" />
+    <e p="F:\practice\wordfinder\wordfinder" t="IncludeFlat">
+      <e p="client-app\node_modules\@types" t="IncludeRecursive">
+        <e p="events" t="IncludeRecursive" />
+        <e p="minimatch" t="IncludeRecursive" />
+        <e p="node" t="IncludeRecursive" />
+      </e>
+      <e p="client-app\node_modules\@vue\cli-plugin-babel" t="IncludeRecursive" />
+      <e p="client-app\node_modules\@vue\cli-plugin-eslint" t="IncludeRecursive" />
+      <e p="client-app\node_modules\@vue\cli-service" t="IncludeRecursive" />
+      <e p="client-app\node_modules\@vue\component-compiler-utils" t="IncludeRecursive" />
+      <e p="client-app\node_modules\address" t="IncludeRecursive" />
+      <e p="client-app\node_modules\axios" t="IncludeRecursive" />
+      <e p="client-app\node_modules\babel-eslint" t="IncludeRecursive" />
+      <e p="client-app\node_modules\chalk" t="IncludeRecursive" />
+      <e p="client-app\node_modules\cli-highlight" t="IncludeRecursive" />
+      <e p="client-app\node_modules\commander" t="IncludeRecursive" />
+      <e p="client-app\node_modules\core-js" t="IncludeRecursive" />
+      <e p="client-app\node_modules\dotenv" t="IncludeRecursive" />
+      <e p="client-app\node_modules\dotenv-expand" t="IncludeRecursive" />
+      <e p="client-app\node_modules\eslint" t="IncludeRecursive" />
+      <e p="client-app\node_modules\eslint-plugin-vue" t="IncludeRecursive" />
+      <e p="client-app\node_modules\javascript-stringify" t="IncludeRecursive" />
+      <e p="client-app\node_modules\portfinder" t="IncludeRecursive" />
+      <e p="client-app\node_modules\postcss" t="IncludeRecursive" />
+      <e p="client-app\node_modules\postcss-selector-parser" t="IncludeRecursive" />
+      <e p="client-app\node_modules\source-map" t="IncludeRecursive" />
+      <e p="client-app\node_modules\terser" t="IncludeRecursive" />
+      <e p="client-app\node_modules\vue" t="IncludeRecursive" />
+      <e p="client-app\node_modules\vue-loader" t="IncludeRecursive" />
+      <e p="client-app\node_modules\vue-template-compiler" t="IncludeRecursive" />
+      <e p="client-app\node_modules\vuex" t="IncludeRecursive" />
+      <e p="client-app\node_modules\webpack-chain" t="IncludeRecursive" />
+      <e p="WebApplication1.sln" t="IncludeFlat" />
+    </e>
+  </component>
+</project>

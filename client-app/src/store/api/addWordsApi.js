@@ -6,7 +6,7 @@ export default {
       method: 'post',
       url: 'text',
       data: text
-    });
+    }).then(({data}) => data);
   },
   SubmitWords(text) {
     return axios({

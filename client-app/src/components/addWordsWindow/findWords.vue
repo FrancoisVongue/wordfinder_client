@@ -1,5 +1,6 @@
 <template>
   <form>
+    <p class="display-4">Find new words!</p>
     <div class="form-group">
       <label for="text-name_input">Text Name</label>
       <input type="text" id="text-name_input" 
@@ -12,7 +13,13 @@
       placeholder="The Imperial Forces under orders from cruel Darth Vader..."
       v-model="text.Content"></textarea>
     </div>
-    <button class="btn btn-primary" @click="getWords">Submit</button>
+    <button class="btn btn-primary" @click="getWords">
+      <span v-if="!loading">Submit</span>
+      <span v-else>
+        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+        Loading...
+      </span>
+    </button>
   </form>
 </template>
 
@@ -26,15 +33,20 @@ export default {
       text : {
         Name: '',
         Content: ''
-      }
+      },
+      loading: false
     }
   },
   methods: {
-    getWords() {
+    getWords(e) {
+      e.preventDefault();
       if(this.text.Name && this.text.Content) {
-        this.$store.dispatch('updateWords', this.text)
-          .then(() => 
-            this.$router.push({name: 'addTranslation'}));
+        this.loading = true;
+        this.$store.dispatch('getNewWords', this.text)
+                .then(() => {
+                  this.loading = false;
+                  this.$router.push({name: 'addTranslation'});
+                });
       }
     }
   },

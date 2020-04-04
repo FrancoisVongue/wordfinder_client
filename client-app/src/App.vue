@@ -11,13 +11,23 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
+            <li class="nav-item"> <!--todo add active class to active-->
               <router-link class="nav-link" :to="{name: 'supplyText'}">
                 Find Words</router-link>
             </li>
             <li class="nav-item">
               <router-link class="nav-link" :to="{name: 'myWords'}">
                 My Words</router-link>
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <router-link class="nav-link" :to="{name: 'signUp'}">
+                Sign Up</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link" :to="{name: 'signIn'}">
+                Sign In</router-link>
             </li>
           </ul>
         </div>

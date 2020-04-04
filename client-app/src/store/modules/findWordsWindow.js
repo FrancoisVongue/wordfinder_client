@@ -1,4 +1,4 @@
-import api from "../../api/addWordsApi"
+import api from "../api/addWordsApi"
 
 let state = {
   text: {
@@ -9,28 +9,33 @@ let state = {
 }
 
 let mutations = {
-  UPDATE_WORDS(state, foundWords) {
+  SET_TEXT(state, text) {
+    state.text.Name = text.Name;
+    state.text.Content = text.Content;
+  },
+  ADD_WORDS(state, foundWords) {
     state.text.foundWords = foundWords;
   },
+  SUBMIT_WORDS(state) {
+    clearState(state);
+  },
   DISCARD_WORDS(state) {
-    for(const property in state.text) {
-      state.text[property] = state.text[property].slice(0,0);
-    }
+    clearState(state);
   },
 }
 
 let actions = {
-  updateWords({commit}, text) {
-    api.GetWordsFromText(text)
-      .then(response => {
-        commit('UPDATE_WORDS', response.data)
-      });
+  getNewWords({commit}, text) {
+    commit('SET_TEXT',text);
+    return api.GetWordsFromText(text)
+          .then(words => {
+            const newWords = words.map(word => NewWordFromContent(word));
+            commit('ADD_WORDS', newWords);
+          });
   },
-  submitWords({commit}, text) {
-    api.GetWords(text)
-      .then(response => {
-        commit('UPDATE_WORDS', response.data)
-      });
+  submitWords({commit, state}, text) {
+    api.SubmitWords(state.text)
+      .then(() => { commit('SUBMIT_WORDS') });
   },
   discardWords({commit}, text) {
     return new Promise.resolve(commit('DISCARD_WORDS'));
@@ -44,6 +49,16 @@ let getters = {
   textName(state) {
     return state.text.Name;
   }
+}
+
+function clearState(state) {
+  for(const prop in state.text) {
+    state.text[prop] = state.text[prop].slice(0,0);
+  }
+}
+
+function NewWordFromContent(content) {
+  return {content: content, editing: true};
 }
 
 export default {state, mutations, actions, getters}

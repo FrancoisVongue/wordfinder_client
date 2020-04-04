@@ -13,7 +13,7 @@
 <script>
 export default {
   name: 'myWordsWindow',
-  
+  // todo: three words pagination
 }
 </script>
 

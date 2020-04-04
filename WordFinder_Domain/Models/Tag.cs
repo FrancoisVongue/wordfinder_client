@@ -5,7 +5,7 @@ using System.Numerics;
 namespace WordFinder_Domain.Models
 {
     [Table("Tags")]
-    public class Tag
+    public class Tag : IUserCollection
     {
         public long Id { get; set; }
         public long UserId { get; set; }

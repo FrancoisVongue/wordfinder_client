@@ -1,4 +1,4 @@
-import api from "../../api/myWordsApi"
+import api from "../api/myWordsApi"
 
 let state = {
   foundWords: []

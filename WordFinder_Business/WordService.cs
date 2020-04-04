@@ -52,14 +52,9 @@ namespace WordFinder_Business
 
         public IEnumerable<Word> UserWords(long id)
         {
-            var userWords = _context.Users
-                .Include(u => u.Words)
-                    .ThenInclude(w => w.WordTags)
-                .Include(u => u.Words)
-                    .ThenInclude(w => w.Topic)
-                .First(u => u.Id == id)
-                .Words;
-
+            var userWords = _context.Words
+                .Where(w => w.UserId == id);
+            
             return userWords.OrderBy(w => w.Content);
         }
 
@@ -134,6 +129,17 @@ namespace WordFinder_Business
             }
             
             return topic;
+        }
+
+        public IEnumerable<long> GetUserCollection<T>(long userId) 
+            where T : class, IUserCollection
+        {
+            var collection = _context.Set<T>()
+                .Where(t => t.UserId == userId)
+                .Select(t => t.Id)
+                .ToList();
+
+            return collection;
         }
     }
 }

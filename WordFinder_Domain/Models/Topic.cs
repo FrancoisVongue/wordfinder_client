@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace WordFinder_Domain.Models
 {
     [Table(name:"Topics")]
-    public class Topic
+    public class Topic : IUserCollection
     {
         public long Id { get; set; }
         public long UserId { get; set; }

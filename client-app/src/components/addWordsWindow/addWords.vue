@@ -1,9 +1,10 @@
 <template>
   <form>
+    <p class="display-4">Add new words!</p>
     <p class="display-4">Found {{foundWords.length}} words in Text: "{{textName}}"</p>
-    <word v-for="(content, index) in foundWords" 
+    <word v-for="(word, index) in foundWords"
     :key="index"
-    :content="content"/>
+    :word.sync="word"/>
     <button class="btn btn-primary" @click="submitWords">Submit</button>
     <button class="btn btn-warning" @click="discardWords">Cancel</button>
   </form>
@@ -17,9 +18,11 @@ export default {
   name: "addTranslation",
   components: {word},
   data() {
-    return {
-      
-    }
+    return {}
+  },
+  methods: {
+    submitWords() {},
+    discardWords() {}
   },
   computed: {
     ...mapGetters([
