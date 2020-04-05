@@ -23,7 +23,8 @@ export default {
     return {
       config: {
         placeholder: "input",
-        tokens: ["hello", "world", "nice", "extracurricular"]
+        tokens: ["hello", "world", "nice", "extracurricular"],
+        CSV: true
       }
     }
   },

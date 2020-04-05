@@ -3,13 +3,17 @@
     <input class="form-control input_field" type="search"
     :placeholder="placeholder" aria-label="Search"
     v-model="inputString"
+    ref="input"
     @input="checkMatches"
     @keyup.delete="checkMatches"/>
     <ul :class="{input_matches: true, input_show: matches.length > 0}">
       <li class="input_match" v-for="(match, i) in matches" 
       :key="i"
-      @click="setInput(match)">{{match}}</li>
+      @click="setMatchToInput(match)">{{match}}</li>
     </ul>
+    <small class="info form-text error" v-if="error.length">{{error}}</small>
+    <small class="info form-text" v-else-if="CSV && !matches.length">
+      Use Comma to separate values</small>
   </div>
 </template>
 
@@ -20,19 +24,39 @@ export default {
   data() {
     return {
       placeholder: this.config ? this.config.placeholder : "",
-      inputString: "",
       tokens:  this.config ? this.config.tokens : [],
-      matches: []
+      CSV: this.config ? this.config.CSV : false,
+      inputString: "",
+      error: "",
+      matches: [],
     }
   },
   methods: {
-    checkMatches() {
-      if(!this.inputString.length) return this.matches = [];
-      this.matches = this.tokens.filter(t => ~t.indexOf(this.inputString))
+    checkMatches(e) {
+      if(this.invalidString() || !this.inputString.length)
+        return this.matches = [];
+        
+      const value = this.CSV ? this.inputString.split(',').pop(): this.inputString;
+        
+      this.matches = this.tokens.filter(t => ~t.indexOf(value.trim()));
     },
-    setInput(match) {
-      this.inputString = match;
+    setMatchToInput(match) {
+      if(~this.inputString.indexOf(',') && this.CSV) {
+        this.inputString = this.inputString.split(',').slice(0, -1).join(',') + ','
+        this.inputString += match;
+      } else {
+        this.inputString = match;
+      }
+      
+      this.$nextTick(() => this.$refs.input.focus())
+      
       this.matches = [];
+    },
+    invalidString() {
+      if(!this.inputString.split('').every(v => (/[A-z0-9_',]/).test(v))){
+        return this.error = "Remove invalid characters";
+      } 
+        return this.error = "";
     }
   }
 }
@@ -71,5 +95,9 @@ export default {
         transition: .15s;
       }
     }
+  }
+  .info {
+    position: absolute;
+    top: 2.5rem;
   }
 </style>

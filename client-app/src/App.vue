@@ -46,8 +46,11 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   .window {
     margin: 1em 0;
+  }
+  .error {
+    color: orangered;
   }
 </style>

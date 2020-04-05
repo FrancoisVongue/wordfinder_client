@@ -102,7 +102,7 @@
 <script>
 export default {
   name: 'Word',
-  props: ['word'],
+  props: ['word'], 
   data() {
     return {
       wordSchema: {

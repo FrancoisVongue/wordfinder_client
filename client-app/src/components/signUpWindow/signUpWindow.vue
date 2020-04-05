@@ -54,7 +54,5 @@
 </script>
 
 <style lang="scss" scoped>
-    .error {
-        color: orangered;
-    }
+    
 </style>
