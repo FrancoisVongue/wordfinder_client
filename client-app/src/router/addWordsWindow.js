@@ -5,12 +5,13 @@ import addTranslation from '../components/addWordsWindow/addWords.vue'
 export default { 
   path: '/', 
   component: findWordsWindow,
+  props: (route) => ({currentWindow: route.name}),
   children: [
-    {
-      name: 'findWords',
-      path: 'find-words',
-      component: findWords,
-    },
+    // todo delete {
+    //   name: 'findWords',
+    //   path: 'find-words',
+    //   component: findWords,
+    // },
     {
       name: 'addTranslation',
       path: 'add-translation', 
