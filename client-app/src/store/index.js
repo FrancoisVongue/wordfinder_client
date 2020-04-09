@@ -1,5 +1,6 @@
 ﻿import findWordsWindow from "./modules/findWordsWindow.js"
 import myWordsWindow from "./modules/myWordsWindow.js"
+import Authentication from "./modules/Authentication";
 
 import Vuex from 'vuex'
 import Vue from 'vue'
@@ -16,5 +17,5 @@ export default new Vuex.Store({
     getters : {
         
     },
-    modules: { findWordsWindow, myWordsWindow } // modules 
+    modules: { findWordsWindow, myWordsWindow, Authentication } 
 });

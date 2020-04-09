@@ -11,9 +11,9 @@ namespace WordFinder_Domain.Models
         public long Id { get; set; }
         public long UserId { get; set; }
         public string Content { get; set; }
-        
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime AdditionTime { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime AdditionTime { get; set; } = DateTime.UtcNow;
         public DateTime? LastRepetitionTime { get; set; }
         public int TimesRepeated { get; set; }
         public Topic Topic { get; set; }

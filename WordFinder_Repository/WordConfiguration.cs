@@ -13,12 +13,6 @@ namespace WordFinder_Repository
                 .WithMany(t => t.Words)
                 .IsRequired(false);
             
-            modelBuilder.Entity<Word>()
-                .HasData(
-                    new Word() {Content = "hello", UserId = 1L, Id = 1},
-                    new Word() {Content = "world", UserId = 1L, Id = 2},
-                    new Word() {Content = "the", UserId = 1L, Id = 3},
-                    new Word() {Content = "star", UserId = 1L, Id = 4});
         }
     }
 }

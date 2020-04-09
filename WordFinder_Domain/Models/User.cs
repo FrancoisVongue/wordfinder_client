@@ -12,9 +12,13 @@ namespace WordFinder_Domain.Models
         [Required]
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        [Required]
         public string Login { get; set; }
+        [Required]
         public string Email { get; set; }
-        public bool Available { get; set; }
+        [Required]
+        public string Password { get; set; }
+        public string Salt { get; set; }
         
         public IEnumerable<Topic> Topics { get; set; }
         public IEnumerable<Tag> Tags { get; set; }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WordFinder_Repository;
@@ -9,9 +10,10 @@ using WordFinder_Repository;
 namespace WordFinder.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    partial class ApiContextModelSnapshot : ModelSnapshot
+    [Migration("20200407052149_requiredUserPassword")]
+    partial class requiredUserPassword
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,6 +81,8 @@ namespace WordFinder.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<bool>("Available");
+
                     b.Property<string>("Email")
                         .IsRequired();
 
@@ -93,8 +97,6 @@ namespace WordFinder.Migrations
                     b.Property<string>("Password")
                         .IsRequired();
 
-                    b.Property<string>("Salt");
-
                     b.HasKey("Id");
 
                     b.ToTable("Users");
@@ -106,7 +108,7 @@ namespace WordFinder.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("AdditionTime")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAddOrUpdate();
 
                     b.Property<string>("Content");
 

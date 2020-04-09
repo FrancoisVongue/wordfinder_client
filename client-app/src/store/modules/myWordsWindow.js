@@ -1,19 +1,19 @@
 import api from "../api/myWordsApi"
 
 let state = {
-  foundWords: []
+    foundWords: []
 }
 
 let mutations = {
-  UPDATE_WORDS(state, foundWords) {
-    state.foundWords = foundWords;
-  }
+    UPDATE_WORDS(state, foundWords) {
+        state.foundWords = foundWords;
+    }
 }
 
 let actions = {
+    
 }
 
-let getters = {
-}
+let getters = {}
 
 export default {state, mutations, actions, getters}

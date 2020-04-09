@@ -9,4 +9,9 @@
       <ProjectReference Include="..\WordFinder_Repository\WordFinder_Repository.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.2.0" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.0" />
+    </ItemGroup>
+
 </Project>

@@ -8,13 +8,7 @@ namespace WordFinder_Repository
     {
         public static void Configure(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
-                .HasData(new User()
-                {
-                    Id = 1,
-                    FirstName = "Francois",
-                    LastName = "Vongue"
-                });
+         
         }
     }
 }

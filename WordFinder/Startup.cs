@@ -14,59 +14,48 @@ namespace WordFinder
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        public Startup(IConfiguration configuration)
+        { Configuration = configuration; }
+
         public void ConfigureServices(IServiceCollection services)
         {
+            var key = Configuration["auth:key"];
+            var skey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+            
             services.AddDbContext<ApiContext>(builder => 
                 builder.UseNpgsql(Configuration["database:cs"],
                     b => b.MigrationsAssembly("WordFinder")));
             services.AddScoped<WordService>();
-            services
-                .AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
+            services.AddScoped<UserService>();
+            services.AddMvc()
+                .AddJsonOptions(x => 
+                    x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.RequireHttpsMetadata = false;
                     options.SaveToken = true;
-                    options.ClaimsIssuer = Configuration["auth:issuer"];
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidateIssuer = true,
                         ValidIssuer = Configuration["auth:issuer"],
-                        ValidateAudience = true,
+                        ValidateIssuer = true,
                         ValidAudience = Configuration["auth:audience"],
+                        ValidateAudience = true,
+                        IssuerSigningKey = skey,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(Configuration["auth:key"])),
                         RequireExpirationTime = true,
                         ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero
                     };
                 });
-            services.AddMvc();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseHsts();
-            }
+            if (env.IsDevelopment()) 
+            { app.UseDeveloperExceptionPage(); }
+            else {  app.UseHsts(); }
 
             app.UseCors(o => o.AllowAnyOrigin());
             app.UseAuthentication();
