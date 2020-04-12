@@ -2,7 +2,7 @@
     <form>
         <p class="display-4">Add new words!</p>
         <p class="display-4">Found {{foundWords.length}} words in Text: "{{textName}}"</p>
-        <word v-for="(word, index) in foundWords"
+        <word v-for="(word, index) in words"
               :key="index"
               :word.sync="word"/>
         <button class="btn btn-primary" @click="submitWords">Submit</button>
@@ -18,12 +18,21 @@
         name: "addTranslation",
         components: {word},
         data() {
-            return {}
+            return {
+                words: []
+            }
+        },
+        created() {
+            this.words = [...this.foundWords];
         },
         methods: {
             submitWords() {
+                this.$store.dispatch('submitWords', this.words);
             },
             discardWords() {
+                this.words = [];
+                this.$store.dispatch('discardWords')
+                    .then(() => this.$router.push({name: 'supplyText'}));
             }
         },
         computed: {

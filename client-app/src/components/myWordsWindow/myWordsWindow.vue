@@ -1,38 +1,63 @@
-.<template>
-  <div class="window">
-    <p class="display-4">My Words</p>
-
-    <form class="form-inline">
-      <searchField class="mr-sm-2" :config="config"/>
-      <searchField class="mr-sm-2" :config="config"/>
-      <searchField class="mr-sm-2" :config="config"/>
-      <!-- <input class="form-control mr-sm-2" type="search" placeholder="Part of word" aria-label="Search"/>
-      <input class="form-control mr-sm-2" type="search" placeholder="Text name" aria-label="Search" />
-      <input class="form-control mr-sm-2" type="search" placeholder="Tags" aria-label="Search" /> -->
-    </form>
-  </div>
+<template>
+    <div class="window">
+        <p class="display-4">My Words</p>
+        <div class="">
+            <form class="row form-inline align-items-start">
+                <div class="col-md-4">
+                    <searchField :config="searchConfigs.word"/>
+                </div>
+                
+                <div class="col-md-4">
+                    <searchField :config="searchConfigs.tags"/>
+                </div>
+                
+                <div class="col-md-4">
+                    <searchField :config="searchConfigs.topics"/>
+                </div>
+            </form>
+        </div>
+        <Word v-for="(word, i) in words" :key="i" :word.sync="word" :small="true"/>
+    </div>
 </template>
 
 <script>
-import searchField from "../common/SearchField";
+    import searchField from "../common/SearchField";
+    import Word from '../common/Word'
 
-export default {
-  name: "myWordsWindow",
-  components: {searchField},
-  data() {
-    return {
-      config: {
-        placeholder: "input",
-        tokens: ["hello", "world", "nice", "extracurricular"],
-        CSV: true
-      }
-    }
-  },
-};
+    export default {
+        name: "myWordsWindow",
+        components: {searchField, Word},
+        data() {
+            return {
+                searchConfigs: {
+                    word: {
+                        placeholder: "input word",
+                        tokens: ["hello", "world", "nice", "extracurricular"],
+                        CSV: false
+                    },
+                    tags: {
+                        placeholder: "input tags",
+                        tokens: ["greeting", "home", "work"],
+                        CSV: true
+                    },
+                    topics: {
+                        placeholder: "input topics",
+                        tokens: ["hellsing", "matrix", "mr.nobody"],
+                        CSV: true
+                    },
+                },
+                words: []
+            }
+        },
+        beforeMount () {
+            this.$store.dispatch('getMyWords')
+                .then(words => this.words = words);
+        }
+    };
 </script>
 
 <style lang="scss" scoped>
-.form-control:focus {
-  outline: none;
-}
+    .form-control:focus {
+        outline: none;
+    }
 </style>

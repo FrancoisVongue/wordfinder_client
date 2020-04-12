@@ -4,7 +4,6 @@ import addWordsApi from "../api/addWordsApi";
 let state = {
     authentication: {
         authenticated: false,
-        token: '',
         loading: false,
         user: {
             id: 0,
@@ -22,10 +21,25 @@ let mutations = {
         state.authentication.loading = isLoading;
     },
     SET_USER(state, user) {
-        state.authentication.user = {...user};
+        const userState = state.authentication.user;
+        for(const prop in userState) {
+            if(!(userState[prop] instanceof Object))
+                userState[prop] = user[prop];
+        }
+    },
+    DISCARD_USER(state) {
+        const defaultUser = {
+            id: 0,
+            firstName: '',
+            secondName: '',
+            login: '',
+            email: '',
+            words: []
+        };
+        state.authentication.user = {...defaultUser};
     },
     SET_TOKEN(state, token) {
-        state.authentication.token = token;
+        localStorage.setItem("token", token);
     },
     SET_AUTH_STATE(state, auth_state) {
         state.authentication.authenticated = auth_state;
@@ -36,36 +50,50 @@ let mutations = {
 }
 
 let actions = {
-    verifyUser({commit}) {
-        const token = localStorage.getItem("token");
-        if (token) {
+    verifyUser({commit}, jwt) {
+        const token = jwt || localStorage.getItem("token");
+        if (token != "undefined") {
             commit('SET_LOADING', true);
-            api.VerifyUser(token)
+            return api.VerifyUser(token)
                 .then( user => {
+                    commit('SET_TOKEN', token);
+                    commit('SET_USER', user);
+                    commit('SET_AUTH_STATE', true);
                     commit('SET_LOADING', false);
-                })
+                }) 
                 .catch( reason => {
-                    commit('SET_LOADING', false)
+                    console.log(`invalid verification: ${reason.message}`);
+                    commit('SET_TOKEN', undefined);
+                    commit('DISCARD_USER');
+                    commit('SET_AUTH_STATE', false);
+                    commit('SET_LOADING', false);
                 });
         }
     },
-    signUpUser({commit}, user) {
+    signUp({commit}, user) {
         commit('SET_LOADING', true);
         return api.SignUp(user)
             .then(response => {
-                commit('SET_USER', response.data);
-                commit('SET_TOKEN', response.headers['x-token']);
-                commit('SET_AUTH_STATE', true);
                 commit('SET_LOADING', false);
-                return response.data;
+                return response.headers['x-token'];
+            })
+            .catch(reason => console.log(user));
+    },
+    signIn({commit}, credentials) {
+        commit('SET_LOADING', true);
+        return api.SignIn(credentials)
+            .then(token => {
+                commit('SET_LOADING', false);
+                return token;
             });
     },
-    setLexicon(context, words) {
-        words.map(w => {
-            w.userId = context.getters('userInfo').id;
-            return w;
+    logOut({commit}) {
+        return new Promise((res, rej) => {
+            commit('SET_TOKEN', undefined);
+            commit('DISCARD_USER');
+            commit('SET_AUTH_STATE', false);
+            res();
         });
-        context.commit('SET_LEXICON', words);
     }
 }
 

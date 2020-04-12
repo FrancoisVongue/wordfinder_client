@@ -1,19 +1,19 @@
 <template>
   <div class="input_wrapper">
     <input class="form-control input_field" type="search"
-    :placeholder="placeholder" aria-label="Search"
-    v-model="inputString"
-    ref="input"
-    @input="checkMatches"
-    @keyup.delete="checkMatches"/>
+        :placeholder="placeholder" aria-label="Search"
+        v-model="inputString"
+        ref="input"
+        @input="checkMatches"
+        @keyup.delete="checkMatches"/>
     <ul :class="{input_matches: true, input_show: matches.length > 0}">
       <li class="input_match" v-for="(match, i) in matches" 
       :key="i"
       @click="setMatchToInput(match)">{{match}}</li>
     </ul>
     <small class="info form-text error" v-if="error.length">{{error}}</small>
-    <small class="info form-text" v-else-if="CSV && !matches.length">
-      Use Comma to separate values</small>
+    <small class="info form-text" v-else>
+      {{CSV ? "Use Comma to separate values" : ''}}</small>
   </div>
 </template>
 
@@ -33,12 +33,21 @@ export default {
   },
   methods: {
     checkMatches(e) {
-      if(this.invalidString() || !this.inputString.length)
-        return this.matches = [];
+        if(this.invalidString() || !this.inputString.length)
+            return this.matches = [];
+            
+        const value = this.CSV ? this.inputString.split(',').pop(): this.inputString;
         
-      const value = this.CSV ? this.inputString.split(',').pop(): this.inputString;
-        
-      this.matches = this.tokens.filter(t => ~t.indexOf(value.trim()));
+        if(value)
+            this.matches = this.tokens.filter(t => {
+                const matchesToken = ~t.indexOf(value.trim());
+                const exists = ~this.inputString.indexOf(t + ',');
+                return matchesToken && !exists;
+            });
+        else {
+            this.matches = this.tokens
+                .filter(t => !~this.inputString.indexOf(t + ','));
+        }
     },
     setMatchToInput(match) {
       if(~this.inputString.indexOf(',') && this.CSV) {
@@ -53,7 +62,7 @@ export default {
       this.matches = [];
     },
     invalidString() {
-      if(!this.inputString.split('').every(v => (/[A-z0-9_',]/).test(v))){
+      if(this.inputString && !(/^[a-zA-Z]+(,[a-zA-Z]*)*$/).test(this.inputString)) {
         return this.error = "Remove invalid characters";
       } 
         return this.error = "";
@@ -66,6 +75,10 @@ export default {
   .input_{
     &wrapper {
       position: relative;
+      padding: 0;
+    }
+    &field {
+        width: 100%;
     }
     &matches {
       margin: 0;
@@ -75,7 +88,8 @@ export default {
       position: absolute;
       left: 0;
       right: 0;
-      top: 3em;
+      top: 2.5em;
+      z-index: 1;
     }
     &show{
       display: block;
@@ -95,9 +109,5 @@ export default {
         transition: .15s;
       }
     }
-  }
-  .info {
-    position: absolute;
-    top: 2.5rem;
   }
 </style>

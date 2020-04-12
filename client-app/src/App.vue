@@ -18,7 +18,10 @@
                         </li>
                         <li class="{nav-item: true, active: currentWindow == myWords}">
                             <router-link class="nav-link" :to="{name: 'myWords'}">
-                                My Words
+                                My Words 
+                                <span class="badge badge-primary" v-if="userInfo.words && userInfo.words.length > 0">
+                                    {{userInfo.words.length}}
+                                </span>
                             </router-link>
                         </li>
                     </ul>
@@ -38,7 +41,14 @@
                         </template>
                         <template v-else>
                             <li class="nav-item">
-                                {{userInfo.firstName}}
+                                <router-link class="nav-link" :to="{name: 'myWords'}">
+                                    {{userInfo.firstName}}
+                                </router-link>
+                            </li>
+                            <li class="nav-item">
+                                <router-link class="nav-link" :to="{name: 'logOut'}">
+                                    Log out
+                                </router-link>
                             </li>
                         </template>
                     </ul>
@@ -69,6 +79,8 @@
         },
         computed: {
             ...mapGetters(['authLoading', 'authenticated', 'userInfo'])
+        },
+        methods: {
         }
     }
 </script>
@@ -76,12 +88,6 @@
 <style lang="scss">
     .window {
         margin: 1em 0;
-    }
-
-    .validation_info {
-        display: inline-block;
-        margin-top: 0.25em;
-        line-height: 1.2rem;
     }
 
     .error {

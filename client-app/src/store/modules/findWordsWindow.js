@@ -4,7 +4,9 @@ let state = {
     text: {
         Name: "",
         Content: "",
-        foundWords: []
+        foundWords: [
+            
+        ]
     },
 }
 
@@ -13,11 +15,8 @@ let mutations = {
         state.text.Name = text.Name;
         state.text.Content = text.Content;
     },
-    ADD_WORDS(state, foundWords) {
+    SET_FOUND_WORDS(state, foundWords) {
         state.text.foundWords = foundWords;
-    },
-    SUBMIT_WORDS(state) {
-        clearState(state);
     },
     DISCARD_WORDS(state) {
         clearState(state);
@@ -27,20 +26,32 @@ let mutations = {
 let actions = {
     getNewWords({commit}, text) {
         commit('SET_TEXT_PROPERTIES', text);
-        return api.GetWordsFromText(text)
-            .then(words => {
-                const newWords = words.map(word => NewWordFromContent(word));
-                commit('ADD_WORDS', newWords);
-            });
+        
+        if(userAuthenticated()) {
+            const token = getToken();
+            const getWordsPromise = api.GetWordsFromText(text, token)
+                .then(words => {
+                    const newWords = words.map(word => NewWordFromContent(word));
+                    commit('SET_FOUND_WORDS', newWords);
+                });
+            
+            return getWordsPromise;
+        }
+        else {
+            return Promise.reject(new Error("User is not authenticated"));
+        }
     },
-    submitWords({commit, state}, text) {
-        api.SubmitWords(state.text)
-            .then(() => {
-                commit('SUBMIT_WORDS')
-            });
+    submitWords({commit, state}) {
+        if(userAuthenticated())
+            return api.SubmitWords(state.text)
+                .then(() => {
+                    commit('DISCARD_WORDS')
+                });
+        else 
+            return Promise.reject("User is not authenticated")
     },
     discardWords({commit}, text) {
-        return new Promise.resolve(commit('DISCARD_WORDS'));
+        return Promise.resolve(commit('DISCARD_WORDS'));
     },
 }
 
@@ -61,6 +72,15 @@ function clearState(state) {
 
 function NewWordFromContent(content) {
     return {content: content, editing: true};
+}
+
+function userAuthenticated() {
+    const token = getToken();
+    return token != 'undefinded';
+}
+
+function getToken() {
+    return localStorage.getItem('token');
 }
 
 export default {state, mutations, actions, getters}

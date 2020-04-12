@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -30,9 +31,6 @@ namespace WordFinder_Business
             
             var addedUser = _context.Users.Add(user).Entity;
             _context.SaveChanges();
-            // _context.Entry(addedUser)
-            //     .Collection(u => u.Words)
-            //     .Load();
             return addedUser;
         }
 
@@ -55,9 +53,31 @@ namespace WordFinder_Business
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public User GetByLogin(string login)
+        public User trySignIn(string credentialsLogin, string credentialsPassword)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Login == login);
+            var user = _context.Users.FirstOrDefault(u => u.Login == credentialsLogin);
+            if (user != null)
+            {
+                var correctPassword = verifyPassword(credentialsPassword, user);
+                if (correctPassword)
+                {
+                    return user;
+                }
+            }
+
+            return null;
+        }
+
+        public User GetUser(HttpContext context)
+        {
+            var token = (string)context.Request.Headers["Authorization"];
+            token = token.Split(' ')[1]; // get rid of bearer prefix
+            
+            var securityToken = new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
+            var userId = Int32.Parse(securityToken.Claims
+                .First(claim => claim.Type == "userId")
+                .Value);
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
             return user;
         }
 
@@ -76,7 +96,7 @@ namespace WordFinder_Business
 
             return hash;
         }
-        
+
         private bool verifyPassword(string pw, User u)
         {
             bool valid;
@@ -101,6 +121,7 @@ namespace WordFinder_Business
 
             return salt.ToString();
         }
+
         private string GetHash(HashAlgorithm hashAlgorithm, string input)
         {
             byte[] data = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(input));

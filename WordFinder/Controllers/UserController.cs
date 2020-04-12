@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using WordFinder_Business;
 using WordFinder_Domain.Models;
+using WordFinder_Domain.ServiceIO;
 using WordFinder_Repository;
 
 namespace WordFinder.Controllers
@@ -39,24 +40,36 @@ namespace WordFinder.Controllers
             var token = _service.GenerateToken(addedUser);
             HttpContext.Response.Headers["x-token"] = token;
 
-            return Ok(addedUser);
+            return Ok();
         }
         
         [HttpPost("[action]")]
-        public ActionResult SignIn(User user)
+        public ActionResult SignIn(SignInCredentials credentials)
         {
-            throw new NotImplementedException();
+            User user = _service.trySignIn(credentials.Login, credentials.Password);
+            if (user == null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                var token = _service.GenerateToken(user);
+                HttpContext.Response.Headers["x-token"] = token;
+                return Ok();
+            }
         }
 
         [Authorize]
         [HttpPost("[action]")]
-        public ActionResult Verify(string login)
+        public ActionResult Verify()
         {
-            var user = _service.GetByLogin(login);
+            var user = _service.GetUser(HttpContext);
             if (user != null)
+            {
                 return Ok(user);
-            else 
-                return new UnauthorizedResult();
+            }
+            else
+                return BadRequest();
         }
     }
 }

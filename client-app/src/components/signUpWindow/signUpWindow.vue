@@ -6,72 +6,31 @@
 
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <label for="fname_create">First Name</label>
-                        <ValidationProvider name="first name" rules="alpha|required" v-slot="{errors}">
-                            <input type="text" class="form-control" id="fname_create"
-                                   placeholder="Enter your first name, please."
-                                   v-model="firstName">
-                            <small class="info form-text error validation_info" v-if="errors[0]">{{errors[0]}}</small>
-                            <small class="info form-text text-muted validation_info" v-else> </small>
-                        </ValidationProvider>
+                        <InputField :field-data.sync="firstNameField"/>
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label for="sname_create">Second Name</label>
-                        <ValidationProvider name="second name" rules="alpha" v-slot="{errors}">
-                            <input type="text" class="form-control" id="sname_create" 
-                                   placeholder="Enter your second name"
-                                   v-model="secondName">
-                            <small class="info form-text error validation_info" v-if="errors[0]">{{errors[0]}}</small>
-                            <small class="info form-text text-muted validation_info" v-else>
-                                (optional)
-                            </small>
-                        </ValidationProvider>
+                        <InputField :field-data.sync="secondNameField"/>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <label for="email_create">Email</label>
-                        <ValidationProvider name="email" rules="email|required" v-slot="{errors}">
-                            <input type="text" class="form-control" id="email_create"
-                                   placeholder="Enter your email"
-                                   v-model="email">
-                            <small class="info form-text error validation_info" v-if="errors[0]">{{errors[0]}}</small>
-                            <small class="info form-text text-muted validation_info" v-else> </small>
-                        </ValidationProvider>
+                        <InputField :field-data.sync="emailField"/>
                     </div>
 
                     <div class="form-group col-md-6">
-                        <label for="login_create">Login</label>
-                        <ValidationProvider name="login" rules="min:5|max:14|required" v-slot="{errors}">
-                            <input type="text" class="form-control" id="login_create" placeholder="Enter your login"
-                                   v-model="login">
-                            <small class="info form-text error validation_info" v-if="errors[0]">{{errors[0]}}</small>
-                            <small class="info form-text text-muted validation_info" v-else> </small>
-                        </ValidationProvider>
+                        <InputField :field-data.sync="loginField"/>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <label for="password_create">Password</label>
-                        <ValidationProvider name="password" rules="diversity:5|min:6|max:20|required" v-slot="{errors}">
-                            <input type="password" class="form-control" id="password_create" placeholder="Password"
-                                   v-model="password">
-                            <small class="info form-text error validation_info" v-if="errors[0]">{{errors[0]}}</small>
-                            <small class="info form-text text-muted validation_info" v-else>Choose a secure password</small>
-                        </ValidationProvider>
+                        <InputField :field-data.sync="passwordField"/>
                     </div>
-    
+
                     <div class="form-group col-md-6">
-                        <label for="repeat_password">Repeat password</label>
-                        <ValidationProvider name="password" :rules="'required|sameas:' + password" v-slot="{errors}">
-                            <input type="password" class="form-control" id="repeat_password" placeholder="Repeat password"
-                                   v-model="password_repeat">
-                            <small class="info form-text error validation_info" v-if="errors[0]">{{errors[0]}}</small>
-                            <small class="info form-text text-muted validation_info" v-else> </small>
-                        </ValidationProvider>
+                        <InputField :field-data.sync="passwordRepeatField"/>
                     </div>
                 </div>
                 
@@ -81,9 +40,8 @@
                             (words will be taken from <a target="_blank" 
                              href="https://github.com/first20hours/google-10000-english/blob/master/google-10000-english-no-swears.txt">this place</a>)
                         </label>
-                        <input type="range" class="custom-range" min="0" max="9500" id="lexicon"
-                               v-model="lexiconSize"
-                                step="100">
+                        <input type="range" class="custom-range" min="0" max="9500"
+                            id="lexicon" v-model="lexiconSize" step="100">
                     </div>
                     <div class="col-md-12">
                         <p class="display-4 small-display text-center">{{lexiconSize}}</p>
@@ -99,34 +57,98 @@
 </template>
 
 <script>
-    import ValidationProvider from '../common/validation';
+    import InputField from "../common/InputField";
     import {ValidationObserver, setInteractionMode} from 'vee-validate';
-    import dictionary from './processedDictionary';
+    import dictionary from './processedDictionary.js';
     import _ from 'lodash'
     setInteractionMode('eager');
 
     export default {
         name: "signUpWindow",
-        components: { ValidationProvider, ValidationObserver },
+        components: { ValidationObserver, InputField },
         data() {
             return {
-                firstName: '',
-                secondName: '',
-                login: '',
-                email: '',
-                password: '',
-                password_repeat: '',
-                words: [],
+                firstNameField: {
+                    id: 'firstName_create',
+                    type: 'text',
+                    smallText: '',
+                    name: 'First name',
+                    rules: 'alpha|required|max:20',
+                    placeholder: 'Input your first name, please',
+                    value: ''
+                },
+                secondNameField: {
+                    id: 'secondName_create',
+                    type: 'text',
+                    smallText: '(optional)',
+                    name: 'Second name',
+                    rules: 'alpha|max:30',
+                    placeholder: 'Input your second name, please',
+                    value: ''
+                },
+                loginField: {
+                    id: 'login_create',
+                    type: 'text',
+                    smallText: '',
+                    name: 'Login',
+                    rules: 'min:5|max:14|required',
+                    placeholder: 'Input your login, please',
+                    value: ''
+                },
+                emailField: {
+                    id: 'email_create',
+                    type: 'text',
+                    smallText: '',
+                    name: 'Email',
+                    rules: 'required|email',
+                    placeholder: 'Input your email, please',
+                    value: ''
+                },
+                passwordField: {
+                    id: 'password_create',
+                    type: 'password',
+                    smallText: '',
+                    name: 'Password',
+                    rules: 'diversity:5|min:6|max:20|required',
+                    placeholder: 'Input your password, please',
+                    value: ''
+                },
                 lexiconSize: 0,
+            }
+        },
+        computed: {
+            passwordRepeatField() {
+                return {
+                    id: 'repeat_password',
+                    type: 'password',
+                    smallText: '',
+                    name: 'Repeat password',
+                    rules: 'required|sameas:' + this.passwordField.value,
+                    placeholder: 'Repeat your password, please',
+                    value: ''}
             }
         },
         methods: {
             signUp() {
-                this.words = JSON.parse(dictionary)
+                const words = dictionary
                     .slice(0, this.lexiconSize)
-                    .map(w => {content: w});
-                const user = _.omit(this, ['password_repeat','lexiconSize']);
-                this.$store.dispatch('signUpUser', user);
+                    .map(w => {
+                        return {content: w};
+                    });
+                
+                const user = {
+                    firstName: this.firstNameField.value,
+                    secondName: this.secondNameField.value,
+                    login: this.loginField.value,
+                    email: this.emailField.value,
+                    password: this.passwordField.value,
+                    words: [...words]
+                }
+                
+                this.$store.dispatch('signUp', user)
+                    .then(token => {
+                        this.$store.dispatch('verifyUser', token);
+                    });
             }
         }
     }

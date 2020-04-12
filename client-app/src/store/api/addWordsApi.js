@@ -1,25 +1,27 @@
 import axios from 'axios'
 
 export default {
-    GetWordsFromText(text) {
-        return axios({
-            method: 'post',
-            url: 'text',
-            data: text
-        }).then(({data}) => data);
-    },
-    SubmitWords(text) {
+    GetWordsFromText(text, token) {
         return axios({
             method: 'post',
             url: 'words',
-            data: text
-        });
+            data: text,
+            headers: {'Authorization': `bearer ${token}`}
+        }).then(({data}) => data);
     },
-    SetLexicon(words) {
+    SubmitWords(text, token) {
         return axios({
             method: 'post',
-            url: 'user/set-lexicon',
-            data: words
+            url: 'words/text',
+            data: text,
+            headers: {'Authorization': `bearer ${token}`}
+        });
+    },
+    GetShallowInfo(token) {
+        return axios({
+            method: 'post',
+            url: 'user/get-lexicon',
+            headers: {'Authorization': `bearer ${token}`}
         });
     }
 }

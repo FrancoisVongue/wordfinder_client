@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WordFinder_Business;
@@ -14,41 +15,47 @@ namespace WordFinder.Controllers
     public class WordsController : ControllerBase
     {
         private readonly WordService _service;
-        private readonly long _userId = 1;
+        private readonly UserService _userService;
 
-        public WordsController(WordService service)
+        public WordsController(WordService service, UserService userService)
         {
             _service = service;
+            _userService = userService;
         }
         
-        /* GET WORDS FROM TEXT */
-        [HttpPost("/text")]
+        [Authorize]
+        [HttpPost]
         public ActionResult GetWordsFromText(Topic topic)
         {
+            var _userId = _userService.GetUser(HttpContext).Id;
             var words = _service.FindNewWords(topic.Content, _userId);
             return Ok(words);
         }
 
-        /* ADD WORDS */
-        [HttpPost("")]
+        [Authorize]
+        [HttpPost("text")]
         public ActionResult AddWords(Topic topic)
         {
+            var _userId = _userService.GetUser(HttpContext).Id;
             var addedWords = _service.AddWords(topic, _userId);
             return Ok(addedWords);
         }
 
-        [HttpGet("searchinfo")]
-        public ActionResult GetSearchInfo()
+        /* GET GENERAL INFORMATION ABOUT USER LEXICON */ 
+        [HttpGet("shallow")]
+        public ActionResult GetShallowInfo()
         {
-            var tags = _service.GetUserCollection<Tag>(_userId);
-            var topics = _service.GetUserCollection<Topic>(_userId);
-            return Ok(new SearchInfo(){TagIds = tags, TopicIds = topics});
+            var _userId = _userService.GetUser(HttpContext).Id;
+            var info = _service.GetShallowInfo(_userId);
+            return Ok(info);
         }
 
         /* GET WORDS FOR USER */
-        [HttpPost("search/{topicId?}")]
+        [Authorize]
+        [HttpGet("lexicon")]
         public ActionResult GetUserWords(long? topicId, [FromBody] List<long> tagIds)
         {
+            var _userId = _userService.GetUser(HttpContext).Id;
             var words = _service.UserWords(_userId);
             if (topicId == null && !tagIds.Any())
                 return Ok(words);

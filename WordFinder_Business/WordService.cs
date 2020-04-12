@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using WordFinder_Domain.Models;
+using WordFinder_Domain.ServiceIO;
 using WordFinder_Repository;
 
 namespace WordFinder_Business
@@ -97,6 +98,25 @@ namespace WordFinder_Business
             return context;
         }
 
+        public ShallowWordsInfo GetShallowInfo(long userId)
+        {
+            var words = _context.Words
+                .Where(w => w.UserId == userId)
+                .Select(w => w.Content);
+            var tags = _context.Tags
+                .Where((t => t.UserId == userId))
+                .Select(t => t.Name);
+            var topics = _context.Topics
+                .Where((t => t.UserId == userId))
+                .Select(t => t.Name);
+            return new ShallowWordsInfo()
+            {
+                Words = words,
+                Tags = tags,
+                Topics = topics
+            };
+        }
+
         private IEnumerable<string> FindWords(string content)
         {
             if(content == null)
@@ -129,17 +149,6 @@ namespace WordFinder_Business
             }
             
             return topic;
-        }
-
-        public IEnumerable<long> GetUserCollection<T>(long userId) 
-            where T : class, IUserCollection
-        {
-            var collection = _context.Set<T>()
-                .Where(t => t.UserId == userId)
-                .Select(t => t.Id)
-                .ToList();
-
-            return collection;
         }
     }
 }

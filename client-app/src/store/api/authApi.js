@@ -8,27 +8,23 @@ export default {
             data: user,
         });
     },
-    SignIn(login, password) {
+    SignIn(credentials) {
         return axios({
             method: 'post',
             url: 'user/signin',
-            data: JSON.stringify({login, password})
-        }).then(({data}) => data);
+            data: credentials,
+        }).then(response => response.headers["x-token"]);
     },
-    VerifyUser(user) {
+    VerifyUser(token) {
         return axios({
             method: 'post',
             url: 'user/verify',
-            data: user,
-            headers: {'Authorization': `bearer ${user.token}`}
-        })
-        .then(response => {
-            if(response.status >= 400)
-                throw new Error(`Couldn't authenticate the user with login ${user.login}`);
-            return response.data;
-        })
-        .catch(e => {
-            console.log(`Bad connection to the server, try again later, please!`);
+            headers: {'Authorization': `bearer ${token}`}
+        }).then(response => {
+            const user = response.data;
+            if(!user.id || !user.firstName) 
+                throw new Error("Verify user: invalid response");
+            return user;
         });
     }
 }

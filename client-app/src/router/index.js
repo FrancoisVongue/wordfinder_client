@@ -1,7 +1,6 @@
 import addWordsWindow from './addWordsWindow'
 import myWordsWindow from './myWordsWindow'
-import signUpWindow from "./signUpWindow"
-import signInWindow from "./signInWindow"
+import auth from "./authentication"
 import store from '../store/index'
 import test from './test'
 import home from '../components/addWordsWindow/addWordsWindow.vue'
@@ -14,8 +13,7 @@ const routes = [
         ...test,
     addWordsWindow,
     myWordsWindow,
-    signUpWindow,
-    signInWindow,
+        ...auth,
     { path: '*', component: home }
 ];
 

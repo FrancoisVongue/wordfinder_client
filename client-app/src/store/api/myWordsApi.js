@@ -1,10 +1,8 @@
 import axios from 'axios'
+import test from './test'
 
 export default {
-  GetWords(content, name) {
-    return axios({
-      method: 'get',
-      url: 'words'
-    });
-  }
+    getMyWords(descriptor, token) {
+        return Promise.resolve(test.words);
+    }
 }

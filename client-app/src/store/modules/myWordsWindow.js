@@ -1,19 +1,25 @@
 import api from "../api/myWordsApi"
 
-let state = {
-    foundWords: []
+const state = {
+    myWords: []
 }
 
-let mutations = {
-    UPDATE_WORDS(state, foundWords) {
-        state.foundWords = foundWords;
+const mutations = {
+    SET_WORDS(state, words) {
+        state.myWords = [...words];
     }
 }
 
-let actions = {
-    
+const actions = {
+    getMyWords({commit}) {
+        return api.getMyWords()
+            .then(words => {
+                commit('SET_WORDS', words);
+                return words;
+            });
+    }
 }
 
-let getters = {}
+const getters = {}
 
 export default {state, mutations, actions, getters}

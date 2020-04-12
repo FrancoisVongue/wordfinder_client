@@ -5,26 +5,13 @@
             <form @submit.prevent="handleSubmit(signIn)">
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <label for="fname_create">Login</label>
-                        <ValidationProvider name="first name" rules="alpha|required|min:5|max:14" v-slot="{errors}">
-                            <input type="text" class="form-control" id="fname_create"
-                                   placeholder="Enter your first name, please."
-                                   v-model="login">
-                            <small class="info form-text error validation_info" v-if="errors[0]">{{errors[0]}}</small>
-                            <small class="info form-text text-muted validation_info" v-else> </small>
-                        </ValidationProvider>
+                        <InputField :field-data.sync="loginField"/>
                     </div>
                 </div>
                 
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <label for="password_create">Password</label>
-                        <ValidationProvider name="password" rules="min:6|max:20|required" v-slot="{errors}">
-                            <input type="password" class="form-control" id="password_create" placeholder="Password"
-                                   v-model="password">
-                            <small class="info form-text error validation_info" v-if="errors[0]">{{errors[0]}}</small>
-                            <small class="info form-text text-muted validation_info" v-else>Choose a secure password</small>
-                        </ValidationProvider>
+                        <InputField :field-data.sync="passwordField"/>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary"
@@ -36,22 +23,56 @@
 </template>
 
 <script>
-    import ValidationProvider from '../common/validation';
+    import _ from 'lodash'
+    import InputField from "../common/InputField";
     import {ValidationObserver, setInteractionMode} from 'vee-validate';
     setInteractionMode('eager');
 
     export default {
         name: "signUpWindow",
-        components: { ValidationProvider, ValidationObserver },
+        components: { ValidationObserver, InputField },
         data() {
             return {
-                login: '',
-                password: ''
+                loginField: {
+                    id: 'login_input',
+                    type: 'text',
+                    smallText: '',
+                    name: 'Login',
+                    rules: 'alpha|required|min:5|max:14',
+                    placeholder: 'Input your login, please',
+                    value: ''
+                },
+                passwordField: {
+                    id: 'password_input',
+                    type: 'password',
+                    smallText: '',
+                    name: 'Password',
+                    rules: 'required|min:6|max:20',
+                    placeholder: 'Input your password, please',
+                    value: ''
+                }
             }
+        },
+        beforeRouteEnter (to, from, next) {
+            next(vm => {
+                if(vm.$store.getters.authenticated)
+                    next({name: 'myWords'});
+                else
+                    next();
+            })
         },
         methods: {
             signIn() {
+                const credentials = {
+                    login: this.loginField.value,
+                    password: this.passwordField.value
+                };
                 
+                this.$store.dispatch('signIn', credentials)
+                    .then(token => {
+                        this.$router.push({name:'myWords'});
+                        this.$store.dispatch('verifyUser', token);
+                    });
             }
         }
     }
