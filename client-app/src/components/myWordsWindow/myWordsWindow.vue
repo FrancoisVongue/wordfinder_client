@@ -16,17 +16,20 @@
                 </div>
             </form>
         </div>
-        <Word v-for="(word, i) in words" :key="i" :word.sync="word" :small="true"/>
+        <Word v-for="(word, i) in WordsForCurrentPage" :key="i" :word.sync="word" :small="true"/>
+        <pagination :pagination-info.sync="pages"/>
     </div>
 </template>
 
 <script>
     import searchField from "../common/SearchField";
     import Word from '../common/Word'
+    import pagination from '../common/Pagination'
 
+    const WORDS_PER_PAGE = 5;
     export default {
         name: "myWordsWindow",
-        components: {searchField, Word},
+        components: {searchField, Word, pagination},
         data() {
             return {
                 searchConfigs: {
@@ -46,13 +49,28 @@
                         CSV: true
                     },
                 },
-                words: [],
-                page: 0
+                pages: {
+                    page: 1,
+                    totalPages: 1
+                },
+                words: []
             }
         },
-        beforeMount () {
+        beforeCreate () {
             this.$store.dispatch('getMyWords')
-                .then(words => this.words = words);
+                .then(words => {
+                    this.words = words;
+                    this.pages.totalPages = Math.ceil(words.length / WORDS_PER_PAGE);
+                });
+        },
+        computed: {
+            WordsForCurrentPage() {
+                const start = (this.pages.page - 1) * WORDS_PER_PAGE;
+                const end = start + WORDS_PER_PAGE;
+                const words = this.words.slice(start, end);
+
+                return words;
+            }
         }
     };
 </script>
