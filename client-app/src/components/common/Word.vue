@@ -1,46 +1,22 @@
 <template>
-    <div class="container-fluid border word">
+    <div class="container-fluid border word" :class="{'word_familiar':word.familiar && !word.editing}">
         
-        <template v-if="word.editing">
-            <div class="row justify-content-center">
-                <div class="col-lg-8 text-center">
-                    <p>
-                        <input type="text" class="display-4 text-center word_content_input"
-                            v-model="word.content">
-                    </p>
-                </div>
-            </div>
-            
-            <div class="row row_description">
-                <p class="text-center col-sm-4 col-form-label">Translation</p>
-                <p class="text-center col-sm-4 col-form-label">Tags</p>
-                <p class="text-center col-sm-4 col-form-label">Notes</p>
-            </div>
-            
-            <div class="form-group row">
-                <div class="col-sm-4">
-                    <input type="text" class="form-control"
-                           id="translation_input" placeholder="translation"
-                           v-model="translationsString">
-                </div>
-                
-                <div class="col-sm-4">
-                    <input type="text" class="form-control"
-                           id="tags_input" placeholder="tags"
-                           v-model="tagsString">
-                </div>
-                
-                <div class="col-sm-4">
-                    <textarea class="form-control" id="notes_input"
-                        placeholder="description" rows="1"
-                        
-                        v-model="word.notes">
-                    </textarea>
-                </div>
-            </div>
-
+        <validation-observer v-if="word.editing">
             <div class="form-group row justify-content-center">
-                <div class="col-sm-4 text-center">
+            
+                <div class="col-sm-4">
+                    <input-field :field-data.sync="contentField"/>
+                </div>
+            
+                <div class="col-sm-4">
+                    <input-field :field-data.sync="tagField"/>
+                </div>
+                
+                <div class="col-sm-4">
+                    <input-field :field-data.sync="translationField"/>
+                </div>
+
+                <div class="col-sm-12 text-center">
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="dont_repeat"
                                v-model="word.familiar">
@@ -48,13 +24,14 @@
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn btn-sm btn-danger edit_button edit_button-discard"
+            
+            <button type="button" class="btn btn-sm btn-secondary edit_button edit_button-discard"
                     @click="discardChanges">Discard changes
             </button>
-            <button type="button" class="btn btn-sm btn-success edit_button edit_button-save"
+            <button type="button" class="btn btn-sm btn-primary edit_button edit_button-save"
                     @click="saveChanges">Save changes
             </button>
-        </template>
+        </validation-observer>
 
         <template v-else>
             <div class="row justify-content-center">
@@ -68,47 +45,6 @@
                 </div>
             </div>
             
-            <template v-if="!small">
-                <div class="row row_description">
-                    <p class="text-center col-sm-4 col-form-label">Translation</p>
-                    <p class="text-center col-sm-4 col-form-label">Tags</p>
-                    <p class="text-center col-sm-4 col-form-label">Notes</p>
-                </div>
-                
-                <div class="form-group row">
-                    <div class="col-sm-4">
-                        <p class="form-control" id="translation">
-                            <span v-if="word.translations.length == 0">No Translation</span>
-                            <span v-for="(translation, i) in word.translations" :key="i">
-                                <span v-if="i > 0">, </span>{{translation}}</span>
-                        </p>
-                    </div>
-                    <div class="col-sm-4">
-                        <p class="form-control" id="tags">
-                            <span v-if="word.tags.length == 0">No Tags</span>
-                            <span v-for="(tag, i) in word.tags" :key="i">
-                                <span v-if="i > 0">, </span>{{tag}}</span>
-                        </p>
-                    </div>
-                    <div class="col-sm-4">
-                        <p class="form-control" id="notes">
-                            <span v-if="word.notes.length == 0">No Description</span>
-                            {{word.notes}}
-                        </p>
-                    </div>
-                </div>
-
-                <div class="form-group row justify-content-center">
-                    <div class="col-sm-4 text-center">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="is_repeated" disabled
-                                :checked="!word.familiar">
-                            <label class="custom-control-label" for="is_repeated"><span
-                                    v-if="word.familiar">Is not</span> Repeated!</label>
-                        </div>
-                    </div>
-                </div>
-            </template>
             <button type="button" class="btn btn-sm btn-warning edit_button edit_button-change"
                     @click="beginEdition">Edit word
             </button>
@@ -117,44 +53,64 @@
 </template>
 
 <script>
+    import InputField from '../common/InputField'
+    import { ValidationObserver } from 'vee-validate'
+    
     export default {
         name: 'Word',
         props: ['word', 'small'],
+        components: {InputField, ValidationObserver},
         data() {
             return {
-                tagsString: "",
-                translationsString: "",
+                contentField: {
+                    id: `word${this.word.id}_content-input`,
+                    type: 'text',
+                    smallText: 'word to learn',
+                    name: 'Word',
+                    rules: 'alpha|required|min:3',
+                    placeholder: 'Input the word, please',
+                    value: this.word.content
+                },
+                tagField: {
+                    id: `tags${this.word.id}_input`,
+                    type: 'text',
+                    smallText: '',
+                    name: 'Tags',
+                    rules: 'alpha|required',
+                    placeholder: 'Input tags, please',
+                    value: this.word.tags.join(', ')
+                },
+                translationField: {
+                    id: `translations${this.word.id}_input`,
+                    type: 'text',
+                    smallText: 'translations of the word',
+                    name: 'Translations',
+                    rules: 'alpha|required',
+                    placeholder: 'Input tags, please',
+                    value: this.word.tags.join(', ')
+                },
                 content: this.word.content,
                 animation: null
             }
         },
         methods: {
-            autoGrow(e) {
-                const inputElement = e.target;
-                inputElement.style.height = (inputElement.scrollHeight + 2) + "px";
-            },
             beginEdition(e) {
                 this.word.editing = true;
-                this.tagsString = this.word.tags.join(', ');
-                this.translationsString = this.word.translations.join(', ');
+
+                this.tagField.value = this.word.tags.join(', ');
+                this.translationField.value = this.word.translations.join(', ');
             },
             saveChanges(e) {
-                this.content = this.word.content;
-                this.word.tags = this.tagsString
-                    .split(',')
-                    .filter(t => t.trim())
-                    .map(t => t.trim());
-
-                this.word.translations = this.translationsString
-                    .split(',')
-                    .filter(t => t.trim())
-                    .map(t => t.trim());
+                this.word.content = this.content = this.contentField.value;
+                this.word.tags = this.parseCsvIntoArray(this.tagField.value);
+                this.word.translations = this.parseCsvIntoArray(this.translationField.value);
 
                 this.word.editing = false;
             },
             discardChanges(e) {
-                this.tagsString = this.word.tags.join(', ');
-                this.translationsString = this.word.translations.join(', ');
+                this.tagField.value = this.word.tags.join(', ');
+                this.translationField.value = this.word.translations.join(', ');
+
                 this.word.editing = false;
             },
             showTranslation() {
@@ -171,25 +127,30 @@
             },
             changeStringStepByStep(to) {
                 let from = this.content;
-                
-                if(from == to) {
+
+                if(from == to && !to) {
                     clearInterval(this.animation);
                     return;
                 }
-                
-                if(!~to.indexOf(from)){
+
+                if(to.indexOf(from) != 0){
                     from = from.length > 1 ?
                         from.substring(0, from.length-1) :
                         to[0];
                     this.content = from;
                 }
                 else {
-                    from += from.length < to.length ? 
+                    from += from.length < to.length ?
                         to[from.length] :
                         '';
                     this.content = from;
                 }
-                        
+            },
+            parseCsvIntoArray(csv) {
+                return csv
+                    .split(',')
+                    .filter(t => t.trim())
+                    .map(t => t.trim());
             }
         }
     }
@@ -202,32 +163,18 @@
         position: relative;
         border-radius: .5rem;
 
-        &_content_ {
-            &input, &display {
-                line-height: 1.5                                                                                            
-            }
-
-            &input {
-                border: 1px solid transparent;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.23);
-                width: 100%;
-            }
-
-            &display {
-                border: 2px solid transparent;
-                &-small {
-                    font-size: 2rem;
-                    line-height: 1.2;
-                    margin-bottom: .5rem;
-                }
-            }
+        &_content_display {
+            line-height: 1.2;
+            border: 2px solid transparent;
+            font-size: 2rem;
+            margin-bottom: .5rem;
         }
-    }
 
-    .form-control {
-        height: initial;
-        margin: 0;
-        overflow: hidden;
+        &_familiar {
+            background-color: #0062cc;
+            color: ghostwhite;
+            font-weight: bolder;
+        }
     }
 
     .edit_button {

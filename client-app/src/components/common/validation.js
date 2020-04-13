@@ -1,5 +1,5 @@
 import {ValidationProvider, extend} from 'vee-validate';
-import {email, required, alpha} from 'vee-validate/dist/rules';
+import {email, required, alpha, } from 'vee-validate/dist/rules';
 
 extend('min', {
     validate(value, args) {

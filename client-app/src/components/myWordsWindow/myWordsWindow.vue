@@ -46,7 +46,8 @@
                         CSV: true
                     },
                 },
-                words: []
+                words: [],
+                page: 0
             }
         },
         beforeMount () {
