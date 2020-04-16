@@ -1,0 +1,102 @@
+﻿openapi: '3.0.2'
+info:
+  title: WordFinder
+  version: '1.0'
+servers:
+  - url: https://localhost:5000/
+paths:
+  /words/word/{id}:
+    patch:
+      summary: Change a word
+      description: Changes a word and returns the changed one
+      operationId: changeWord
+      parameters:
+        - name: Id
+          required: true
+          in: "path"
+          schema:
+            type: integer
+      requestBody:
+        description: Updated word object
+        content: 
+          application/json: 
+              schema:
+                $ref: '#/components/schemas/Word'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Word'
+        401:
+          description: User is not authenticated
+          content: {}
+        404:
+          description: User not found
+          content: {}
+  /words/find:
+    post:
+      summary: Find words from text
+      description: Gets text and returns an array of words
+      operationId: findWords
+      requestBody: 
+        description: Gets string that is text content
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+      responses:
+        200:
+          description: words were found successfuly
+          content:
+            application/json:
+              schema:
+                type: object
+                required: 
+                  - words
+                properties:
+                  words:
+                    type: array
+                    description: an array of words
+                    items: 
+                      type: string 
+        401:
+          description: User is not authenticated
+          content: {}
+        404:
+          description: Words were not found
+          content: {}
+                
+components:
+  schemas:
+    Word: 
+      type: object
+      properties:
+        Id:
+          type: integer
+        UserId:
+          type: integer
+        Content:
+          type: string
+        AdditionTime:
+          type: string
+        LastRepetitionTime:
+          type: string
+        TimesRepeated:
+          type: integer
+        Translations: 
+          type: array
+          description: an Array of translations
+          items: 
+            type: string
+        Tags:
+          type: array
+          description: an array of tags
+          items: 
+            type: string

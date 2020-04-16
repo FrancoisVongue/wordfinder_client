@@ -1,22 +1,25 @@
 <template>
-    <form>
+<ValidationObserver v-slot="{ failed, handleSubmit }">
+    <form @submit.prevent="handleSubmit(submitWords)">
         <p class="display-4">Add new words!</p>
         <p class="display-4">Found {{foundWords.length}} words in Text: "{{textName}}"</p>
-        <word v-for="(word, index) in words"
+        <word v-for="(word, index) in foundWords"
               :key="index"
               :word.sync="word"/>
-        <button class="btn btn-primary" @click="submitWords">Submit</button>
-        <button class="btn btn-warning" @click="discardWords">Cancel</button>
+        <button type="submit" class="btn mr-2 btn-primary">Submit</button>
+        <button class="btn btn-secondary" @click="discardWords">Cancel</button>
     </form>
+</ValidationObserver>
 </template>
 
 <script>
     import word from '../common/Word'
+    import {ValidationObserver} from 'vee-validate'
     import {mapGetters} from 'vuex'
 
     export default {
         name: "addTranslation",
-        components: {word},
+        components: {word, ValidationObserver},
         data() {
             return {
                 words: []

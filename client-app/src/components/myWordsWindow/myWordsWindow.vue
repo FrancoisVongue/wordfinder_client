@@ -1,32 +1,48 @@
 <template>
     <div class="window">
-        <p class="display-4">My Words</p>
+        <p class="display-4">My words</p>
         <div class="">
             <form class="row form-inline align-items-start">
                 <div class="col-md-4">
-                    <searchField :config="searchConfigs.word"/>
+                    <searchField
+                            @finished-typing="searchWords"
+                            :config="searchConfigs.word"/>
                 </div>
                 
                 <div class="col-md-4">
-                    <searchField :config="searchConfigs.tags"/>
+                    <searchField
+                            @finished-typing="searchWords"
+                            :config="searchConfigs.tags"/>
                 </div>
                 
                 <div class="col-md-4">
-                    <searchField :config="searchConfigs.topics"/>
+                    <searchField
+                            @finished-typing="searchWords"
+                            :config="searchConfigs.topics"/>
                 </div>
             </form>
         </div>
-        <Word v-for="(word, i) in WordsForCurrentPage" :key="i" :word.sync="word" :small="true"/>
-        <pagination :pagination-info.sync="pages"/>
+
+        <template v-if="loading">
+            <div class="d-flex justify-content-center auth_spinner align-items-center">
+                <div class="spinner-grow" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        </template>
+        <template v-else-if="WordsForCurrentPage.length">
+            <Word v-for="word in WordsForCurrentPage" :key="word.id" :word.sync="word"/>
+            <pagination :pagination-info.sync="pagination"/>
+        </template>
     </div>
 </template>
 
 <script>
+    import {mapGetters} from 'vuex'
     import searchField from "../common/SearchField";
     import Word from '../common/Word'
     import pagination from '../common/Pagination'
 
-    const WORDS_PER_PAGE = 5;
     export default {
         name: "myWordsWindow",
         components: {searchField, Word, pagination},
@@ -49,25 +65,44 @@
                         CSV: true
                     },
                 },
-                pages: {
+                pagination: {
                     page: 1,
-                    totalPages: 1
+                    perPage: 5,
+                    items: []
                 },
-                words: []
+                loading: true
             }
         },
-        beforeCreate () {
+        methods: {
+            searchWords() {
+                this.loading = true;
+                this.$store.dispatch('getMyWords')
+                    .then(words => {
+                        this.pagination.items = words;
+                        this.loading = false;
+                    });
+                // todo: update the page
+            }
+        },
+        mounted () {
+            this.$store.dispatch('getWordsInfo')
+                .then(info => {
+                    this.searchConfigs.word.tokens = info.words;
+                    this.searchConfigs.tags.tokens = info.tags;
+                    this.searchConfigs.topics.tokens = info.topics;
+                });
             this.$store.dispatch('getMyWords')
                 .then(words => {
-                    this.words = words;
-                    this.pages.totalPages = Math.ceil(words.length / WORDS_PER_PAGE);
+                    this.pagination.items = words;
+
+                    this.loading = false;
                 });
         },
         computed: {
             WordsForCurrentPage() {
-                const start = (this.pages.page - 1) * WORDS_PER_PAGE;
-                const end = start + WORDS_PER_PAGE;
-                const words = this.words.slice(start, end);
+                const start = (this.pagination.page - 1) * this.pagination.perPage;
+                const end = start + this.pagination.perPage;
+                const words = this.pagination.items.slice(start, end);
 
                 return words;
             }

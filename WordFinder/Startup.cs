@@ -55,10 +55,9 @@ namespace WordFinder
         {
             if (env.IsDevelopment()) 
             { app.UseDeveloperExceptionPage(); }
-            else {  app.UseHsts(); }
+            app.UseAuthentication(); 
 
             app.UseCors(o => o.AllowAnyOrigin());
-            app.UseAuthentication();
             app.UseMvc();
         }
     }

@@ -2,7 +2,7 @@ import api from "../api/addWordsApi"
 
 let state = {
     text: {
-        Name: "",
+        Name: "Star Wars",
         Content: "",
         foundWords: [
             

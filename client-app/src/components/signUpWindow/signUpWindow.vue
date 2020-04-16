@@ -138,7 +138,7 @@
                 
                 const user = {
                     firstName: this.firstNameField.value,
-                    secondName: this.secondNameField.value,
+                    lastName: this.secondNameField.value,
                     login: this.loginField.value,
                     email: this.emailField.value,
                     password: this.passwordField.value,

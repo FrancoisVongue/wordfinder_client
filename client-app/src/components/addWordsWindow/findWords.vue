@@ -58,17 +58,22 @@
         },
         methods: {
             getWords() {
-                this.loading = !this.loading;
-                this.$store.dispatch('getNewWords', this.text)
+                this.loading = true;
+                const text = {
+                    Name: this.NameField.value,
+                    Content: this.ContentField.value
+                }
+                this.$store.dispatch('getNewWords', text)
                     .then(() => {
-                        this.loading = false;
                         this.errorMessage = '';
                         this.$router.push({name: 'addTranslation'});
                     })
                     .catch(() => {
-                        this.loading = false;
                         this.errorMessage = 'Check your internet connection, please';
-                    });
+                    })
+                    .finally(() => {
+                        this.loading = false;
+                    })
             }
         },
         components: { ValidationObserver, InputField },

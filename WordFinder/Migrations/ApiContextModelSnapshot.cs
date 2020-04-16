@@ -110,6 +110,8 @@ namespace WordFinder.Migrations
 
                     b.Property<string>("Content");
 
+                    b.Property<bool>("Familiar");
+
                     b.Property<DateTime?>("LastRepetitionTime");
 
                     b.Property<int>("TimesRepeated");

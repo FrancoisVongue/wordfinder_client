@@ -1,5 +1,8 @@
 <template>
-    <div class="container-fluid border word" :class="{'word_familiar':word.familiar && !word.editing}">
+    <div class="container-fluid border word"
+         :class="{'word_familiar':word.familiar && !word.editing}"
+         @mouseenter="showTranslation"
+         @mouseleave="showContent">
         
         <validation-observer v-if="word.editing">
             <div class="form-group row justify-content-center">
@@ -36,10 +39,7 @@
         <template v-else>
             <div class="row justify-content-center">
                 <div class="col-8">
-                    <p class="display-4 text-center word_content_display"
-                        :class="{'word_content_display-small': small}"
-                        @mouseenter="(() => small ? showTranslation : () => {})()"
-                        @mouseleave="(() => small ? showContent : () => {})()">
+                    <p class="display-4 text-center word_content_display">
                         {{content}}
                     </p>
                 </div>
@@ -58,7 +58,7 @@
     
     export default {
         name: 'Word',
-        props: ['word', 'small'],
+        props: ['word'],
         components: {InputField, ValidationObserver},
         data() {
             return {
@@ -69,7 +69,7 @@
                     name: 'Word',
                     rules: 'alpha|required|min:3',
                     placeholder: 'Input the word, please',
-                    value: this.word.content
+                    value: ''
                 },
                 tagField: {
                     id: `tags${this.word.id}_input`,
@@ -78,7 +78,7 @@
                     name: 'Tags',
                     rules: 'alpha|required',
                     placeholder: 'Input tags, please',
-                    value: this.word.tags.join(', ')
+                    value: ''
                 },
                 translationField: {
                     id: `translations${this.word.id}_input`,
@@ -87,11 +87,20 @@
                     name: 'Translations',
                     rules: 'alpha|required',
                     placeholder: 'Input tags, please',
-                    value: this.word.tags.join(', ')
+                    value: ''
                 },
                 content: this.word.content,
                 animation: null
             }
+        },
+        beforeMount() {
+            const {word} = this;
+            let content = word.content || "No contnet";
+            let tagsString = word.tags ? word.tags.join(', ') : "No tags";
+            let translationString = word.translations ? word.translations.join(', ') : "No translation";
+            this.contentField.value =  content;
+            this.tagField.value =  tagsString;
+            this.translationField.value = translationString;
         },
         methods: {
             beginEdition(e) {
@@ -115,20 +124,29 @@
             },
             showTranslation() {
                 clearInterval(this.animation);
-                const translation = this.word.translations[0];
-                this.animation = 
+                const translation = this.word.translations ? 
+                    this.word.translations[0] : '';
+                if(!translation) 
+                    return;
+                
+                this.content = translation[0];
+                this.animation =
                     setInterval(this.changeStringStepByStep, 30, translation);
             },
             showContent() {
                 clearInterval(this.animation);
                 const content = this.word.content;
+                if(!content) 
+                    return;
+                
+                this.content = content[0];
                 this.animation =
                     setInterval(this.changeStringStepByStep, 30, content);
             },
             changeStringStepByStep(to) {
                 let from = this.content;
 
-                if(from == to && !to) {
+                if(from == to || !to) {
                     clearInterval(this.animation);
                     return;
                 }

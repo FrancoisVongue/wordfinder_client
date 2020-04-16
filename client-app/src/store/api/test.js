@@ -6,6 +6,7 @@ export default {
     password: '125125dfsf32',
     words: [
         {
+            id: 1,
             content: 'hello',
             tags: ['greeting'],
             translations: ['привет'],
@@ -14,6 +15,7 @@ export default {
             editing: false,
         },
         {
+            id: 2,
             content: 'hey',
             tags: ['greeting'],
             translations: ['привет'],
@@ -22,6 +24,7 @@ export default {
             editing: false,
         },
         {
+            id: 3,
             content: 'bonjour',
             tags: ['greeting'],
             translations: ['добрый день'],
@@ -30,7 +33,8 @@ export default {
             editing: false,
         },
         {
-            content: 'hello',
+            id: 4,
+            content: 'good morning',
             tags: ['greeting'],
             translations: ['привет'],
             notes: 'word to greet people',
@@ -38,7 +42,8 @@ export default {
             editing: false,
         },
         {
-            content: 'hey',
+            id: 5,
+            content: 'good day',
             tags: ['greeting'],
             translations: ['привет'],
             notes: 'word to greet people',
@@ -46,7 +51,8 @@ export default {
             editing: false,
         },
         {
-            content: 'bonjour',
+            id: 6,
+            content: 'nice to see you',
             tags: ['greeting'],
             translations: ['добрый день'],
             notes: 'word to greet people',
@@ -54,84 +60,18 @@ export default {
             editing: false,
         },
         {
-            content: 'hey',
+            id: 7,
+            content: 'heeeey',
             tags: ['greeting'],
             translations: ['привет'],
             notes: 'word to greet people',
             familiar: true,
             editing: false,
-        },
-        {
-            content: 'bonjour',
-            tags: ['greeting'],
-            translations: ['добрый день'],
-            notes: 'word to greet people',
-            familiar: false,
-            editing: false,
-        },
-        {
-            content: 'hello',
-            tags: ['greeting'],
-            translations: ['привет'],
-            notes: 'word to greet people',
-            familiar: false,
-            editing: false,
-        },
-        {
-            content: 'hey',
-            tags: ['greeting'],
-            translations: ['привет'],
-            notes: 'word to greet people',
-            familiar: false,
-            editing: false,
-        },
-        {
-            content: 'bonjour',
-            tags: ['greeting'],
-            translations: ['добрый день'],
-            notes: 'word to greet people',
-            familiar: false,
-            editing: false,
-        },
-        {
-            content: 'hey',
-            tags: ['greeting'],
-            translations: ['привет'],
-            notes: 'word to greet people',
-            familiar: true,
-            editing: false,
-        },
-        {
-            content: 'bonjour',
-            tags: ['greeting'],
-            translations: ['добрый день'],
-            notes: 'word to greet people',
-            familiar: false,
-            editing: false,
-        },
-        {
-            content: 'hello',
-            tags: ['greeting'],
-            translations: ['привет'],
-            notes: 'word to greet people',
-            familiar: false,
-            editing: false,
-        },
-        {
-            content: 'hey',
-            tags: ['greeting'],
-            translations: ['привет'],
-            notes: 'word to greet people',
-            familiar: false,
-            editing: false,
-        },
-        {
-            content: 'bonjour',
-            tags: ['greeting'],
-            translations: ['добрый день'],
-            notes: 'word to greet people',
-            familiar: false,
-            editing: false,
-        },
-    ]
+        }
+    ],
+    info: {
+        words: ['hello', 'hey', 'bonjour', 'good morning', 'good day', 'nice to see you', 'heeeey'],
+        tags: ['home','work','workout','days','weeks','months'],
+        topics: ['matrix','genzel und gretel','greetings','years','mr nobody']
+    }
 }

@@ -20,11 +20,6 @@ export default {
             method: 'post',
             url: 'user/verify',
             headers: {'Authorization': `bearer ${token}`}
-        }).then(response => {
-            const user = response.data;
-            if(!user.id || !user.firstName) 
-                throw new Error("Verify user: invalid response");
-            return user;
         });
     }
 }

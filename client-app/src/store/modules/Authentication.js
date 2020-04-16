@@ -55,11 +55,12 @@ let actions = {
         if (token != "undefined") {
             commit('SET_LOADING', true);
             return api.VerifyUser(token)
-                .then( user => {
+                .then( response => {
                     commit('SET_TOKEN', token);
-                    commit('SET_USER', user);
+                    commit('SET_USER', response.data);
                     commit('SET_AUTH_STATE', true);
                     commit('SET_LOADING', false);
+                    return true;
                 }) 
                 .catch( reason => {
                     console.log(`invalid verification: ${reason.message}`);
@@ -68,14 +69,15 @@ let actions = {
                     commit('SET_AUTH_STATE', false);
                     commit('SET_LOADING', false);
                 });
-        }
+        } 
+        return Promise.resolve(false);
     },
     signUp({commit}, user) {
         commit('SET_LOADING', true);
         return api.SignUp(user)
             .then(response => {
                 commit('SET_LOADING', false);
-                return response.headers['x-token'];
+                return response.data;
             })
             .catch(reason => console.log(user));
     },

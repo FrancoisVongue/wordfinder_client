@@ -4,6 +4,7 @@
                :placeholder="placeholder" aria-label="Search"
                v-model="inputString"
                ref="input"
+               @blur="beginSearch"
                @input="checkMatches"
                @keyup.delete="checkMatches"/>
         <ul :class="{input_matches: true, input_show: matches.length > 0}">
@@ -25,8 +26,7 @@
         data() {
             return {
                 placeholder: this.config ? this.config.placeholder : "",
-                tokens: this.config ? this.config.tokens : [],
-                CSV: this.config ? this.config.CSV : false,
+                CSV: this.config.CSV,
                 inputString: "",
                 error: "",
                 matches: [],
@@ -40,13 +40,13 @@
                 const value = this.CSV ? this.inputString.split(',').pop() : this.inputString;
 
                 if (value)
-                    this.matches = this.tokens.filter(t => {
+                    this.matches = this.config.tokens.filter(t => {
                         const matchesToken = ~t.indexOf(value.trim());
                         const exists = ~this.inputString.indexOf(t + ',');
                         return matchesToken && !exists;
                     });
                 else {
-                    this.matches = this.tokens
+                    this.matches = this.config.tokens
                         .filter(t => !~this.inputString.indexOf(t + ','));
                 }
             },
@@ -63,10 +63,13 @@
                 this.matches = [];
             },
             invalidString() {
-                if (this.inputString && !(/^[a-zA-Z]+(,[a-zA-Z]*)*$/).test(this.inputString)) {
+                if (this.inputString && !(/^[\w\s]+(,[\w\s]*)*$/).test(this.inputString)) {
                     return this.error = "Remove invalid characters";
                 }
                 return this.error = "";
+            },
+            beginSearch() {
+                this.$emit('finished-typing');
             }
         }
     }

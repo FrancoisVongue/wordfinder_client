@@ -13,12 +13,12 @@
                     <ul class="navbar-nav mr-auto">
                         <li class="{nav-item: true, active: currentWindow == supplyText}">
                             <router-link class="nav-link" :to="{name: 'supplyText'}">
-                                Find Words
+                                Find words
                             </router-link>
                         </li>
                         <li class="{nav-item: true, active: currentWindow == myWords}">
                             <router-link class="nav-link" :to="{name: 'myWords'}">
-                                My Words 
+                                My words
                                 <span class="badge badge-primary" v-if="userInfo.words && userInfo.words.length > 0">
                                     {{userInfo.words.length}}
                                 </span>
@@ -59,13 +59,13 @@
         <main class="currentWindow" v-if="!authLoading">
             <router-view></router-view>
         </main>
-        <div class="container" v-else>
-            <div class="d-flex justify-content-center auth_loading align-items-center">
+        <main class="currentWindow" v-else>
+            <div class="d-flex justify-content-center auth_spinner align-items-center">
                 <div class="spinner-grow" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 </template>
 
@@ -75,7 +75,11 @@
         name: 'app',
         props: ['currentWindow'],
         beforeCreate() {
-            this.$store.dispatch("verifyUser");
+            this.$store.dispatch("verifyUser")
+                .then(auth => {
+                    if (auth) this.$router.push({name: 'myWords'});
+                    console.log('logged - ' + auth);
+                });
         },
         computed: {
             ...mapGetters(['authLoading', 'authenticated', 'userInfo'])
@@ -94,7 +98,7 @@
         color: orangered;
     }
     
-    .auth_loading {
+    .auth_spinner {
         height: 6rem;
     }
 </style>

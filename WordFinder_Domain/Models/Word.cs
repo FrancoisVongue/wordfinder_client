@@ -12,6 +12,8 @@ namespace WordFinder_Domain.Models
         public long UserId { get; set; }
         public string Content { get; set; }
 
+        public bool Familiar { get; set; }
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime AdditionTime { get; set; } = DateTime.UtcNow;
         public DateTime? LastRepetitionTime { get; set; }

@@ -60,6 +60,7 @@
         <e p="Controllers" t="Include">
           <e p="UserController.cs" t="Include" />
           <e p="WordController.cs" t="Include" />
+          <e p="wordfinder.yaml" t="Include" />
         </e>
         <e p="global.json" t="Include" />
         <e p="Migrations" t="Include">
@@ -71,6 +72,8 @@
           <e p="20200408093802_addedSalt.Designer.cs" t="Include" />
           <e p="20200409092319_addedDefaultAdditionTime.cs" t="Include" />
           <e p="20200409092319_addedDefaultAdditionTime.Designer.cs" t="Include" />
+          <e p="20200416050102_addedFamiliarToWord.cs" t="Include" />
+          <e p="20200416050102_addedFamiliarToWord.Designer.cs" t="Include" />
           <e p="ApiContextModelSnapshot.cs" t="Include" />
         </e>
         <e p="obj" t="ExcludeRecursive">

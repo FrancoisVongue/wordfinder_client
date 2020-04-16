@@ -10,6 +10,7 @@ using WordFinder_Domain.ServiceIO;
 
 namespace WordFinder.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("/[controller]")]
     public class WordsController : ControllerBase
@@ -23,7 +24,7 @@ namespace WordFinder.Controllers
             _userService = userService;
         }
         
-        [Authorize]
+       
         [HttpPost]
         public ActionResult GetWordsFromText(Topic topic)
         {
@@ -32,17 +33,23 @@ namespace WordFinder.Controllers
             return Ok(words);
         }
 
-        [Authorize]
         [HttpPost("text")]
         public ActionResult AddWords(Topic topic)
         {
             var _userId = _userService.GetUser(HttpContext).Id;
-            var addedWords = _service.AddWords(topic, _userId);
-            return Ok(addedWords);
+            var addedTopic = _service.AddTopic(topic, _userId);
+            return Ok(addedTopic);
         }
 
-        /* GET GENERAL INFORMATION ABOUT USER LEXICON */ 
-        [HttpGet("shallow")]
+        [HttpGet("all")]
+        public ActionResult GetAllWords()
+        {
+            var _userId = _userService.GetUser(HttpContext).Id;
+            var words = _service.UserWords(_userId);
+            return Ok(words);
+        }
+        
+        [HttpGet("info")]
         public ActionResult GetShallowInfo()
         {
             var _userId = _userService.GetUser(HttpContext).Id;
@@ -50,9 +57,8 @@ namespace WordFinder.Controllers
             return Ok(info);
         }
 
-        /* GET WORDS FOR USER */
-        [Authorize]
-        [HttpGet("lexicon")]
+        
+        [HttpGet("search")]
         public ActionResult GetUserWords(long? topicId, [FromBody] List<long> tagIds)
         {
             var _userId = _userService.GetUser(HttpContext).Id;

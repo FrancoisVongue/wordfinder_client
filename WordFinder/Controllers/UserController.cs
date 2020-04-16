@@ -38,9 +38,8 @@ namespace WordFinder.Controllers
 
             var addedUser = _service.Register(user);
             var token = _service.GenerateToken(addedUser);
-            HttpContext.Response.Headers["x-token"] = token;
 
-            return Ok();
+            return Content(token);
         }
         
         [HttpPost("[action]")]

@@ -19,7 +19,12 @@ const routes = [
 
 const router = new VueRouter({mode: 'history', routes});
 router.beforeEach((to, from, next) => {
-    if(!store.getters.authLoading) next();
+    if(to.name == 'signUp')
+        next();
+    else if(!store.getters.authenticated && to.name != 'signIn')
+        next({name: 'signIn'});
+    else 
+        next();
 });
 
 export default router;

@@ -53,26 +53,16 @@
                 }
             }
         },
-        beforeRouteEnter (to, from, next) {
-            next(vm => {
-                if(vm.$store.getters.authenticated)
-                    next({name: 'myWords'});
-                else
-                    next();
-            })
-        },
         methods: {
-            signIn() {
+            async signIn() {
                 const credentials = {
                     login: this.loginField.value,
                     password: this.passwordField.value
                 };
                 
-                this.$store.dispatch('signIn', credentials)
-                    .then(token => {
-                        this.$router.push({name:'myWords'});
-                        this.$store.dispatch('verifyUser', token);
-                    });
+                const token = await this.$store.dispatch('signIn', credentials);
+                await this.$store.dispatch('verifyUser', token);
+                this.$router.push({name:'myWords'});
             }
         }
     }

@@ -37,7 +37,7 @@ namespace WordFinder_Business
             return words;
         }
 
-        public IEnumerable<Word> AddWords(Topic receivedTopic, long userId)
+        public Topic AddTopic(Topic receivedTopic, long userId)
         {
             var topic = GetTopicWithName(receivedTopic.Name, userId);
             
@@ -45,10 +45,11 @@ namespace WordFinder_Business
             {
                 word.Topic = topic;
             }
+
             _context.Words.AddRange(receivedTopic.Words);
             _context.SaveChanges();
             
-            return receivedTopic.Words;
+            return receivedTopic;
         }
 
         public IEnumerable<Word> UserWords(long id)
@@ -56,7 +57,7 @@ namespace WordFinder_Business
             var userWords = _context.Words
                 .Where(w => w.UserId == id);
             
-            return userWords.OrderBy(w => w.Content);
+            return userWords;
         }
 
         public IEnumerable<Word> SearchWords(IEnumerable<Word> words, long? topicId, IEnumerable<long> tagIds)
@@ -145,7 +146,6 @@ namespace WordFinder_Business
                     Name = topicName,
                     UserId = userId
                 }).Entity;
-                _context.SaveChanges();
             }
             
             return topic;
