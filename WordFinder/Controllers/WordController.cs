@@ -28,46 +28,52 @@ namespace WordFinder.Controllers
         [HttpPost]
         public ActionResult GetWordsFromText(Topic topic)
         {
-            var _userId = _userService.GetUser(HttpContext).Id;
+            var _userId = _userService.GetUserByToken(GetToken()).Id;
             var words = _service.FindNewWords(topic.Content, _userId);
             return Ok(words);
         }
 
-        [HttpPost("text")]
-        public ActionResult AddWords(Topic topic)
-        {
-            var _userId = _userService.GetUser(HttpContext).Id;
-            var addedTopic = _service.AddTopic(topic, _userId);
-            return Ok(addedTopic);
-        }
+        // [HttpPost("text")]
+        // public ActionResult AddWords(Topic topic)
+        // {
+        //     var _userId = _userService.GetUser(HttpContext).Id;
+        //     var addedTopic = _service.AddTopic(topic, _userId);
+        //     return Ok(addedTopic);
+        // }
+        //
+        // [HttpGet("all")]
+        // public ActionResult GetAllWords()
+        // {
+        //     var _userId = _userService.GetUser(HttpContext).Id;
+        //     var words = _service.UserWords(_userId);
+        //     return Ok(words);
+        // }
+        //
+        // [HttpGet("info")]
+        // public ActionResult GetShallowInfo()
+        // {
+        //     var _userId = _userService.GetUser(HttpContext).Id;
+        //     var info = _service.GetShallowInfo(_userId);
+        //     return Ok(info);
+        // }
+        //
+        //
+        // [HttpGet("search")]
+        // public ActionResult GetUserWords(long? topicId, [FromBody] List<long> tagIds)
+        // {
+        //     var _userId = _userService.GetUser(HttpContext).Id;
+        //     var words = _service.UserWords(_userId);
+        //     if (topicId == null && !tagIds.Any())
+        //         return Ok(words);
+        //
+        //     var filteredWords = _service.SearchWords(words, topicId, tagIds);
+        //     return Ok(filteredWords);
+        // }
 
-        [HttpGet("all")]
-        public ActionResult GetAllWords()
+        private string GetToken()
         {
-            var _userId = _userService.GetUser(HttpContext).Id;
-            var words = _service.UserWords(_userId);
-            return Ok(words);
-        }
-        
-        [HttpGet("info")]
-        public ActionResult GetShallowInfo()
-        {
-            var _userId = _userService.GetUser(HttpContext).Id;
-            var info = _service.GetShallowInfo(_userId);
-            return Ok(info);
-        }
-
-        
-        [HttpGet("search")]
-        public ActionResult GetUserWords(long? topicId, [FromBody] List<long> tagIds)
-        {
-            var _userId = _userService.GetUser(HttpContext).Id;
-            var words = _service.UserWords(_userId);
-            if (topicId == null && !tagIds.Any())
-                return Ok(words);
-
-            var filteredWords = _service.SearchWords(words, topicId, tagIds);
-            return Ok(filteredWords);
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
+            return token;
         }
     }
 }

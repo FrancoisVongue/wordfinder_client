@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using WordFinder_Business;
+using WordFinder_Domain.AutomapperConfig;
 using WordFinder_Repository;
 
 namespace WordFinder
@@ -23,7 +25,8 @@ namespace WordFinder
         {
             var key = Configuration["auth:key"];
             var skey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
-            
+
+            services.AddAutoMapper(typeof(UserProfile));
             services.AddDbContext<ApiContext>(builder => 
                 builder.UseNpgsql(Configuration["database:cs"],
                     b => b.MigrationsAssembly("WordFinder")));
@@ -58,6 +61,7 @@ namespace WordFinder
             app.UseAuthentication(); 
 
             app.UseCors(o => o.AllowAnyOrigin());
+            
             app.UseMvc();
         }
     }

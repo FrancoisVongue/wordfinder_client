@@ -37,7 +37,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <label for="lexicon">How many words do you know?
-                            (words will be taken from <a target="_blank" 
+                            (words will be taken from <a target="_blank"
                              href="https://github.com/first20hours/google-10000-english/blob/master/google-10000-english-no-swears.txt">this place</a>)
                         </label>
                         <input type="range" class="custom-range" min="0" max="9500"

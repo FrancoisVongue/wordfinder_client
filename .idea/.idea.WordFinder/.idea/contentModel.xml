@@ -94,6 +94,7 @@
       <e p="WordFinder.sln" t="IncludeFlat" />
       <e p="WordFinder_Business" t="IncludeRecursive">
         <e p="bin" t="ExcludeRecursive" />
+        <e p="JWThandler.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">
             <e p="netcoreapp2.1" t="Include">
@@ -101,6 +102,7 @@
             </e>
           </e>
         </e>
+        <e p="PasswordHandler.cs" t="Include" />
         <e p="UserService.cs" t="Include" />
         <e p="WordFinder_Business.csproj" t="IncludeRecursive" />
         <e p="WordService.cs" t="Include" />
@@ -114,10 +116,14 @@
             </e>
           </e>
         </e>
+        <e p="PasswordHandlerTests.cs" t="Include" />
         <e p="WordFinder_BusinessTests.csproj" t="IncludeRecursive" />
         <e p="WordServiceTest.cs" t="Include" />
       </e>
       <e p="WordFinder_Domain" t="IncludeRecursive">
+        <e p="AutomapperConfig" t="Include">
+          <e p="UserProfile.cs" t="Include" />
+        </e>
         <e p="bin" t="ExcludeRecursive" />
         <e p="Models" t="Include">
           <e p="Tag.cs" t="Include" />
@@ -137,8 +143,21 @@
         <e p="ServiceIO" t="Include">
           <e p="ShallowWordsInfo.cs" t="Include" />
           <e p="SignInCredentials.cs" t="Include" />
+          <e p="UserInfo.cs" t="Include" />
         </e>
         <e p="WordFinder_Domain.csproj" t="IncludeRecursive" />
+      </e>
+      <e p="WordFinder_DomainTests" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.1" t="Include">
+              <e p="WordFinder_DomainTests.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="UserProfileTests.cs" t="Include" />
+        <e p="WordFinder_DomainTests.csproj" t="IncludeRecursive" />
       </e>
       <e p="WordFinder_Repository" t="IncludeRecursive">
         <e p="ApiContext.cs" t="Include" />

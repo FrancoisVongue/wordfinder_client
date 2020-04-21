@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,52 +24,58 @@ namespace WordFinder.Controllers
     {
         private readonly UserService _service;
         private readonly IConfiguration _config;
+        private readonly IMapper _mapper;
 
-        public UserController(UserService service, IConfiguration configuration)
+        public UserController(UserService service, IConfiguration configuration, IMapper mapper)
         {
             _service = service;
             _config = configuration;
+            _mapper = mapper;
         }
 
-        [HttpPost("[action]")]
+        [HttpPost]
         public ActionResult Register(User user)
         {
             if(!ModelState.IsValid) 
-                return new BadRequestResult();
+                return BadRequest(ModelState);
 
             var addedUser = _service.Register(user);
-            var token = _service.GenerateToken(addedUser);
+            var token = _service.CreateTokenForUser(addedUser);
 
-            return Content(token);
+            UserInfo mappedUser = _mapper.Map<User, UserInfo>(addedUser);
+            HttpContext.Response.Headers["x-token"] = token;
+            
+            return Ok(mappedUser);
         }
         
-        [HttpPost("[action]")]
-        public ActionResult SignIn(SignInCredentials credentials)
-        {
-            User user = _service.trySignIn(credentials.Login, credentials.Password);
-            if (user == null)
-            {
-                return BadRequest();
-            }
-            else
-            {
-                var token = _service.GenerateToken(user);
-                HttpContext.Response.Headers["x-token"] = token;
-                return Ok();
-            }
-        }
-
-        [Authorize]
-        [HttpPost("[action]")]
-        public ActionResult Verify()
-        {
-            var user = _service.GetUser(HttpContext);
-            if (user != null)
-            {
-                return Ok(user);
-            }
-            else
-                return BadRequest();
-        }
+        // [HttpPost("[action]")]
+        // public ActionResult SignIn(SignInCredentials credentials)
+        // {
+        //     var token = HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
+        //     
+        //     User user = _service.GetUserByCredntials(credentials);
+        //     if (user == null)
+        //     {
+        //         return BadRequest();
+        //     }
+        //     else
+        //     {
+        //         HttpContext.Response.Headers["x-token"] = token;
+        //         return Ok();
+        //     }
+        // }
+        //
+        // [Authorize]
+        // [HttpPost("[action]")]
+        // public ActionResult Verify()
+        // {
+        //     var user = _service.GetUser(HttpContext);
+        //     if (user != null)
+        //     {
+        //         return Ok(user);
+        //     }
+        //     else
+        //         return BadRequest();
+        // }
     }
 }

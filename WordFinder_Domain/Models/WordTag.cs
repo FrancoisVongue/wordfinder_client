@@ -6,9 +6,14 @@ namespace WordFinder_Domain.Models
     public class WordTag
     {
         public long WordId { get; set; }
+        
+        
         public long TagId { get; set; }
         
+        
         public Word Word { get; set; }
+        
+        
         public Tag Tag { get; set; }
     }
 }
