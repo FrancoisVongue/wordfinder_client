@@ -5,8 +5,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using WordFinder_Domain.Errors;
 using WordFinder_Domain.Models;
 using WordFinder_Domain.ServiceIO;
 using WordFinder_Repository;
@@ -29,6 +31,8 @@ namespace WordFinder_Business
 
         public User Register(User user)
         {
+            
+            
             user.Salt = PasswordHandler.getSalt(SaltLength);
             user.Password = PasswordHandler.getHashed(user.Salt + user.Password);
             
@@ -39,9 +43,11 @@ namespace WordFinder_Business
 
         public User GetUserByCredentials(SignInCredentials credentials)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Login == credentials.Login);
-            if (user != null)
+            long? userId = _context.Users.FirstOrDefault(u => u.Login == credentials.Login)?.Id;
+
+            if (userId != null)
             {
+                var user = getUserById((long)userId);
                 var hashedInput = PasswordHandler.getHashed(user.Salt + credentials.Password);
                 var correctPassword = PasswordHandler.verifyPassword(hashedInput, user.Password);
                 
@@ -65,7 +71,25 @@ namespace WordFinder_Business
 
         private User getUserById(long id)
         {
-            return _context.Users.Find(id);
+            return _context.Users
+                .Include(user => user.Words)
+                .Include(user => user.Tags)
+                .Include(user => user.Topics)
+                .FirstOrDefault(u => u.Id == id);
         }
+
+        public bool EmailIsUnique(User user)
+        {
+            var sameEmail = _context.Users.FirstOrDefault(u => u.Email == user.Email)?.Email;
+            
+            return sameEmail == null;
+        }
+        
+        public bool LoginIsUnique(User user)
+         {
+             var sameLogin = _context.Users.FirstOrDefault(u => u.Login == user.Login)?.Login;
+
+             return sameLogin == null;
+         }
     }
 }

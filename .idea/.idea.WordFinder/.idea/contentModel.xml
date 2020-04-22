@@ -125,6 +125,9 @@
           <e p="UserProfile.cs" t="Include" />
         </e>
         <e p="bin" t="ExcludeRecursive" />
+        <e p="Errors" t="Include">
+          <e p="CustomErros.cs" t="Include" />
+        </e>
         <e p="Models" t="Include">
           <e p="Tag.cs" t="Include" />
           <e p="Topic.cs" t="Include" />

@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +39,11 @@ namespace WordFinder.Controllers
         {
             if(!ModelState.IsValid) 
                 return BadRequest(ModelState);
-
+            if(!_service.EmailIsUnique(user))
+                return BadRequest("User with the same email address already exists");
+            if(!_service.LoginIsUnique(user))
+                return BadRequest("User with the same login already exists");
+            
             var addedUser = _service.Register(user);
             var token = _service.CreateTokenForUser(addedUser);
 
@@ -48,34 +53,36 @@ namespace WordFinder.Controllers
             return Ok(mappedUser);
         }
         
-        // [HttpPost("[action]")]
-        // public ActionResult SignIn(SignInCredentials credentials)
-        // {
-        //     var token = HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
-        //     
-        //     User user = _service.GetUserByCredntials(credentials);
-        //     if (user == null)
-        //     {
-        //         return BadRequest();
-        //     }
-        //     else
-        //     {
-        //         HttpContext.Response.Headers["x-token"] = token;
-        //         return Ok();
-        //     }
-        // }
-        //
-        // [Authorize]
-        // [HttpPost("[action]")]
-        // public ActionResult Verify()
-        // {
-        //     var user = _service.GetUser(HttpContext);
-        //     if (user != null)
-        //     {
-        //         return Ok(user);
-        //     }
-        //     else
-        //         return BadRequest();
-        // }
+        [HttpPost("login")]
+        public ActionResult Login(SignInCredentials credentials)
+        {
+            User user = _service.GetUserByCredentials(credentials);
+            if (user != null)
+            {
+                UserInfo mappedUser = _mapper.Map<User, UserInfo>(user);
+                return Ok(mappedUser);
+            }
+
+            return BadRequest("Invalid login or password");
+        }
+
+        [Authorize]
+        [HttpGet]
+        public ActionResult LoginWithToken()
+        {
+            var user = _service.GetUserByToken(getToken());
+            if (user != null)
+            {
+                var mappedUser = _mapper.Map<User, UserInfo>(user);
+                return Ok(mappedUser);
+            }
+            return BadRequest("Invalid token");
+        }
+
+        private string getToken()
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
+            return token;
+        }
     }
 }
