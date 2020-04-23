@@ -89,9 +89,6 @@ paths:
                 description: an array of Word objects
                 items:
                   $ref: '#/components/schemas/Word'
-        400:
-          description: Invalid request
-          content: {}         
         401:
           description: User is not authenticated
           content: {}
@@ -228,6 +225,32 @@ paths:
         401:
           description: User is not authenticated
           content: {}
+  /words/tags:
+    post:
+      summary: add new tags for words 
+      description: |
+        add new tags for different words
+      operationId: addTags
+      requestBody:
+        description: An array of strings that are tag names
+        content:
+          application/json: 
+            schema:
+              type: array
+              items:
+                type: string
+      responses:
+        200:
+          description: information about added tags
+          content: 
+            application/json: 
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TagInfo'
+        400:
+          description: Invalid request body
+          content: {}
   /text/words:
     get:
       summary: Find words from text
@@ -291,7 +314,6 @@ paths:
         401:
           description: User is not authenticated
           content: {}
-                  
     
                 
 components:
@@ -332,15 +354,15 @@ components:
         words:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/WordInfo'
         tags:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/TagInfo'
         texts:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/TextInfo'
     Credentials:
       type: object
       required:
@@ -370,12 +392,15 @@ components:
           type: array
           description: an Array of translations
           items: 
-            type: string
+            $ref: '#/components/schemas/Translation'
         Tags:
           type: array
           description: an array of tags
           items: 
-            type: string
+            $ref: '#/components/schemas/TagInfo'
+        Topic:
+          type: string
+          description: Topic the word was taken from
     Text:
       type: object
       properties:
@@ -391,4 +416,32 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Word'
-            
+    TagInfo:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Content: 
+          type: string
+    Translation:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Content: 
+          type: string
+    TextInfo:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Name:
+          type: string
+    WordInfo:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Content:
+          type: string
+      

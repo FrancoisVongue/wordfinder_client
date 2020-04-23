@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using WordFinder_Business;
 using WordFinder_Domain.AutomapperConfig;
+using WordFinder_Domain.AutomapperConfig.Info;
+using WordFinder_Domain.ServiceIO;
 using WordFinder_Repository;
 
 namespace WordFinder
@@ -26,15 +28,23 @@ namespace WordFinder
             var key = Configuration["auth:key"];
             var skey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
 
-            services.AddAutoMapper(typeof(UserProfile));
+            services.AddAutoMapper(
+                typeof(UserProfile), 
+                typeof(WordProfile),
+                typeof(TagInfoProfile),
+                typeof(TextInfoProfile),
+                typeof(TranslationInfoProfile));
+            
             services.AddDbContext<ApiContext>(builder => 
                 builder.UseNpgsql(Configuration["database:cs"],
                     b => b.MigrationsAssembly("WordFinder")));
+            
             services.AddScoped<WordService>();
             services.AddScoped<UserService>();
             services.AddMvc()
                 .AddJsonOptions(x => 
                     x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {

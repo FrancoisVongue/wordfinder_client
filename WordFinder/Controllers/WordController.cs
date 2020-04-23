@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,21 +18,63 @@ namespace WordFinder.Controllers
     {
         private readonly WordService _service;
         private readonly UserService _userService;
+        private readonly IMapper _mapper;
 
-        public WordsController(WordService service, UserService userService)
+        public WordsController(WordService service, UserService userService, IMapper mapper)
         {
             _service = service;
             _userService = userService;
+            _mapper = mapper;
         }
         
        
-        [HttpPost]
-        public ActionResult GetWordsFromText(Topic topic)
+        [Authorize]
+        [HttpGet("{amount=50}")]
+        public ActionResult GetUserWords([FromQuery(Name = "amount")] int amount)
         {
-            var _userId = _userService.GetUserByToken(GetToken()).Id;
-            var words = _service.FindNewWords(topic.Content, _userId);
-            return Ok(words);
+            var _userId = JWThandler.GetUserId(GetToken());
+            var words = _service.GetUserWords(_userId, amount);
+            var mappedWords = _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(words);
+            
+            return Ok(mappedWords);
         }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult AddWords(IEnumerable<WordDTO> words)
+        {
+            var _userId = JWThandler.GetUserId(GetToken());
+            var domainWords = _mapper.Map<IEnumerable<WordDTO>, IEnumerable<Word>>(words);
+            var addedWords = _service.AddWords(_userId, domainWords);
+
+            var mappedWords =
+                _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(addedWords);
+
+            return Ok(mappedWords);
+        }
+        
+        [Authorize]
+        [HttpPost("tags")]
+        public ActionResult AddTags(IEnumerable<string> tags)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid tag name");
+                
+            var _userId = JWThandler.GetUserId(GetToken());
+            var addedTags = _service.AddTags(_userId, tags);
+            var mappedTags = 
+                _mapper.Map<IEnumerable<Tag>, IEnumerable<TagInfo>>(addedTags);
+
+            return Ok(mappedTags);
+        }
+        
+        // [HttpPost]
+        // public ActionResult GetWordsFromText(Topic topic)
+        // {
+        //     var _userId = _userService.GetUserByToken(GetToken()).Id;
+        //     var words = _service.FindNewWords(topic.Content, _userId);
+        //     return Ok(words);
+        // }
 
         // [HttpPost("text")]
         // public ActionResult AddWords(Topic topic)
@@ -40,24 +83,6 @@ namespace WordFinder.Controllers
         //     var addedTopic = _service.AddTopic(topic, _userId);
         //     return Ok(addedTopic);
         // }
-        //
-        // [HttpGet("all")]
-        // public ActionResult GetAllWords()
-        // {
-        //     var _userId = _userService.GetUser(HttpContext).Id;
-        //     var words = _service.UserWords(_userId);
-        //     return Ok(words);
-        // }
-        //
-        // [HttpGet("info")]
-        // public ActionResult GetShallowInfo()
-        // {
-        //     var _userId = _userService.GetUser(HttpContext).Id;
-        //     var info = _service.GetShallowInfo(_userId);
-        //     return Ok(info);
-        // }
-        //
-        //
         // [HttpGet("search")]
         // public ActionResult GetUserWords(long? topicId, [FromBody] List<long> tagIds)
         // {

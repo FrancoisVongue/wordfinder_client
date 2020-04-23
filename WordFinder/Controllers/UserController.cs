@@ -47,7 +47,7 @@ namespace WordFinder.Controllers
             var addedUser = _service.Register(user);
             var token = _service.CreateTokenForUser(addedUser);
 
-            UserInfo mappedUser = _mapper.Map<User, UserInfo>(addedUser);
+            UserDTO mappedUser = _mapper.Map<User, UserDTO>(addedUser);
             HttpContext.Response.Headers["x-token"] = token;
             
             return Ok(mappedUser);
@@ -59,7 +59,7 @@ namespace WordFinder.Controllers
             User user = _service.GetUserByCredentials(credentials);
             if (user != null)
             {
-                UserInfo mappedUser = _mapper.Map<User, UserInfo>(user);
+                UserDTO mappedUser = _mapper.Map<User, UserDTO>(user);
                 return Ok(mappedUser);
             }
 
@@ -73,7 +73,7 @@ namespace WordFinder.Controllers
             var user = _service.GetUserByToken(getToken());
             if (user != null)
             {
-                var mappedUser = _mapper.Map<User, UserInfo>(user);
+                var mappedUser = _mapper.Map<User, UserDTO>(user);
                 return Ok(mappedUser);
             }
             return BadRequest("Invalid token");

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Mime;
 using AutoMapper;
 using WordFinder_Domain.Models;
 using WordFinder_Domain.ServiceIO;
@@ -10,20 +11,7 @@ namespace WordFinder_Domain.AutomapperConfig
     {
         public UserProfile ()
         {
-            CreateMap<User, UserInfo>()
-                .ForMember(dest => dest.Tags, 
-                    opt 
-                        => opt.MapFrom(src => src.Tags.Select(t => t.Name)))
-                .ForMember(dest => dest.Topics, 
-                opt 
-                    => opt.MapFrom(src => src.Topics.Select(t => t.Name)))
-                .ForMember(dest => dest.Words, 
-                opt 
-                    => opt.MapFrom(src => src.Words.Select(t => t.Content)));
-            
-            ShouldMapProperty = info =>
-                info.Name != "Salt" &&
-                info.Name != "Password";
+            CreateMap<User, UserDTO>();
         }
     }
 }

@@ -31,8 +31,6 @@ namespace WordFinder_Business
 
         public User Register(User user)
         {
-            
-            
             user.Salt = PasswordHandler.getSalt(SaltLength);
             user.Password = PasswordHandler.getHashed(user.Salt + user.Password);
             

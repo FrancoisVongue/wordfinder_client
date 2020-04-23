@@ -2,7 +2,7 @@
 
 namespace WordFinder_Domain.ServiceIO
 {
-    public class UserInfo
+    public class UserDTO
     {
         public long Id { get; set; }
         
@@ -11,8 +11,8 @@ namespace WordFinder_Domain.ServiceIO
         public string Login { get; set; }
         public string Email { get; set; }
         
-        public IEnumerable<string> Topics { get; set; }
-        public IEnumerable<string> Tags { get; set; }
-        public IEnumerable<string> Words { get; set; }
+        public IEnumerable<TextInfo> Topics { get; set; }
+        public IEnumerable<TagInfo> Tags { get; set; }
+        public IEnumerable<WordInfo> Words { get; set; }
     }
 }

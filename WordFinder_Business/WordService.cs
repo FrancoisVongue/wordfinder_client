@@ -22,6 +22,62 @@ namespace WordFinder_Business
             _context = context;
         }
 
+        
+        public IEnumerable<Word> GetUserWords(long id, int amount)
+        {
+            var userWords = _context.Words
+                .Include(w => w.WordTags)
+                    .ThenInclude(wt => wt.Tag)
+                .Include(w => w.Translations)
+                .Where(w => w.UserId == id)
+                .OrderBy(w => w.AdditionTime)
+                .Take(amount);
+            
+            return userWords;
+        }
+
+        public IEnumerable<Word> AddWords(long userId, IEnumerable<Word> words)
+        {
+            var addedWords = new List<Word>();
+            
+            foreach (var word in words)
+            {
+                word.UserId = userId;
+                word.Topic = _context.Topics.Find(word.Topic.Id);
+                
+                foreach (var wt in word.WordTags)
+                {
+                    wt.Tag = _context.Tags.Find(wt.TagId);
+                }
+
+                var addedWord = _context.Words.Add(word).Entity;
+                addedWords.Add(addedWord);
+            }
+            
+            _context.SaveChanges();
+            return addedWords;
+        }
+        
+        public IEnumerable<Tag> AddTags(long userId, IEnumerable<string> tags)
+        {
+            var existingTags = _context.Tags
+                .Select(t => t.Name)
+                .ToList();
+            
+            var tagsToAdd = tags
+                .Except(existingTags)
+                .Select(t => new Tag(){ Name = t, UserId = userId });
+            
+            _context.AddRange(tagsToAdd);
+            _context.SaveChanges();
+            
+            var addedTags = _context.Tags
+                .Where(t => !existingTags.Contains(t.Name))
+                .ToList();
+            
+            return addedTags;
+        }
+        
         public IEnumerable<string> FindNewWords(string content, long userId)
         {
             var foundWords = FindWords(content);
@@ -50,14 +106,6 @@ namespace WordFinder_Business
             _context.SaveChanges();
             
             return receivedTopic;
-        }
-
-        public IEnumerable<Word> UserWords(long id)
-        {
-            var userWords = _context.Words
-                .Where(w => w.UserId == id);
-            
-            return userWords;
         }
 
         public IEnumerable<Word> SearchWords(IEnumerable<Word> words, long? topicId, IEnumerable<long> tagIds)
@@ -99,25 +147,6 @@ namespace WordFinder_Business
             return context;
         }
 
-        public ShallowWordsInfo GetShallowInfo(long userId)
-        {
-            var words = _context.Words
-                .Where(w => w.UserId == userId)
-                .Select(w => w.Content);
-            var tags = _context.Tags
-                .Where((t => t.UserId == userId))
-                .Select(t => t.Name);
-            var topics = _context.Topics
-                .Where((t => t.UserId == userId))
-                .Select(t => t.Name);
-            return new ShallowWordsInfo()
-            {
-                Words = words,
-                Tags = tags,
-                Topics = topics
-            };
-        }
-
         private IEnumerable<string> FindWords(string content)
         {
             if(content == null)
@@ -149,6 +178,12 @@ namespace WordFinder_Business
             }
             
             return topic;
+        }
+
+        private User getUserById(long userId)
+        {
+            var user = _context.Users.Find(userId);
+            return user;
         }
     }
 }
