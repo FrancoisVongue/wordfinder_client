@@ -58,13 +58,14 @@ namespace WordFinder_Business
             return addedWords;
         }
         
-        public IEnumerable<Tag> AddTags(long userId, IEnumerable<string> tags)
+        public IEnumerable<Tag> AddTags(long userId, IEnumerable<Tag> tags)
         {
             var existingTags = _context.Tags
                 .Select(t => t.Name)
                 .ToList();
             
             var tagsToAdd = tags
+                .Select(t => t.Name)
                 .Except(existingTags)
                 .Select(t => new Tag(){ Name = t, UserId = userId });
             
@@ -108,17 +109,15 @@ namespace WordFinder_Business
             return receivedTopic;
         }
 
-        public IEnumerable<Word> SearchWords(IEnumerable<Word> words, long? topicId, IEnumerable<long> tagIds)
+        public IEnumerable<Word> SearchWords(long userId, SearchInfo info)
         {
-            var correctWords = words.Where(word =>
-            {
-                var correctTopic = (topicId == null) || word.Topic?.Id == (long) topicId;
-                var wordTagIds = word.WordTags.Select(wt => wt.TagId);
-                var correctTag = tagIds.Intersect(wordTagIds).Any();
-                return correctTag && correctTopic;
-            });
+            var words = _context.Words
+                .Include(w => w.WordTags)
+                .Include(w => w.Topic);
 
-            return correctWords;
+            var selectedWords = words.ToList();
+                
+            return selectedWords;
         }
 
         public IEnumerable<Word> GetWordsForRepetition(long userId)

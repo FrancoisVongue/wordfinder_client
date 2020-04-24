@@ -8,7 +8,8 @@ namespace WordFinder_Domain.AutomapperConfig.Info
     {
         public TagInfoProfile ()
         {
-            CreateMap<Tag, TagInfo>();
+            CreateMap<Tag, TagInfo>()
+                .ReverseMap();
             CreateMap<WordTag, TagInfo>()
                 .ForMember(dest => dest.Name,
                     opt =>

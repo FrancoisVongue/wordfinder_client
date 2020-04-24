@@ -55,18 +55,29 @@ namespace WordFinder.Controllers
         
         [Authorize]
         [HttpPost("tags")]
-        public ActionResult AddTags(IEnumerable<string> tags)
+        public ActionResult AddTags(IEnumerable<TagInfo> tags)
         {
             if (!ModelState.IsValid)
-                return BadRequest("Invalid tag name");
-                
+                return BadRequest("Invalid tag names found");
+            
             var _userId = JWThandler.GetUserId(GetToken());
-            var addedTags = _service.AddTags(_userId, tags);
+            var domainTags = _mapper.Map<IEnumerable<TagInfo>, IEnumerable<Tag>>(tags);
+            var addedTags = _service.AddTags(_userId, domainTags);
             var mappedTags = 
                 _mapper.Map<IEnumerable<Tag>, IEnumerable<TagInfo>>(addedTags);
 
             return Ok(mappedTags);
         }
+        
+        [HttpGet("specific")]
+        public ActionResult GetSpecificWords(SearchInfo info)
+        {
+            var _userId = JWThandler.GetUserId(GetToken());
+            var foundWords = _service.SearchWords(_userId, info);
+            
+            return Ok(); // todo return words
+        }
+        
         
         // [HttpPost]
         // public ActionResult GetWordsFromText(Topic topic)
@@ -82,17 +93,6 @@ namespace WordFinder.Controllers
         //     var _userId = _userService.GetUser(HttpContext).Id;
         //     var addedTopic = _service.AddTopic(topic, _userId);
         //     return Ok(addedTopic);
-        // }
-        // [HttpGet("search")]
-        // public ActionResult GetUserWords(long? topicId, [FromBody] List<long> tagIds)
-        // {
-        //     var _userId = _userService.GetUser(HttpContext).Id;
-        //     var words = _service.UserWords(_userId);
-        //     if (topicId == null && !tagIds.Any())
-        //         return Ok(words);
-        //
-        //     var filteredWords = _service.SearchWords(words, topicId, tagIds);
-        //     return Ok(filteredWords);
         // }
 
         private string GetToken()
