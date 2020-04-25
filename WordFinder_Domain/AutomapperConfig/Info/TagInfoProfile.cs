@@ -18,9 +18,8 @@ namespace WordFinder_Domain.AutomapperConfig.Info
                     opt =>
                         opt.MapFrom(src => src.TagId))
                 .ReverseMap()
-                .ForPath(src => src.TagId,
-                    opt =>
-                        opt.MapFrom(src => src.Id));
+                .ForPath(dest => dest.Tag,
+                    opt => opt.MapFrom(src => src));
         }
     }
 }

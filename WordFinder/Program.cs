@@ -17,7 +17,6 @@ namespace WordFinder
             CreateWebHostBuilder(args).Build().Run();
         }
             
-        // todo: change config
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseUrls("http://localhost:5000")

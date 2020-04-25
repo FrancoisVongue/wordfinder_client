@@ -10,7 +10,8 @@ namespace WordFinder_Domain.ServiceIO
     {
         public long Id { get; set; }
         
-        
+        [MinLength(2)]
+        [StringLength(25)]
         public string Content { get; set; }
         
 

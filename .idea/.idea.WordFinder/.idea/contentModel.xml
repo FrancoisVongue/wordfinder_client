@@ -143,6 +143,7 @@
             </e>
           </e>
         </e>
+        <e p="TagInfoProfileTests.cs" t="Include" />
         <e p="UserProfileTests.cs" t="Include" />
         <e p="WordFinder_DomainTests.csproj" t="IncludeRecursive" />
         <e p="WordProfileTest.cs" t="Include" />

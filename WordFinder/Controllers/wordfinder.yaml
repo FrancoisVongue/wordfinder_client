@@ -198,7 +198,7 @@ paths:
           description: no words need to be repeated
           content: {}
     post:
-      summary: repeat an array words
+      summary: repeat an array of words
       description: |
         make server know that you have repeated some words
       operationId: repeatWords

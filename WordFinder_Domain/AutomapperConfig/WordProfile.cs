@@ -13,7 +13,9 @@ namespace WordFinder_Domain.AutomapperConfig
                 .ForMember(dest => dest.Tags,
                     opt =>
                         opt.MapFrom(src => src.WordTags))
-                .ReverseMap();
+                .ReverseMap()
+                .ForPath(dest => dest.WordTags,
+                    opt => opt.MapFrom(src => src.Tags));
         }
     }
 }

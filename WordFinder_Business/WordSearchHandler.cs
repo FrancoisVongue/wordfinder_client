@@ -20,7 +20,7 @@ namespace WordFinder_Business
         {
             if (topicIds?.Count() != 0)
                 return words.Where(w =>
-                    topicIds.Contains(w.Topic.Id));
+                    w.Topic != null && topicIds.Contains(w.Topic.Id));
             else
                 return words;
         }
@@ -29,7 +29,7 @@ namespace WordFinder_Business
         {
             if (tagIds?.Count() != 0)
                 return words.Where(w =>
-                    tagIds.Intersect(w.WordTags.Select(wt => wt.TagId)).Count() > 0);
+                    tagIds.Intersect(w.WordTags?.Select(wt => wt.TagId)).Count() == tagIds.Count());
             else
                 return words;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -74,8 +75,29 @@ namespace WordFinder.Controllers
         {
             var _userId = JWThandler.GetUserId(GetToken());
             var foundWords = _service.SearchWords(_userId, info);
-            
-            return Ok(); // todo return words
+
+            var mappedWords = _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(foundWords);
+            return Ok(mappedWords); 
+        }
+
+        [HttpPatch("word/{id}")]
+        public ActionResult UpdateWord(long id, WordDTO word)
+        {
+            if (!ModelState.IsValid) 
+                return BadRequest("Invalid word format");
+
+            try
+            {
+                var _userId = JWThandler.GetUserId(GetToken());
+                var domainWord = _mapper.Map<WordDTO, Word>(word);
+                var updatedWord = _service.UpdateWord(_userId, domainWord);
+                var mappedWord = _mapper.Map<Word, WordDTO>(updatedWord);
+                return Ok(mappedWord);
+            }
+            catch(SecurityException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
         
         

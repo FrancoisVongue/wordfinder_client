@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using WordFinder_Domain.Models;
 using WordFinder_Domain.ServiceIO;
@@ -30,7 +33,7 @@ namespace WordFinder_Business
                     .ThenInclude(wt => wt.Tag)
                 .Include(w => w.Translations)
                 .Where(w => w.UserId == id)
-                .OrderBy(w => w.AdditionTime)
+                .OrderByDescending(w => w.AdditionTime)
                 .Take(amount);
             
             return userWords;
@@ -79,6 +82,20 @@ namespace WordFinder_Business
             return addedTags;
         }
         
+        public IEnumerable<Word> SearchWords(long userId, SearchInfo info)
+        {
+            var words = _context.Words
+                .Include(w => w.WordTags)
+                .Include(w => w.Topic);
+
+            var selectedWords = words.ToList();
+            selectedWords = WordSearchHandler.FilterByContent(selectedWords, info.Content).ToList();
+            selectedWords = WordSearchHandler.FilterByTopics(selectedWords, info.TopicIds).ToList();
+            selectedWords = WordSearchHandler.FilterByTags(selectedWords, info.TagIds).ToList();
+            
+            return selectedWords;
+        }
+        
         public IEnumerable<string> FindNewWords(string content, long userId)
         {
             var foundWords = FindWords(content);
@@ -108,18 +125,7 @@ namespace WordFinder_Business
             
             return receivedTopic;
         }
-
-        public IEnumerable<Word> SearchWords(long userId, SearchInfo info)
-        {
-            var words = _context.Words
-                .Include(w => w.WordTags)
-                .Include(w => w.Topic);
-
-            var selectedWords = words.ToList();
-                
-            return selectedWords;
-        }
-
+        
         public IEnumerable<Word> GetWordsForRepetition(long userId)
         {
             var intervals = new int[] { 0, 1, 3, 7, 14, 30, 90, 360 };
@@ -183,6 +189,65 @@ namespace WordFinder_Business
         {
             var user = _context.Users.Find(userId);
             return user;
+        }
+
+        public Word UpdateWord(long userId, Word updatedWord)
+        {
+            var originalWord = _context.Words
+                .Include(w => w.WordTags)
+                .Include(w => w.Topic)
+                .Include(w => w.Translations)
+                .FirstOrDefault(w => w.Id == updatedWord.Id && w.UserId == userId);
+            if (originalWord == null)
+                throw new SecurityException("Attempt to update invalid word.");
+            
+            
+            if (!String.IsNullOrWhiteSpace(updatedWord.Content))
+                originalWord.Content = updatedWord.Content;
+
+            AddTags();
+            AddTranslations();
+
+            void AddTranslations()
+            {
+                // todo: make it for every single word
+                if (updatedWord.Translations != null && updatedWord.Translations.Any())
+                {
+                    var originalTranslations = String.Join("", originalWord.Translations
+                        .Select(t => t.Content));
+                    var newTranslations = String.Join("", updatedWord.Translations
+                        .Select(t => t.Content));
+                
+                    if(originalTranslations != newTranslations)
+                        originalWord.Translations = updatedWord.Translations;
+                }
+            }
+
+            void AddTags()
+            {
+                if (updatedWord.WordTags != null && updatedWord.WordTags.Any())
+                {
+                    var updatedWordTags = updatedWord.WordTags.Select(wt =>
+                    {
+                        wt.WordId = originalWord.Id;
+                        wt.TagId = wt.Tag.Id;
+                        wt.Tag = getUserTags(userId).FirstOrDefault(t => t.Id == wt.TagId);
+                        wt.Word = originalWord;
+                        return wt;
+                    }).ToList();
+                    
+                    originalWord.WordTags = updatedWordTags;
+                }
+            }
+            
+            _context.SaveChanges();
+            return originalWord;
+        }
+
+        private IQueryable<Tag> getUserTags(long userID)
+        {
+            var tags = _context.Tags.Where(t => t.UserId == userID);
+            return tags;
         }
     }
 }
