@@ -176,13 +176,22 @@ paths:
           description: User is not authenticated
           content: {}
         404:
-          description: User not found
+          description: Word not found
           content: {}
   /words/repeat:
     get:
       summary: get words to repeat
       description: Returns an array of Words to be repeated
       operationId: wordsToRepeat
+      parameters:
+        - name: number
+          in: query
+          required: false
+          description: number of words
+          schema:
+            type: integer
+            minimum: 0
+            default: 10
       responses:
         200:
           description: words were found successfuly

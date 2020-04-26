@@ -28,9 +28,7 @@ namespace WordFinder.Controllers
             _mapper = mapper;
         }
         
-       
-        [Authorize]
-        [HttpGet("{amount=50}")]
+        [HttpGet]
         public ActionResult GetUserWords([FromQuery(Name = "amount")] int amount)
         {
             var _userId = JWThandler.GetUserId(GetToken());
@@ -40,7 +38,6 @@ namespace WordFinder.Controllers
             return Ok(mappedWords);
         }
 
-        [Authorize]
         [HttpPost]
         public ActionResult AddWords(IEnumerable<WordDTO> words)
         {
@@ -54,7 +51,7 @@ namespace WordFinder.Controllers
             return Ok(mappedWords);
         }
         
-        [Authorize]
+        
         [HttpPost("tags")]
         public ActionResult AddTags(IEnumerable<TagInfo> tags)
         {
@@ -100,6 +97,14 @@ namespace WordFinder.Controllers
             }
         }
         
+        [HttpGet("repeat")]
+        public ActionResult GetWordsForRepetition([FromQuery(Name = "amount")] int number = 10)
+        {
+            var _userId = JWThandler.GetUserId(GetToken());
+            var wordsToRepeat = _service.GetWordsForRepetition(_userId, number);
+            var mappedWords = _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(wordsToRepeat);
+            return Ok(mappedWords);
+        }
         
         // [HttpPost]
         // public ActionResult GetWordsFromText(Topic topic)

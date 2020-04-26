@@ -95,7 +95,26 @@ namespace WordFinder_Business
             
             return selectedWords;
         }
-        
+
+        public IEnumerable<Word> GetWordsForRepetition(long userId, int amount)
+        {
+            var user = _context.Users
+                .Include(u => u.Words)
+                    .ThenInclude(w => w.WordTags)
+                        .ThenInclude(wt => wt.Tag)
+                .Include(u => u.Words)
+                    .ThenInclude(w => w.Translations)
+                .Include(u => u.Words)
+                    .ThenInclude(w => w.Topic)
+                .FirstOrDefault(u => u.Id == userId);
+            
+            var wordsToRepeat = user.Words
+                .OrderBy(w => w.TimesRepeated)
+                .Take(amount);
+
+            return wordsToRepeat;
+        }
+
         public IEnumerable<string> FindNewWords(string content, long userId)
         {
             var foundWords = FindWords(content);
@@ -124,16 +143,6 @@ namespace WordFinder_Business
             _context.SaveChanges();
             
             return receivedTopic;
-        }
-        
-        public IEnumerable<Word> GetWordsForRepetition(long userId)
-        {
-            var intervals = new int[] { 0, 1, 3, 7, 14, 30, 90, 360 };
-            var user = _context.Users.Find(userId);
-            return user.Words.Where(word =>
-                DateTime.Now - word.LastRepetitionTime > TimeSpan.FromDays(intervals[word.TimesRepeated]) ||
-                word.TimesRepeated == 0
-            );
         }
 
         public static string GetInContext(Word word)
