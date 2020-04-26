@@ -26,13 +26,9 @@ namespace WordFinder_Business
         }
 
         
-        public IEnumerable<Word> GetUserWords(long id, int amount)
+        public IEnumerable<Word> GetUserWords(long userId, int amount)
         {
-            var userWords = _context.Words
-                .Include(w => w.WordTags)
-                    .ThenInclude(wt => wt.Tag)
-                .Include(w => w.Translations)
-                .Where(w => w.UserId == id)
+            var userWords = getUserWords(userId)
                 .OrderByDescending(w => w.AdditionTime)
                 .Take(amount);
             
@@ -84,10 +80,8 @@ namespace WordFinder_Business
         
         public IEnumerable<Word> SearchWords(long userId, SearchInfo info)
         {
-            var words = _context.Words
-                .Include(w => w.WordTags)
-                .Include(w => w.Topic);
-
+            var words = getUserWords(userId);
+            
             var selectedWords = words.ToList();
             selectedWords = WordSearchHandler.FilterByContent(selectedWords, info.Content).ToList();
             selectedWords = WordSearchHandler.FilterByTopics(selectedWords, info.TopicIds).ToList();
@@ -98,21 +92,26 @@ namespace WordFinder_Business
 
         public IEnumerable<Word> GetWordsForRepetition(long userId, int amount)
         {
-            var user = _context.Users
-                .Include(u => u.Words)
-                    .ThenInclude(w => w.WordTags)
-                        .ThenInclude(wt => wt.Tag)
-                .Include(u => u.Words)
-                    .ThenInclude(w => w.Translations)
-                .Include(u => u.Words)
-                    .ThenInclude(w => w.Topic)
-                .FirstOrDefault(u => u.Id == userId);
+            var userWords = getUserWords(userId);
             
-            var wordsToRepeat = user.Words
+            var wordsToRepeat = userWords
                 .OrderBy(w => w.TimesRepeated)
                 .Take(amount);
 
             return wordsToRepeat;
+        }
+
+        public IEnumerable<Word> RepeatWords(long userId, IEnumerable<long> wordsIds)
+        {
+            var userWords = getUserWords(userId).ToList();
+            var repeatedWords = userWords.Where(w => wordsIds.Contains(w.Id));
+            foreach (var word in repeatedWords)
+            {
+                word.TimesRepeated++;
+            }
+
+            _context.SaveChanges();
+            return repeatedWords;
         }
 
         public IEnumerable<string> FindNewWords(string content, long userId)
@@ -194,19 +193,11 @@ namespace WordFinder_Business
             return topic;
         }
 
-        private User getUserById(long userId)
-        {
-            var user = _context.Users.Find(userId);
-            return user;
-        }
-
         public Word UpdateWord(long userId, Word updatedWord)
         {
-            var originalWord = _context.Words
-                .Include(w => w.WordTags)
-                .Include(w => w.Topic)
-                .Include(w => w.Translations)
-                .FirstOrDefault(w => w.Id == updatedWord.Id && w.UserId == userId);
+            var originalWord = getUserWords(userId)
+                .FirstOrDefault(w => w.Id == updatedWord.Id);
+            
             if (originalWord == null)
                 throw new SecurityException("Attempt to update invalid word.");
             
@@ -214,10 +205,10 @@ namespace WordFinder_Business
             if (!String.IsNullOrWhiteSpace(updatedWord.Content))
                 originalWord.Content = updatedWord.Content;
 
-            AddTags();
-            AddTranslations();
+            UpdateTags();
+            UpdateTranslations();
 
-            void AddTranslations()
+            void UpdateTranslations()
             {
                 // todo: make it for every single word
                 if (updatedWord.Translations != null && updatedWord.Translations.Any())
@@ -232,7 +223,7 @@ namespace WordFinder_Business
                 }
             }
 
-            void AddTags()
+            void UpdateTags()
             {
                 if (updatedWord.WordTags != null && updatedWord.WordTags.Any())
                 {
@@ -253,10 +244,22 @@ namespace WordFinder_Business
             return originalWord;
         }
 
-        private IQueryable<Tag> getUserTags(long userID)
+        private IQueryable<Tag> getUserTags(long userId)
         {
-            var tags = _context.Tags.Where(t => t.UserId == userID);
+            var tags = _context.Tags.Where(t => t.UserId == userId);
             return tags;
+        }
+
+        private IQueryable<Word> getUserWords(long userId)
+        {
+            var userWords = _context.Words
+                .Include(w => w.WordTags)
+                    .ThenInclude(wt => wt.Tag)
+                .Include(w => w.Translations)
+                .Include(w => w.Topic)
+                .Where(w => w.UserId == userId);
+
+            return userWords;
         }
     }
 }

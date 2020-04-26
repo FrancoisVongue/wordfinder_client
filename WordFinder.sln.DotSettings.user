@@ -1,11 +1,16 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=3d627923_002D0d81_002D4a6a_002D91ce_002Dabaf4a080c5d/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="WordProfileTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Or&gt;&#xD;
+    &lt;Or&gt;&#xD;
+      &lt;TestAncestor&gt;&#xD;
+        &lt;TestId&gt;NUnit3x::9B4687E6-5CF6-4263-9725-67D86E28878F::.NETCoreApp,Version=v2.1::WordFinder_DomainTests.WordProfileTest&lt;/TestId&gt;&#xD;
+      &lt;/TestAncestor&gt;&#xD;
+      &lt;TestAncestor&gt;&#xD;
+        &lt;TestId&gt;NUnit3x::E46DD7B1-40A7-4C99-B93F-DCAB94CE71D5::.NETCoreApp,Version=v2.1::WordFinder_BusinessTests.WordServiceTest.GetWordsForRepetition_WhenCalled_ReturnsOnlyThoseThatNeedToBeRepeated&lt;/TestId&gt;&#xD;
+      &lt;/TestAncestor&gt;&#xD;
+    &lt;/Or&gt;&#xD;
     &lt;TestAncestor&gt;&#xD;
-      &lt;TestId&gt;NUnit3x::9B4687E6-5CF6-4263-9725-67D86E28878F::.NETCoreApp,Version=v2.1::WordFinder_DomainTests.WordProfileTest&lt;/TestId&gt;&#xD;
-    &lt;/TestAncestor&gt;&#xD;
-    &lt;TestAncestor&gt;&#xD;
-      &lt;TestId&gt;NUnit3x::E46DD7B1-40A7-4C99-B93F-DCAB94CE71D5::.NETCoreApp,Version=v2.1::WordFinder_BusinessTests.WordServiceTest.GetWordsForRepetition_WhenCalled_ReturnsOnlyThoseThatNeedToBeRepeated&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;NUnit3x::E46DD7B1-40A7-4C99-B93F-DCAB94CE71D5::.NETCoreApp,Version=v2.1::WordFinder_BusinessTests.WordServiceTest.RepeatWords_WhenCalled_IncrementsRepetitionTimes&lt;/TestId&gt;&#xD;
     &lt;/TestAncestor&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>

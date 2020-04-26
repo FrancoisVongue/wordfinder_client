@@ -29,7 +29,7 @@ namespace WordFinder.Controllers
         }
         
         [HttpGet]
-        public ActionResult GetUserWords([FromQuery(Name = "amount")] int amount)
+        public ActionResult GetUserWords([FromQuery(Name = "amount")] int amount = 10)
         {
             var _userId = JWThandler.GetUserId(GetToken());
             var words = _service.GetUserWords(_userId, amount);
@@ -103,6 +103,15 @@ namespace WordFinder.Controllers
             var _userId = JWThandler.GetUserId(GetToken());
             var wordsToRepeat = _service.GetWordsForRepetition(_userId, number);
             var mappedWords = _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(wordsToRepeat);
+            return Ok(mappedWords);
+        }
+        
+        [HttpPost("repeat")]
+        public ActionResult RepeatWords(IEnumerable<long> wordsIds)
+        {
+            var _userId = JWThandler.GetUserId(GetToken());
+            var repeatedWords = _service.RepeatWords(_userId, wordsIds);
+            var mappedWords = _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(repeatedWords);
             return Ok(mappedWords);
         }
         
