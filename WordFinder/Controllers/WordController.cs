@@ -111,18 +111,22 @@ namespace WordFinder.Controllers
         {
             var _userId = JWThandler.GetUserId(GetToken());
             var repeatedWords = _service.RepeatWords(_userId, wordsIds);
+            if (repeatedWords == null)
+                return BadRequest("Couldn't find words to repeat");
+            
             var mappedWords = _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(repeatedWords);
             return Ok(mappedWords);
         }
         
-        // [HttpPost]
-        // public ActionResult GetWordsFromText(Topic topic)
-        // {
-        //     var _userId = _userService.GetUserByToken(GetToken()).Id;
-        //     var words = _service.FindNewWords(topic.Content, _userId);
-        //     return Ok(words);
-        // }
-
+        [HttpGet("/text/words")]
+        public ActionResult GetWordsFromText(Topic text)
+        {
+            var _userId = _userService.GetUserByToken(GetToken()).Id;
+            var words = _service.FindNewWords(_userId, text.Content);
+            var mappedWords = _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(words);
+             
+            return Ok(mappedWords);
+        }
         // [HttpPost("text")]
         // public ActionResult AddWords(Topic topic)
         // {

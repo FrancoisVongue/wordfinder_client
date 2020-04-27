@@ -11,15 +11,11 @@
  {
      public class WordServiceTest
      {
-         private DbContextOptions<ApiContext> _options;
          private IEnumerable<Word> _words;
          
          [SetUp]
          public void Setup()
          {
-             _options = new DbContextOptionsBuilder<ApiContext>()
-                 .UseInMemoryDatabase(databaseName: "Add_to_database")
-                 .Options;
              
              _words = new List<Word>()
              {
@@ -33,25 +29,13 @@
          }
          
          [Test]
-         public void FindWords()
-         {
-             // using (var context = new ApiContext(_options))
-             // {
-             //     var service = new WordService(context);
-             //     var words = service.FindNewWords("hello world");
-             //     foreach (var word in words)
-             //     {
-             //         Console.WriteLine(word.Content);
-             //     }
-             //     Assert.That(words.Count(), Is.EqualTo(2));
-             //     context.Database.EnsureDeleted();
-             // }
-         }
-
-         [Test]
          public void GetWordsForRepetition_WhenCalled_ReturnsOnlyThoseThatNeedToBeRepeated()
          {
-             using (var context = new ApiContext(_options))
+             var options = new DbContextOptionsBuilder<ApiContext>()
+                 .UseInMemoryDatabase(databaseName: "Add_to_database")
+                 .Options;
+             
+             using (var context = new ApiContext(options))
              {
                  context.Users.Add(new User() {Id = 1});
                  foreach (var word in _words)
@@ -74,7 +58,11 @@
          [Test]
          public void RepeatWords_WhenCalled_IncrementsRepetitionTimes()
          {
-             using (var context = new ApiContext(_options))
+             var options = new DbContextOptionsBuilder<ApiContext>()
+                 .UseInMemoryDatabase(databaseName: "Add_to_database")
+                 .Options;
+             
+             using (var context = new ApiContext(options))
              {
                  context.Users.Add(new User() {Id = 1});
                  foreach (var word in _words)

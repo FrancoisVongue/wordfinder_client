@@ -289,8 +289,8 @@ paths:
                   words:
                     type: array
                     description: an array of words
-                    items: 
-                      type: string 
+                    items:
+                      $ref: '#/components/schemas/Word'
         401:
           description: User is not authenticated
           content: {}
