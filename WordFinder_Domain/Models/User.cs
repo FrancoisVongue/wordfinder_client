@@ -29,7 +29,7 @@ namespace WordFinder_Domain.Models
         
         [Required]
         [MinLength(5, ErrorMessage = "Password can not be less than 5 characters")]
-        [StringLength(90, ErrorMessage = "Password can not be less than 5 characters")]
+        [StringLength(90, ErrorMessage = "Password can not be longer than 90 characters")]
         public string Password { get; set; }
         
         

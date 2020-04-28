@@ -28,10 +28,8 @@ namespace WordFinder.Controllers
             _mapper = mapper;
         }
         
-       
-        [Authorize]
-        [HttpGet("{amount=50}")]
-        public ActionResult GetUserWords([FromQuery(Name = "amount")] int amount)
+        [HttpGet]
+        public ActionResult GetUserWords([FromQuery(Name = "amount")] int amount = 10)
         {
             var _userId = JWThandler.GetUserId(GetToken());
             var words = _service.GetUserWords(_userId, amount);
@@ -40,7 +38,6 @@ namespace WordFinder.Controllers
             return Ok(mappedWords);
         }
 
-        [Authorize]
         [HttpPost]
         public ActionResult AddWords(IEnumerable<WordDTO> words)
         {
@@ -54,7 +51,7 @@ namespace WordFinder.Controllers
             return Ok(mappedWords);
         }
         
-        [Authorize]
+        
         [HttpPost("tags")]
         public ActionResult AddTags(IEnumerable<TagInfo> tags)
         {
@@ -100,22 +97,40 @@ namespace WordFinder.Controllers
             }
         }
         
+        [HttpGet("repeat")]
+        public ActionResult GetWordsForRepetition([FromQuery(Name = "amount")] int number = 10)
+        {
+            var _userId = JWThandler.GetUserId(GetToken());
+            var wordsToRepeat = _service.GetWordsForRepetition(_userId, number);
+            var mappedWords = _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(wordsToRepeat);
+            return Ok(mappedWords);
+        }
         
-        // [HttpPost]
-        // public ActionResult GetWordsFromText(Topic topic)
-        // {
-        //     var _userId = _userService.GetUserByToken(GetToken()).Id;
-        //     var words = _service.FindNewWords(topic.Content, _userId);
-        //     return Ok(words);
-        // }
-
-        // [HttpPost("text")]
-        // public ActionResult AddWords(Topic topic)
-        // {
-        //     var _userId = _userService.GetUser(HttpContext).Id;
-        //     var addedTopic = _service.AddTopic(topic, _userId);
-        //     return Ok(addedTopic);
-        // }
+        [HttpPost("repeat")]
+        public ActionResult RepeatWords(IEnumerable<long> wordsIds)
+        {
+            var _userId = JWThandler.GetUserId(GetToken());
+            var repeatedWords = _service.RepeatWords(_userId, wordsIds);
+            if (repeatedWords == null)
+                return BadRequest("Couldn't find words to repeat");
+            
+            var mappedWords = _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(repeatedWords);
+            return Ok(mappedWords);
+        }
+        
+        [HttpGet("/text/words")]
+        public ActionResult GetWordsFromText(Topic text)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid text format");
+            
+            var _userId = _userService.GetUserByToken(GetToken()).Id;
+            var topic = _service.GetTopicFromDatabase(_userId, text);
+            var words = _service.FindNewWords(_userId, topic.Id);
+            var mappedWords = _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(words);
+            
+            return Ok(mappedWords);
+        }
 
         private string GetToken()
         {

@@ -89,5 +89,17 @@ namespace WordFinder_BusinessTests
             
             Assert.That(result, Is.EquivalentTo(expectedContents));
         }
+        
+        [TestCase("Hello, hello hello nice HeLlo", new string[] {"hello", "nice"})]
+        [TestCase("", new string[0])]
+        [TestCase("tomorrow, yesterday, welcome, yesterday", new string[] {"tomorrow", "yesterday", "welcome"})]
+        public void FindWordsInText_WhenPassedTextContent_ReturnsUniqueWords(string input, string[] expectedWords)
+        {
+            var result = WordSearchHandler
+                .FindWordsInText(input);
+            
+            Assert.That(result, Is.EquivalentTo(expectedWords));
+        }
+        
     }
 }

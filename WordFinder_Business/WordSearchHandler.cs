@@ -1,12 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using WordFinder_Domain.Models;
 
 namespace WordFinder_Business
 {
     public class WordSearchHandler
     {
+        public static IEnumerable<string> FindWordsInText(string content)
+        {
+            if(String.IsNullOrWhiteSpace(content))
+                return new List<string>();
+            
+            var pattern = new Regex(@"[\-a-z]{3,}", RegexOptions.IgnoreCase);
+            
+            MatchCollection matches = pattern.Matches(content);
+
+            var words = matches
+                .Select(match => match.Value.ToLower())
+                .Distinct();
+
+            return words;
+        }
+        
         public static IEnumerable<Word> FilterByContent(IEnumerable<Word> words, string content)
         {
             if (!String.IsNullOrWhiteSpace(content))
