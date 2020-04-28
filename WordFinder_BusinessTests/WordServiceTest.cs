@@ -64,39 +64,56 @@
              
              using (var context = new ApiContext(options))
              {
-                 context.Users.Add(new User() {Id = 1});
-                 foreach (var word in _words)
-                 {
-                     context.Words.Add(word); 
-                 }
-                 
+                 var user = context.Users.Add(new User() {Id = 1}).Entity;
+                 var word = context.Words.Add(new Word() {Id = 1, TimesRepeated = 1, UserId = 1}).Entity;
+                 context.SaveChanges();
+                 var service = new WordService(context);
+
+                 service.RepeatWords(user.Id, new long[] {word.Id} );
+                 Assert.That(word.TimesRepeated, Is.EqualTo(2));
+             }
+         }
+         
+         [Test]
+         public void GetTopicFromDatabase_IfThereIsExistingTopicWithTheSameName_ReturnsTopicFromTheDatabase()
+         {
+             var options = new DbContextOptionsBuilder<ApiContext>()
+                 .UseInMemoryDatabase(databaseName: "Get_Topic_From_Db")
+                 .Options;
+             
+             using (var context = new ApiContext(options))
+             {
+                 var user = context.Users.Add(new User() {Id = 1}).Entity;
+                 var topic = context.Topics
+                     .Add(new Topic() {Name = "Keras", Id = 1, UserId = 1, Content = "test"}).Entity;
                  context.SaveChanges();
                  
                  var service = new WordService(context);
-                 var words = context.Words;
-                 
-                 
-                 var repetitionTimeSumBeforeRepeating = getRepetitionTimesSum();
 
-                 service.RepeatWords(1, words.Select(w => w.Id) );
+                 var topicFromDatabase = service.GetTopicFromDatabase(user.Id, new Topic(){Name = "Keras"});
+                 Assert.That(topicFromDatabase, Is.EqualTo(topic));
+                 Assert.That(topicFromDatabase.Content, Is.EqualTo("test"));
+             }
+         }
+         
+         [Test]
+         public void GetTopicFromDatabase_IfThereIsNoTopicWithTheSameName_AddsNewTopicToDb()
+         {
+             var options = new DbContextOptionsBuilder<ApiContext>()
+                 .UseInMemoryDatabase(databaseName: "Add_Topic_To_Db")
+                 .Options;
+             
+             using (var context = new ApiContext(options))
+             {
+                 var user = context.Users.Add(new User() {Id = 1, FirstName = "test"}).Entity;
+                 context.SaveChanges();
                  
-                 var repetitionTimeSumAfterRepeating = getRepetitionTimesSum();
-
-                 long getRepetitionTimesSum()
-                 {
-                     var wordsRepetitionTimeSum = 0;
-                     foreach (var word in words)
-                     {
-                         wordsRepetitionTimeSum += word.TimesRepeated;
-                     }
-
-                     return wordsRepetitionTimeSum;
-                 }
+                 var service = new WordService(context);
+                 var topicFromDatabase = service.GetTopicFromDatabase(user.Id, new Topic() {Name = "Keras", Id = 1, Content = "test"});
                  
-                 Assert.That(
-                     repetitionTimeSumAfterRepeating - repetitionTimeSumBeforeRepeating,
-                     Is.EqualTo(words.Count()));
-                 Assert.That(words.Find(1l).TimesRepeated, Is.EqualTo(1));
+                 context.Topics.Find(1l);
+                 Assert.That(topicFromDatabase.User.FirstName, Is.EqualTo("test"));
+                 Assert.That(topicFromDatabase.Content, Is.EqualTo("test"));
              }
          }
      }

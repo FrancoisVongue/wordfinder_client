@@ -121,19 +121,16 @@ namespace WordFinder.Controllers
         [HttpGet("/text/words")]
         public ActionResult GetWordsFromText(Topic text)
         {
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid text format");
+            
             var _userId = _userService.GetUserByToken(GetToken()).Id;
-            var words = _service.FindNewWords(_userId, text.Content);
+            var topic = _service.GetTopicFromDatabase(_userId, text);
+            var words = _service.FindNewWords(_userId, topic.Id);
             var mappedWords = _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(words);
-             
+            
             return Ok(mappedWords);
         }
-        // [HttpPost("text")]
-        // public ActionResult AddWords(Topic topic)
-        // {
-        //     var _userId = _userService.GetUser(HttpContext).Id;
-        //     var addedTopic = _service.AddTopic(topic, _userId);
-        //     return Ok(addedTopic);
-        // }
 
         private string GetToken()
         {

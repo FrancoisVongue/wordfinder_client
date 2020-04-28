@@ -165,34 +165,18 @@ namespace WordFinder_Business
             return originalWord;
         }
 
-        public IEnumerable<Word> FindNewWords(long userId, string textContent)
+        public IEnumerable<Word> FindNewWords(long userId, long topicId)
         {
-            var foundWords = WordSearchHandler.FindWordsInText(textContent);
-            
-            var userWords = _context.Words
-                .Where(w => w.UserId == userId)
-                .Select(w => w.Content);
+            var topic = _context.Topics.Find(topicId);
+            var foundWords = WordSearchHandler.FindWordsInText(topic.Content);
+            var userWords = getUserWords(userId).Select(w => w.Content);
+            var topicFromDb = GetTopicFromDatabase(userId, topic);
 
             var words = foundWords
                 .Except(userWords, StringComparer.OrdinalIgnoreCase)
-                .Select(w => new Word() {Content = w});
+                .Select(w => new Word() {Content = w, Topic = topicFromDb});
 
             return words;
-        }
-
-        public Topic AddTopic(Topic receivedTopic, long userId)
-        {
-            var topic = GetTopicWithName(receivedTopic.Name, userId);
-            
-            foreach (var word in receivedTopic.Words)
-            {
-                word.Topic = topic;
-            }
-
-            _context.Words.AddRange(receivedTopic.Words);
-            _context.SaveChanges();
-            
-            return receivedTopic;
         }
 
         public static string GetInContext(Word word)
@@ -211,22 +195,19 @@ namespace WordFinder_Business
             return context;
         }
 
-        private Topic GetTopicWithName(string topicName, long userId)
+        public Topic GetTopicFromDatabase(long userId, Topic topic)
         {
-            var topic = _context.Users.Find(userId)
-                .Topics
-                .FirstOrDefault(t => t.Name == topicName);
+            var topicFromDb = _context.Topics
+                .FirstOrDefault(t => t.Name == topic.Name && t.UserId == userId);
             
-            if (topic == null)
+            if (topicFromDb == null)
             {
-                topic = _context.Topics.Add(new Topic()
-                {
-                    Name = topicName,
-                    UserId = userId
-                }).Entity;
+                topic.UserId = userId;
+                topicFromDb = _context.Topics.Add(topic).Entity;
+                _context.SaveChanges();
             }
             
-            return topic;
+            return topicFromDb;
         }
 
         private IQueryable<Tag> getUserTags(long userId)
