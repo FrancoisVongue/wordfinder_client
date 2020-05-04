@@ -58,6 +58,8 @@
 
 <script>
     import InputField from "../common/InputField";
+    import fieldConfig from "../common/field configuration/signUp"
+    import business from "../common/business/signUp"
     import Vue from 'vue'
     import {ValidationObserver, setInteractionMode} from 'vee-validate';
     import dictionary from './processedDictionary.js';
@@ -69,88 +71,19 @@
         components: { ValidationObserver, InputField },
         data() {
             return {
-                firstNameField: {
-                    id: 'firstName_create',
-                    type: 'text',
-                    smallText: '',
-                    name: 'First name',
-                    rules: 'alpha|required|max:20',
-                    placeholder: 'Input your first name, please',
-                    value: ''
-                },
-                secondNameField: {
-                    id: 'secondName_create',
-                    type: 'text',
-                    smallText: '(optional)',
-                    name: 'Second name',
-                    rules: 'alpha|max:30',
-                    placeholder: 'Input your second name, please',
-                    value: ''
-                },
-                loginField: {
-                    id: 'login_create',
-                    type: 'text',
-                    smallText: '',
-                    name: 'Login',
-                    rules: 'min:5|max:14|required',
-                    placeholder: 'Input your login, please',
-                    value: ''
-                },
-                emailField: {
-                    id: 'email_create',
-                    type: 'text',
-                    smallText: '',
-                    name: 'Email',
-                    rules: 'required|email',
-                    placeholder: 'Input your email, please',
-                    value: ''
-                },
-                passwordField: {
-                    id: 'password_create',
-                    type: 'password',
-                    smallText: '',
-                    name: 'Password',
-                    rules: 'diversity:5|min:6|max:20|required',
-                    placeholder: 'Input your password, please',
-                    value: ''
-                },
+                firstNameField: fieldConfig.firstNameField,
+                secondNameField: fieldConfig.secondNameField,
+                loginField: fieldConfig.loginField,
+                emailField: fieldConfig.emailField,
+                passwordField: fieldConfig.passwordField,
                 lexiconSize: 0,
             }
         },
         computed: {
-            passwordRepeatField() {
-                return {
-                    id: 'repeat_password',
-                    type: 'password',
-                    smallText: '',
-                    name: 'Repeat password',
-                    rules: 'required|sameas:' + this.passwordField.value,
-                    placeholder: 'Repeat your password, please',
-                    value: ''}
-            }
+            passwordRepeatField: _ => fieldConfig.passwordRepeatField,
         },
         methods: {
-            signUp() {
-                const words = dictionary
-                    .slice(0, this.lexiconSize)
-                    .map(w => {
-                        return {content: w};
-                    });
-                
-                const user = {
-                    firstName: this.firstNameField.value,
-                    lastName: this.secondNameField.value,
-                    login: this.loginField.value,
-                    email: this.emailField.value,
-                    password: this.passwordField.value,
-                    words: [...words]
-                }
-                
-                this.$store.dispatch('signUp', user)
-                    .then(_ => {
-                        Vue.nextTick().then(_ => this.$router.push({name: 'myWords'}));
-                    });
-            }
+            signUp: business.signUp,
         }
     }
 </script>
