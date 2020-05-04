@@ -31,5 +31,8 @@ import test from './test'
 export default {
     GetWordsFromText() {
         return Promise.resolve(test.wordsFromText);
+    },
+    SubmitWords() {
+        return Promise.resolve(test.wordsFromText);
     }
 }

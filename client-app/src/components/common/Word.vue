@@ -29,16 +29,18 @@
                 </div>
             </div>
             
-            <button type="button" class="btn btn-sm btn-secondary
-                edit_button edit_button-discard" 
-                @click="discardChanges">
-                Discard changes
-            </button>
-            <button type="button" class="btn btn-sm btn-primary
-                edit_button edit_button-save"
-                @click="handleSubmit(saveChanges)">
-                Save changes
-            </button>
+            <template v-if="!fresh">
+                <button type="button" class="btn btn-sm btn-secondary
+                    edit_button edit_button-discard" 
+                    @click="discardChanges">
+                    Discard changes
+                </button>
+                <button type="button" class="btn btn-sm btn-primary
+                    edit_button edit_button-save"
+                    @click="handleSubmit(saveChanges)">
+                    Save changes
+                </button>
+            </template>
         </ValidationObserver>
 
         <template v-else>
@@ -88,15 +90,18 @@
                 translationField: {
                     id: `translations${this.word.id}_input`,
                     type: 'text',
-                    smallText: 'translations of the word',
+                    smallText: `translations`,
                     name: 'Translations',
                     rules: '',
-                    placeholder: 'Input translations, please',
+                    placeholder: 'input translations',
                     value: ''
                 },
-                editing: false,
+                editing: this.fresh,
                 familiar: this.word.familiar
             }
+        },
+        created() {
+            this.setFieldValues();  
         },
         computed: {
             content() { return this.word.content },
@@ -106,14 +111,7 @@
         methods: {
             beginEdition(e) {
                 this.editing = true;
-                
-                this.contentField.value = this.word.content;
-                this.tagField.value = this.word.tags
-                    .map(t => t.name)
-                    .join(', ');
-                this.translationField.value = this.word.translations
-                    .map(t => t.content)
-                    .join(', ');
+                this.setFieldValues();
             },
             saveChanges(e) {
                 this.word.content = this.contentField.value;
@@ -135,6 +133,15 @@
                     .map(t => {return {[name]: t.trim()}});
                 return result;
                 
+            },
+            setFieldValues() {
+                this.contentField.value = this.word.content;
+                this.tagField.value = this.word.tags
+                    .map(t => t.name)
+                    .join(', ');
+                this.translationField.value = this.word.translations
+                    .map(t => t.content)
+                    .join(', ');
             }
         }
     }

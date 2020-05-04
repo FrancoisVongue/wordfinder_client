@@ -185,6 +185,17 @@ export default {
     wordsFromText: [
         {
             "id": 0,
+            "content": "update",
+            "familiar": false,
+            "additionTime": "2020-04-27T05:31:53.6384291Z",
+            "lastRepetitionTime": "2020-04-27T05:31:53.6385292Z",
+            "timesRepeated": 0,
+            "topic": null,
+            "tags": [],
+            "translations": []
+        },
+        {
+            "id": 0,
             "content": "tomorrow",
             "familiar": false,
             "additionTime": "2020-04-27T05:31:53.6385291Z",

@@ -30,9 +30,8 @@
                 </div>
             </div>
         </template>
-        <template v-else-if="WordsForCurrentPage.length">
-            <Word v-for="word in WordsForCurrentPage" :key="word.id" :word.sync="word"/>
-            <pagination :pagination-info.sync="pagination"/>
+        <template v-else>
+            <pageOfWords :words = "wordsList" :pageNumber.sync = "page"/>
         </template>
     </div>
 </template>
@@ -40,36 +39,16 @@
 <script>
     import {mapGetters} from 'vuex'
     import searchField from "../common/SearchField";
-    import Word from '../common/Word'
-    import pagination from '../common/Pagination'
+    import pageOfWords from '@/components/pageOfWords/pageOfWords'
+    import searchConfigs from './searchConfigs'
 
     export default {
         name: "myWordsWindow",
-        components: {searchField, Word, pagination},
+        components: {searchField, pageOfWords},
         data() {
             return {
-                searchConfigs: {
-                    word: {
-                        placeholder: "input word",
-                        tokens: ["hello", "world", "nice", "extracurricular"],
-                        CSV: false
-                    },
-                    tags: {
-                        placeholder: "input tags",
-                        tokens: ["greeting", "home", "work"],
-                        CSV: true
-                    },
-                    topics: {
-                        placeholder: "input topics",
-                        tokens: ["hellsing", "matrix", "mr.nobody"],
-                        CSV: true
-                    },
-                },
-                pagination: {
-                    page: 1,
-                    perPage: 5,
-                    itemsAmount: 1
-                },
+                searchConfigs: searchConfigs,
+                page: 1,
                 wordsList: [],
                 loading: true
             }
@@ -82,29 +61,17 @@
             },
             updateWordList(words) {
                 this.wordsList = words;
-                this.pagination.itemsAmount = words.length;
-                this.pagination.page = 1;
+                this.page = 1;
                 this.loading = false;
             }
         },
         mounted () {
             this.$store.dispatch('getMyWords')
                 .then(this.updateWordList);
-        },
-        computed: {
-            WordsForCurrentPage() {
-                const start = (this.pagination.page - 1) * this.pagination.perPage;
-                const end = start + this.pagination.perPage;
-                const words = this.wordsList.slice(start, end);
-
-                return words;
-            }
         }
     };
 </script>
 
 <style lang="scss" scoped>
-    .form-control:focus {
-        outline: none;
-    }
+    
 </style>

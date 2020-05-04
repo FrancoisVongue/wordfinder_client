@@ -2,7 +2,7 @@ import api from "../api/addWordsApi"
 
 let state = {
     text: {
-        Name: "Star Wars",
+        Name: "",
         Content: "",
         foundWords: [
             
@@ -19,7 +19,7 @@ let mutations = {
         state.text.foundWords = foundWords;
     },
     DISCARD_WORDS(state) {
-        clearState(state);
+        state.text.foundWords = [];
     },
 }
 
@@ -36,13 +36,11 @@ let actions = {
         return getWordsPromise;
     },
     submitWords({commit, state}) {
-        if(userAuthenticated())
-            return api.SubmitWords(state.text)
-                .then(() => {
-                    commit('DISCARD_WORDS')
-                });
-        else 
-            return Promise.reject("User is not authenticated")
+        return api.SubmitWords(state.text)
+            .then(() => {
+                state.words.concat(state.text.foundWords);
+                commit('DISCARD_WORDS');
+            });
     },
     discardWords({commit}, text) {
         return Promise.resolve(commit('DISCARD_WORDS'));
@@ -56,21 +54,6 @@ let getters = {
     textName(state) {
         return state.text.Name;
     }
-}
-
-function clearState(state) {
-    for (const prop in state.text) {
-        state.text[prop] = state.text[prop].slice(0, 0);
-    }
-}
-
-function userAuthenticated() {
-    const token = getToken();
-    return token != 'undefinded';
-}
-
-function getToken() {
-    return localStorage.getItem('token');
 }
 
 export default {state, mutations, actions, getters}

@@ -5,6 +5,7 @@
                v-model="inputString"
                ref="input"
                @blur="beginSearch"
+               @focus="stopSearch"
                @input="checkMatches"
                @keyup.delete="checkMatches"/>
         <ul :class="{input_matches: true, input_show: matches.length > 0}">
@@ -30,6 +31,7 @@
                 inputString: "",
                 error: "",
                 matches: [],
+                searchTimer: null
             }
         },
         methods: {
@@ -69,13 +71,21 @@
                 return this.error = "";
             },
             beginSearch() {
-                this.$emit('finished-typing');
+                this.searchTimer = setTimeout(() => {
+                    this.$emit('finished-typing');
+                }, 300);
+            },
+            stopSearch() {
+                this.searchTimer = null;
             }
         }
     }
 </script>
 
 <style lang="scss" scoped>
+    .input_field:focus {
+        border: none;
+    }
     .input_ {
         &wrapper {
             position: relative;

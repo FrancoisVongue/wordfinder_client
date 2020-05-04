@@ -17,7 +17,8 @@
                 <span v-if="!loading">Submit</span>
                 <template v-else>
                     <span>Loading...</span>
-                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true">
+                    <span class="spinner-grow spinner-grow-sm"
+                        role="status" aria-hidden="true">
                     </span>
                 </template>
             </button>

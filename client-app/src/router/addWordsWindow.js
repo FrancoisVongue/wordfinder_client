@@ -14,8 +14,8 @@ export default {
             component: addTranslation,
         },
         {
-            path: '',
             name: 'supplyText',
+            path: '',
             component: findWords,
             beforeEnter(to, from, next) {
                 if(store.getters.foundWords.length > 0)
