@@ -60,8 +60,7 @@
                     password: this.passwordField.value
                 };
                 
-                const token = await this.$store.dispatch('signIn', credentials);
-                await this.$store.dispatch('verifyUser', token);
+                await this.$store.dispatch('signIn', credentials);
                 this.$router.push({name:'myWords'});
             }
         }

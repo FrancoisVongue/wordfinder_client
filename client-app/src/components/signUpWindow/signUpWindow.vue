@@ -58,6 +58,7 @@
 
 <script>
     import InputField from "../common/InputField";
+    import Vue from 'vue'
     import {ValidationObserver, setInteractionMode} from 'vee-validate';
     import dictionary from './processedDictionary.js';
     import _ from 'lodash'
@@ -146,8 +147,8 @@
                 }
                 
                 this.$store.dispatch('signUp', user)
-                    .then(token => {
-                        this.$store.dispatch('verifyUser', token);
+                    .then(_ => {
+                        Vue.nextTick().then(_ => this.$router.push({name: 'myWords'}));
                     });
             }
         }

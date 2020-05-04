@@ -1,10 +1,8 @@
 <template>
     <div class="container-fluid border word"
-         :class="{'word_familiar':word.familiar && !word.editing}"
-         @mouseenter="showTranslation"
-         @mouseleave="showContent">
+         :class="{'word_familiar':word.familiar && !editing}">
         
-        <validation-observer v-if="word.editing">
+        <ValidationObserver v-if="editing" v-slot="{ failed, handleSubmit }">
             <div class="form-group row justify-content-center">
             
                 <div class="col-sm-4">
@@ -21,20 +19,27 @@
 
                 <div class="col-sm-12 text-center">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="dont_repeat"
-                               v-model="word.familiar">
-                        <label class="custom-control-label" for="dont_repeat">Don't repeat!</label>
+                        <input type="checkbox" class="custom-control-input" 
+                            id="dont_repeat"
+                            v-model="familiar">
+                        <label class="custom-control-label" for="dont_repeat">
+                            Don't repeat!
+                        </label>
                     </div>
                 </div>
             </div>
             
-            <button type="button" class="btn btn-sm btn-secondary edit_button edit_button-discard"
-                    @click="discardChanges">Discard changes
+            <button type="button" class="btn btn-sm btn-secondary
+                edit_button edit_button-discard" 
+                @click="discardChanges">
+                Discard changes
             </button>
-            <button type="button" class="btn btn-sm btn-primary edit_button edit_button-save"
-                    @click="saveChanges">Save changes
+            <button type="button" class="btn btn-sm btn-primary
+                edit_button edit_button-save"
+                @click="handleSubmit(saveChanges)">
+                Save changes
             </button>
-        </validation-observer>
+        </ValidationObserver>
 
         <template v-else>
             <div class="row justify-content-center">
@@ -58,14 +63,14 @@
     
     export default {
         name: 'Word',
-        props: ['word'],
+        props: ['word', 'fresh'],
         components: {InputField, ValidationObserver},
         data() {
             return {
                 contentField: {
                     id: `word${this.word.id}_content-input`,
                     type: 'text',
-                    smallText: 'word to learn',
+                    smallText: '',
                     name: 'Word',
                     rules: 'alpha|required|min:3',
                     placeholder: 'Input the word, please',
@@ -74,9 +79,9 @@
                 tagField: {
                     id: `tags${this.word.id}_input`,
                     type: 'text',
-                    smallText: '',
+                    smallText: 'tags to assign',
                     name: 'Tags',
-                    rules: 'alpha|required',
+                    rules: '',
                     placeholder: 'Input tags, please',
                     value: ''
                 },
@@ -85,90 +90,51 @@
                     type: 'text',
                     smallText: 'translations of the word',
                     name: 'Translations',
-                    rules: 'alpha|required',
-                    placeholder: 'Input tags, please',
+                    rules: '',
+                    placeholder: 'Input translations, please',
                     value: ''
                 },
-                content: this.word.content,
-                animation: null
+                editing: false,
+                familiar: this.word.familiar
             }
         },
-        beforeMount() {
-            const {word} = this;
-            let content = word.content || "No contnet";
-            let tagsString = word.tags ? word.tags.join(', ') : "No tags";
-            let translationString = word.translations ? word.translations.join(', ') : "No translation";
-            this.contentField.value =  content;
-            this.tagField.value =  tagsString;
-            this.translationField.value = translationString;
+        computed: {
+            content() { return this.word.content },
+            translations() { return this.word.translations },
+            tags() { return this.word.tags }
         },
         methods: {
             beginEdition(e) {
-                this.word.editing = true;
-
-                this.tagField.value = this.word.tags.join(', ');
-                this.translationField.value = this.word.translations.join(', ');
+                this.editing = true;
+                
+                this.contentField.value = this.word.content;
+                this.tagField.value = this.word.tags
+                    .map(t => t.name)
+                    .join(', ');
+                this.translationField.value = this.word.translations
+                    .map(t => t.content)
+                    .join(', ');
             },
             saveChanges(e) {
-                this.word.content = this.content = this.contentField.value;
-                this.word.tags = this.parseCsvIntoArray(this.tagField.value);
-                this.word.translations = this.parseCsvIntoArray(this.translationField.value);
+                this.word.content = this.contentField.value;
+                this.word.tags = 
+                    this.CSVtoArrayOfObjects(this.tagField.value, "name");
+                this.word.translations = 
+                    this.CSVtoArrayOfObjects(this.translationField.value, "content");
+                this.word.familiar = this.familiar;
 
-                this.word.editing = false;
+                this.editing = false;
             },
-            discardChanges(e) {
-                this.tagField.value = this.word.tags.join(', ');
-                this.translationField.value = this.word.translations.join(', ');
-
-                this.word.editing = false;
+            discardChanges(e) { 
+                this.editing = false;
             },
-            showTranslation() {
-                clearInterval(this.animation);
-                const translation = this.word.translations ? 
-                    this.word.translations[0] : '';
-                if(!translation) 
-                    return;
-                
-                this.content = translation[0];
-                this.animation =
-                    setInterval(this.changeStringStepByStep, 30, translation);
-            },
-            showContent() {
-                clearInterval(this.animation);
-                const content = this.word.content;
-                if(!content) 
-                    return;
-                
-                this.content = content[0];
-                this.animation =
-                    setInterval(this.changeStringStepByStep, 30, content);
-            },
-            changeStringStepByStep(to) {
-                let from = this.content;
-
-                if(from == to || !to) {
-                    clearInterval(this.animation);
-                    return;
-                }
-
-                if(to.indexOf(from) != 0){
-                    from = from.length > 1 ?
-                        from.substring(0, from.length-1) :
-                        to[0];
-                    this.content = from;
-                }
-                else {
-                    from += from.length < to.length ?
-                        to[from.length] :
-                        '';
-                    this.content = from;
-                }
-            },
-            parseCsvIntoArray(csv) {
-                return csv
+            CSVtoArrayOfObjects(csv, name) {
+                const result = csv
                     .split(',')
                     .filter(t => t.trim())
-                    .map(t => t.trim());
+                    .map(t => {return {[name]: t.trim()}});
+                return result;
+                
             }
         }
     }

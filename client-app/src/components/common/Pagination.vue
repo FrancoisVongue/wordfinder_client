@@ -1,22 +1,22 @@
 <template>
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
-            <li class="page-item" :class="{disabled : paginationInfo.page <= 1}">
+            <li class="page-item" :class="{disabled : currentPage <= 1}">
                 <a class="page-link" href="#" tabindex="-1"
-                   @click="--paginationInfo.page">Previous</a>
+                   @click="changePage(a => a - 1)">Previous</a>
             </li>
 
-            <li class="page-item" v-for="page in pagination"
+            <li class="page-item" v-for="page in pages"
                 :key="page"
                 :class="{disabled : isCurrentPage(page), current: isCurrentPage(page)}">
-                <a class="page-link" href="#" @click="paginationInfo.page = page">
+                <a class="page-link" href="#" @click="changePage(a => page)">
                     {{page}}
                 </a>
             </li>
 
-            <li class="page-item" :class="{disabled : paginationInfo.page >= totalPages}">
+            <li class="page-item" :class="{disabled : currentPage >= totalPages}">
                 <a class="page-link" href="#"
-                   @click="++paginationInfo.page">Next</a>
+                   @click="changePage(a => a + 1)">Next</a>
             </li>
         </ul>
     </nav>
@@ -26,46 +26,55 @@
     export default {
         name: "Pagination",
         props: ['paginationInfo'],
+        data() {
+            return {
+                maxPagesView: 7
+            }
+        },
         computed: {
             totalPages() {
-                return Math.ceil(this.paginationInfo.items.length / 
-                    this.paginationInfo.perPage)
+                return Math.ceil(this.paginationInfo.itemsAmount / 
+                    this.paginationInfo.perPage);
             },
-            pagination() {
-                const totalPages = this.totalPages;
-                const currentPage = this.paginationInfo.page;
-                const pagesToDisplay = 3 * 2; // except current
-                const wing = pagesToDisplay / 2;
-                const pagination = [];
+            currentPage() {
+                return this.paginationInfo.page;  
+            },
+            pages() {
+                const block = Math.floor(this.maxPagesView / 2);
+                const pages = [];
                 
-                const toRight = totalPages - currentPage;
-                const toLeft = currentPage - 1;
-                let rightWing = wing;
-                let leftWing = wing;
-                
-                if(currentPage < totalPages / 2) {
-                    if(toLeft < wing) {
-                        rightWing += wing - toLeft;
-                        leftWing = toLeft;
-                    }
-                } else  {
-                    if(toRight < wing) {
-                        leftWing += wing - toRight;
-                        rightWing = toRight;
-                    }
+                if(this.totalPages <= this.maxPagesView) {
+                    return this.getArrayOfNumbers(1, this.totalPages);
                 }
-                
-                for(let i = currentPage - leftWing; i <= currentPage + rightWing; i++) {
-                    pagination.push(i);
+                if( this.currentPage <= block ) {
+                    return this.getArrayOfNumbers(1, this.maxPagesView);
                 }
-                
-                
-                return pagination;
+                if( this.currentPage + block >= this.totalPages ) {
+                    return this.getArrayOfNumbers(this.totalPages - this.maxPagesView,
+                        this.totalPages);
+                }
+                else {
+                    return this.getArrayOfNumbers(this.currentPage - block,
+                        this.currentPage + block)
+                }
             }
         },
         methods: {
             isCurrentPage(page) {
                 return page === this.paginationInfo.page;
+            },
+            changePage(predicate) {
+                let a = this.currentPage;
+                let b = predicate(a);
+                console.log(b);
+                
+                this.paginationInfo.page += b - a;
+            },
+            getArrayOfNumbers(a, b) {
+                const array = [];
+                for(let i = a ; i <= b; i++)
+                    array.push(i);
+                return array;
             }
         },
     }

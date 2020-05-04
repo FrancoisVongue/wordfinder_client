@@ -33,9 +33,11 @@ namespace WordFinder_Business
         {
             user.Salt = PasswordHandler.getSalt(SaltLength);
             user.Password = PasswordHandler.getHashed(user.Salt + user.Password);
+            user.Words = null;
             
             var addedUser = _context.Users.Add(user).Entity;
             _context.SaveChanges();
+            
             return addedUser;
         }
 

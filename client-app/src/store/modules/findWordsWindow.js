@@ -27,19 +27,13 @@ let actions = {
     getNewWords({commit}, text) {
         commit('SET_TEXT_PROPERTIES', text);
         
-        if(userAuthenticated()) {
-            const token = getToken();
-            const getWordsPromise = api.GetWordsFromText(text, token)
-                .then(words => {
-                    const newWords = words.map(word => NewWordFromContent(word));
-                    commit('SET_FOUND_WORDS', newWords);
-                });
-            
-            return getWordsPromise;
-        }
-        else {
-            return Promise.reject(new Error("User is not authenticated"));
-        }
+        const getWordsPromise = api.GetWordsFromText(text)
+            .then(words => {
+                commit('SET_FOUND_WORDS', words);
+                return words;
+            });
+        
+        return getWordsPromise;
     },
     submitWords({commit, state}) {
         if(userAuthenticated())
@@ -68,10 +62,6 @@ function clearState(state) {
     for (const prop in state.text) {
         state.text[prop] = state.text[prop].slice(0, 0);
     }
-}
-
-function NewWordFromContent(content) {
-    return {content: content, editing: true};
 }
 
 function userAuthenticated() {

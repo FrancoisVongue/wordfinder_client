@@ -68,8 +68,9 @@
                 pagination: {
                     page: 1,
                     perPage: 5,
-                    items: []
+                    itemsAmount: 1
                 },
+                wordsList: [],
                 loading: true
             }
         },
@@ -77,32 +78,24 @@
             searchWords() {
                 this.loading = true;
                 this.$store.dispatch('getMyWords')
-                    .then(words => {
-                        this.pagination.items = words;
-                        this.loading = false;
-                    });
-                // todo: update the page
+                    .then(this.updateWordList);
+            },
+            updateWordList(words) {
+                this.wordsList = words;
+                this.pagination.itemsAmount = words.length;
+                this.pagination.page = 1;
+                this.loading = false;
             }
         },
         mounted () {
-            this.$store.dispatch('getWordsInfo')
-                .then(info => {
-                    this.searchConfigs.word.tokens = info.words;
-                    this.searchConfigs.tags.tokens = info.tags;
-                    this.searchConfigs.topics.tokens = info.topics;
-                });
             this.$store.dispatch('getMyWords')
-                .then(words => {
-                    this.pagination.items = words;
-
-                    this.loading = false;
-                });
+                .then(this.updateWordList);
         },
         computed: {
             WordsForCurrentPage() {
                 const start = (this.pagination.page - 1) * this.pagination.perPage;
                 const end = start + this.pagination.perPage;
-                const words = this.pagination.items.slice(start, end);
+                const words = this.wordsList.slice(start, end);
 
                 return words;
             }
