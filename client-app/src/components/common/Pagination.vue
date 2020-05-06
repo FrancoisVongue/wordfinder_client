@@ -37,7 +37,7 @@
                     this.paginationInfo.perPage);
             },
             currentPage() {
-                return this.paginationInfo.page;  
+                return this.paginationInfo.page;
             },
             pages() {
                 const block = Math.floor(this.maxPagesView / 2);
@@ -66,7 +66,6 @@
             changePage(predicate) {
                 let a = this.currentPage;
                 let b = predicate(a);
-                console.log(b);
                 
                 this.paginationInfo.page += b - a;
             },
@@ -84,5 +83,8 @@
     .current .page-link {
         background-color: #0062cc;
         color: ghostwhite;
+    }
+    .pagination * {
+        box-shadow: none;
     }
 </style>

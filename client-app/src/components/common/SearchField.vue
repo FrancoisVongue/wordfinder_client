@@ -1,88 +1,93 @@
 <template>
     <div class="input_wrapper">
+        <div class="token__container">
+            <span v-for="token in selected" :key="token" 
+                class="badge badge-pill badge-secondary token">
+                {{token}}
+                <button class="delete-token" @mouseup="removeToken(token)">x</button>
+            </span>
+        </div>
         <input class="form-control input_field" type="search"
                :placeholder="placeholder" aria-label="Search"
                v-model="inputString"
                ref="input"
-               @blur="beginSearch"
-               @focus="stopSearch"
+               @focus="focus"
+               @blur="search"
                @input="checkMatches"
                @keyup.delete="checkMatches"/>
         <ul :class="{input_matches: true, input_show: matches.length > 0}">
             <li class="input_match" v-for="(match, i) in matches"
                 :key="i"
-                @click="setMatchToInput(match)">{{match}}
+                @click="addToken(match)">{{match}}
             </li>
         </ul>
         <small class="info form-text error" v-if="error.length">{{error}}</small>
-        <small class="info form-text" v-else>
-            {{CSV ? "Use Comma to separate values" : ''}}</small>
     </div>
 </template>
 
 <script>
+    import business from "../common/business/searchField"
+
     export default {
         name: "SearchField",
         props: ["config"],
         data() {
             return {
-                placeholder: this.config ? this.config.placeholder : "",
-                CSV: this.config.CSV,
+                placeholder: this.config.placeholder || "",
                 inputString: "",
                 error: "",
                 matches: [],
+                selected: [],
                 searchTimer: null
             }
         },
         methods: {
             checkMatches() {
-                if (this.invalidString() || !this.inputString.length)
-                    return this.matches = [];
-
-                const value = this.CSV ? this.inputString.split(',').pop() : this.inputString;
-
-                if (value)
-                    this.matches = this.config.tokens.filter(t => {
-                        const matchesToken = ~t.indexOf(value.trim());
-                        const exists = ~this.inputString.indexOf(t + ',');
-                        return matchesToken && !exists;
-                    });
-                else {
-                    this.matches = this.config.tokens
-                        .filter(t => !~this.inputString.indexOf(t + ','));
-                }
+                this.matches = 
+                    business.checkMatches(this.inputString, this.config.tokens)
+                        .filter(match => !~this.selected.indexOf(match));
             },
-            setMatchToInput(match) {
-                if (~this.inputString.indexOf(',') && this.CSV) {
-                    this.inputString = this.inputString.split(',').slice(0, -1).join(',') + ',';
-                    this.inputString += match;
-                } else {
-                    this.inputString = match;
-                }
-
-                this.$nextTick(() => this.$refs.input.focus());
-
-                this.matches = [];
+            addToken(value) {
+                this.inputString = '';
+                this.selected.push(value);
             },
-            invalidString() {
-                if (this.inputString && !(/^[\w\s]+(,[\w\s]*)*$/).test(this.inputString)) {
-                    return this.error = "Remove invalid characters";
-                }
-                return this.error = "";
+            removeToken(value) {
+                this.selected.splice(this.selected.indexOf(value), 1);
             },
-            beginSearch() {
-                this.searchTimer = setTimeout(() => {
-                    this.$emit('finished-typing');
-                }, 300);
+            search() { 
+                setTimeout(() => {
+                    this.inputString = '';
+                    this.matches = [];
+                }, 100);
+                this.$emit('finished-typing'); 
             },
-            stopSearch() {
-                this.searchTimer = null;
+            focus() { 
+                this.checkMatches();
+                this.$emit('focus');
             }
         }
     }
 </script>
 
 <style lang="scss" scoped>
+    .token__container{
+        font-size: 1.05rem;
+        padding-bottom: 3px;
+    }
+    .token {
+        margin-right: .2em;
+    }
+    .delete-token {
+        color: #343434;
+        font-family: monospace;
+        border-radius: 50%;
+        height: 1em;
+        width: 1em;
+        box-shadow: none;
+        padding: 0;
+        border: none;
+        background-color: rgb(200, 200, 200);
+    }
     .input_field:focus {
         border: none;
     }
@@ -104,7 +109,9 @@
             position: absolute;
             left: 0;
             right: 0;
-            top: 2.5em;
+            height: 11.25em;
+            overflow-y: auto;
+            bottom: -11.5em;
             z-index: 1;
         }
 

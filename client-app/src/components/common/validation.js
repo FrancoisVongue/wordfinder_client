@@ -1,5 +1,5 @@
 import {ValidationProvider, extend} from 'vee-validate';
-import {email, required, alpha, } from 'vee-validate/dist/rules';
+import {email, required, alpha, alpha_spaces, alpha_dash} from 'vee-validate/dist/rules';
 
 extend('min', {
     validate(value, args) {
@@ -34,6 +34,15 @@ extend('sameas', {
     params: ['pass'],
     message: "Passwords don't match."
 });
+extend('CSV', {
+    validate(value) {
+        const regex = /[\w\-\s]{2,}(,\s?[\w\-\s]{2,})*/g;
+        const result = regex.exec(value);
+        
+        return result[0].length == value.length;
+    },
+    message: "Field should contain values separated with a single comma."
+})
 extend('email', {
     ...email,
     message: "Invalid email"
@@ -45,6 +54,14 @@ extend('required', {
 extend('alpha', {
     ...alpha,
     message: "Field may only contain letters."
+})
+extend('alpha_spaces', {
+    ...alpha_spaces,
+    message: "Field may only contain letters and spaces."
+})
+extend('alpha_dash', {
+    ...alpha_dash,
+    message: "Field may only contain letters and dashes."
 })
 
 export default ValidationProvider;

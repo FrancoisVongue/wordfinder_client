@@ -18,8 +18,16 @@ let mutations = {
     SET_FOUND_WORDS(state, foundWords) {
         state.text.foundWords = foundWords;
     },
-    DISCARD_WORDS(state) {
-        state.text.foundWords = [];
+    DISCARD_WORDS(state, words) {
+        let {text} = state;
+        
+        if(!words)
+            text.foundWords = [];
+        else {
+            let wordsToDiscard = new Set(words);
+            text.foundWords = text.foundWords
+                .filter(w => !wordsToDiscard.has(w));
+        }
     },
 }
 
@@ -35,11 +43,11 @@ let actions = {
         
         return getWordsPromise;
     },
-    submitWords({commit, state}) {
-        return api.SubmitWords(state.text)
-            .then(() => {
-                state.words.concat(state.text.foundWords);
-                commit('DISCARD_WORDS');
+    submitWords({commit}, wordsToSubmit) {
+        return api.SubmitWords(wordsToSubmit)
+            .then(words => {
+                commit('DISCARD_WORDS', wordsToSubmit);
+                return words;
             });
     },
     discardWords({commit}, text) {

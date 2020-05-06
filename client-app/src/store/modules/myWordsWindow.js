@@ -6,7 +6,7 @@ const state = {
 
 const mutations = {
     SET_WORDS(state, words) {
-        state.myWords = words;
+        state.words = words;
     }
 }
 

@@ -33,7 +33,7 @@ axios.interceptors.response.use(response => response,
 export default {
     SignUp(user) {
         test.user.token = "sdf235325asfg242t";
-        return Promise.resolve(test.user);
+        return new Promise(_ => setTimeout(_, 400, test.user));
     },
     SignIn(credentials) {
         test.user.token = "sdf235325asfg242t";

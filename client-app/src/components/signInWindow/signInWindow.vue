@@ -24,7 +24,7 @@
 
 <script>
     import InputField from "../common/InputField";
-    import fieldConfig from "../common/field configuration/signIn"
+    import fieldConfig from "../common/fieldConfig/signIn"
     import business from "../common/business/signIn"
     import {ValidationObserver, setInteractionMode} from 'vee-validate';
     setInteractionMode('eager');

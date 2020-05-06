@@ -37,8 +37,8 @@
                 <div class="row">
                     <div class="col-md-12">
                         <label for="lexicon">How many words do you know?
-                            (words will be taken from <a target="_blank"
-                             href="https://github.com/first20hours/google-10000-english/blob/master/google-10000-english-no-swears.txt">this place</a>)
+                            (words will be taken from 
+                            <a target="_blank" href="https://github.com/first20hours/google-10000-english/blob/master/google-10000-english-no-swears.txt">this place</a>)
                         </label>
                         <input type="range" class="custom-range" min="0" max="9500"
                             id="lexicon" v-model="lexiconSize" step="100">
@@ -58,7 +58,7 @@
 
 <script>
     import InputField from "../common/InputField";
-    import fieldConfig from "../common/field configuration/signUp"
+    import fieldConfig from "../common/fieldConfig/signUp"
     import business from "../common/business/signUp"
     import Vue from 'vue'
     import {ValidationObserver, setInteractionMode} from 'vee-validate';
@@ -83,7 +83,10 @@
             passwordRepeatField: _ => fieldConfig.passwordRepeatField,
         },
         methods: {
-            signUp: business.signUp,
+            signUp() {
+                business.signUp()
+                    .then(_ => this.$router.push({name: "myWords"}));
+            }
         }
     }
 </script>

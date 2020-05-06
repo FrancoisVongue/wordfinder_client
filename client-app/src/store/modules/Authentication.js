@@ -3,8 +3,18 @@
 let state = {
     authenticated: false,
     loading: false,
-    user: GetEmptyUser(),
-    authentication_error: ''
+    authentication_error: '',
+    user: {
+        id: null,
+        token: null,
+        firstName: '',
+        lastName: '',
+        login: '',
+        email: '',
+        topics: [],
+        tags: [],
+        words: []
+    }
 }
 
 let mutations = {
@@ -81,6 +91,10 @@ let getters = {
     },
     userName(state) {
         return state.user.firstName;
+    },
+    userInfo(state) {
+        console.log(state.user);
+        return state.user;
     }
 }
 

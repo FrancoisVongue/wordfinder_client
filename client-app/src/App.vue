@@ -80,7 +80,9 @@
             this.$store.dispatch("signInWithToken")
                 .then(success => {
                     if (success) {
-                        this.$router.push({name: "myWords"})
+                        this.$router.push({name: "myWords"});
+                    } else {
+                        this.$router.push({name: "signIn"});
                     }
                 });
         },

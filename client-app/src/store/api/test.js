@@ -1,7 +1,7 @@
 export default {
     user : {
         "id": 13,
-        "firstName": "Francois",
+        "firstName": "Fransua",
         "lastName": "Vongue",
         "login": "hellatsugoi",
         "email": "francois@mail.ru",
@@ -12,13 +12,41 @@ export default {
             },
             {
                 "id": 4,
-                "name": "Titanic"
+                "name": "Star Wars"
+            },
+            {
+                "id": 5,
+                "name": "Naruto"
+            },
+            {
+                "id": 6,
+                "name": "The Lord Of Rings"
+            },
+            {
+                "id": 7,
+                "name": "Matrix"
             }
         ],
         "tags": [
             {
                 "id": 3,
                 "name": "home"
+            },
+            {
+                "id": 4,
+                "name": "work"
+            },
+            {
+                "id": 5,
+                "name": "family"
+            },
+            {
+                "id": 6,
+                "name": "computer"
+            },
+            {
+                "id": 7,
+                "name": "university"
             },
         ],
         "words": [
@@ -240,7 +268,7 @@ export default {
         },
         {
             "id": 0,
-            "content": "something-some",
+            "content": "somethingsome",
             "familiar": false,
             "additionTime": "2020-04-27T05:31:53.6385813Z",
             "lastRepetitionTime": "2020-04-27T05:31:53.6385813Z",

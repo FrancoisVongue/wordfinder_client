@@ -15,6 +15,8 @@ import test from './test'
 export default {
     GetUserWords(amount) {
         const token = localStorage.getItem('token');
-        return Promise.resolve(test.words);
+        return new Promise(_ => {
+            setTimeout(_, 500, test.words);
+        });
     }
 }

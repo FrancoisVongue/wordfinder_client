@@ -52,8 +52,10 @@
                 </div>
             </div>
             
-            <button type="button" class="btn btn-sm btn-warning edit_button edit_button-change"
-                    @click="beginEdition">Edit word
+            <button type="button" 
+                class="btn btn-sm btn-warning edit_button edit_button-change"
+                @click="beginEdition">
+                Edit word
             </button>
         </template>
     </div>
@@ -61,6 +63,8 @@
 
 <script>
     import InputField from '../common/InputField'
+    import fieldConfig from '../common/fieldConfig/word'
+    import business from '../common/business/word'
     import { ValidationObserver } from 'vee-validate'
     
     export default {
@@ -69,33 +73,9 @@
         components: {InputField, ValidationObserver},
         data() {
             return {
-                contentField: {
-                    id: `word${this.word.id}_content-input`,
-                    type: 'text',
-                    smallText: '',
-                    name: 'Word',
-                    rules: 'alpha|required|min:3',
-                    placeholder: 'Input the word, please',
-                    value: ''
-                },
-                tagField: {
-                    id: `tags${this.word.id}_input`,
-                    type: 'text',
-                    smallText: 'tags to assign',
-                    name: 'Tags',
-                    rules: '',
-                    placeholder: 'Input tags, please',
-                    value: ''
-                },
-                translationField: {
-                    id: `translations${this.word.id}_input`,
-                    type: 'text',
-                    smallText: `translations`,
-                    name: 'Translations',
-                    rules: '',
-                    placeholder: 'input translations',
-                    value: ''
-                },
+                contentField: fieldConfig.contentField(this.word),
+                tagField: fieldConfig.tagField(this.word),
+                translationField: fieldConfig.translationField(this.word),
                 editing: this.fresh,
                 familiar: this.word.familiar
             }
@@ -116,9 +96,9 @@
             saveChanges(e) {
                 this.word.content = this.contentField.value;
                 this.word.tags = 
-                    this.CSVtoArrayOfObjects(this.tagField.value, "name");
+                    business.CSVtoArrayOfObjects(this.tagField.value, "name");
                 this.word.translations = 
-                    this.CSVtoArrayOfObjects(this.translationField.value, "content");
+                    business.CSVtoArrayOfObjects(this.translationField.value, "content");
                 this.word.familiar = this.familiar;
 
                 this.editing = false;
@@ -126,22 +106,12 @@
             discardChanges(e) { 
                 this.editing = false;
             },
-            CSVtoArrayOfObjects(csv, name) {
-                const result = csv
-                    .split(',')
-                    .filter(t => t.trim())
-                    .map(t => {return {[name]: t.trim()}});
-                return result;
-                
-            },
             setFieldValues() {
-                this.contentField.value = this.word.content;
-                this.tagField.value = this.word.tags
-                    .map(t => t.name)
-                    .join(', ');
-                this.translationField.value = this.word.translations
-                    .map(t => t.content)
-                    .join(', ');
+                ({  content: this.contentField.value,
+                    tags: this.tagField.value,
+                    translations: this.translationField.value} = 
+                    
+                    business.setFieldValues(this.word));
             }
         }
     }
