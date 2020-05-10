@@ -1,6 +1,7 @@
 ﻿<template>
     <div class="window">
         <p class="display-4">Login</p>
+        <error-message :content="errorMessage"/>
         <ValidationObserver v-slot="{ failed, handleSubmit }">
             <form @submit.prevent="handleSubmit(signIn)">
                 <div class="row">
@@ -23,23 +24,31 @@
 </template>
 
 <script>
-    import InputField from "../common/InputField";
+    import InputField from "../common/InputField"
+    import errorMessage from '@/components/common/errorMessage'
     import fieldConfig from "../common/fieldConfig/signIn"
     import business from "../common/business/signIn"
-    import {ValidationObserver, setInteractionMode} from 'vee-validate';
+    import {ValidationObserver, setInteractionMode} from 'vee-validate'
     setInteractionMode('eager');
 
     export default {
         name: "signUpWindow",
-        components: { ValidationObserver, InputField },
+        components: { ValidationObserver, InputField, errorMessage },
         data() {
             return {
                 loginField: fieldConfig.loginField,
-                passwordField: fieldConfig.passwordField
+                passwordField: fieldConfig.passwordField,
+                errorMessage: ''
             }
         },
         methods: {
-            signIn: business.signIn
+            signIn() {
+                business.signIn()
+                    .then(_ => this.$router.push({name: "myWords"}))
+                    .catch(errorMessage => {
+                        this.errorMessage = errorMessage;
+                    });
+            } 
         }
     }
 </script>

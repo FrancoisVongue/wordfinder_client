@@ -2,7 +2,7 @@
 import test from './test'
 
 axios.interceptors.response.use(response => response,
-    error => Promise.reject(error.response) );
+    error => Promise.reject(error.response.data) );
 
 export default {
     SignUp(user) {
@@ -12,18 +12,19 @@ export default {
             data: user,
         });
     },
-    // SignIn(credentials) {
-    //     return axios({
-    //         method: 'post',
-    //         url: 'user/signin',
-    //         data: credentials,
-    //     }).then(response => response.headers["x-token"]);
-    // },
+    SignIn(credentials) {
+        return axios({
+            method: 'post',
+            url: 'user/login',
+            data: credentials,
+        });
+    },
     SignInWithToken() { 
         const token = localStorage.getItem('token');
         
-        if(!token)
-            return Promise.reject();
+        if(!token) {
+            return Promise.reject(new Error("You have to login again :("));
+        }
             
         return axios({
             method: 'get',

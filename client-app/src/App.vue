@@ -58,6 +58,10 @@
             </nav>
         </header>
 
+        <aside class="application_error" v-show="errorMessage.length">
+            <error-message :content="errorMessage"></error-message>
+        </aside>
+
         <main class="currentWindow" v-show="!authLoading">
             <router-view></router-view>
         </main>
@@ -72,30 +76,54 @@
 </template>
 
 <script>
+    import errorMessage from '@/components/common/errorMessage'
     import { mapGetters } from 'vuex'
     export default {
         name: 'app',
         props: ['currentWindow'],
+        components: {errorMessage},
+        data() {
+            return {
+                errorMessage: 'hello'      
+            }
+        },
         beforeCreate() {
             this.$store.dispatch("signInWithToken")
-                .then(success => {
-                    if (success) {
-                        this.$router.push({name: "myWords"});
-                    } else {
-                        if(this.$router.currentRoute.name != 'signIn')
-                            this.$router.push({name: "signIn"}).catch();
-                    }
+                .then(_ => {
+                    this.$router.push({name: "myWords"});
+                })
+                .catch(error => {
+                    this.errorMessage = error.message;
+                    this.doLater(() => {
+                        this.errorMessage = ''
+                    }, 6000);
+                    
+                    if(this.$router.currentRoute.name != 'signIn')
+                        this.$router.push({name: "signIn"}); 
                 });
         },
-        computed: {
-            ...mapGetters(['authLoading', 'authenticated', 'userWordsInfo', 'userName'])
-        },
         methods: {
+            doLater(f, time) {
+                setTimeout(f, time);
+            }            
+        },
+        computed: {
+            ...mapGetters([
+                'authLoading', 
+                'authenticated', 
+                'userWordsInfo', 
+                'userName',
+            ]),
         }
     }
 </script>
 
 <style lang="scss">
+    .application_error {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+    }
     .window {
         margin: 1em 0;
     }

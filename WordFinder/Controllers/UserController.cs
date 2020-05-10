@@ -37,7 +37,7 @@ namespace WordFinder.Controllers
         [HttpPost]
         public ActionResult Register(User user)
         {
-            if(!ModelState.IsValid) 
+            if(!ModelState.IsValid)
                 return BadRequest(ModelState);
             if(!_service.EmailIsUnique(user))
                 return BadRequest("User with the same email address already exists");
