@@ -1,46 +1,28 @@
 import api from "../api/myWordsApi"
-import test from "../api/test";
 
 const state = {
-    wordsInfo: {
-        words: [],
-        tags: [],
-        topics: []
-    },
-    myWords: []
+    words: []
 }
 
 const mutations = {
     SET_WORDS(state, words) {
-        state.myWords = [...words];
-    },
-    SET_INFO(state, info) {
-        state.wordsInfo = info;
+        state.words = words;
     }
 }
 
 const actions = {
     getMyWords(context) {
-        const token = localStorage.getItem('token');
-        return api.getMyWords(token)
+        const wordsToShow = 25;
+        const wordsPromise = api.GetUserWords(wordsToShow)
             .then(words => {
                 context.commit('SET_WORDS', words);
                 return words;
             });
-    },
-    getWordsInfo({commit}) {
-        return api.getInfo()
-            .then(info => {
-                commit('SET_INFO', info);
-                return info;
-            });
+        
+        return wordsPromise;
     }
 }
 
-const getters = {
-    WordsInfo(state) {
-        return state.wordsInfo;
-    }
-}
+const getters = {}
 
 export default {state, mutations, actions, getters}

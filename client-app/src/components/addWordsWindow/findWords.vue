@@ -17,7 +17,8 @@
                 <span v-if="!loading">Submit</span>
                 <template v-else>
                     <span>Loading...</span>
-                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true">
+                    <span class="spinner-grow spinner-grow-sm"
+                        role="status" aria-hidden="true">
                     </span>
                 </template>
             </button>
@@ -64,12 +65,12 @@
                     Content: this.ContentField.value
                 }
                 this.$store.dispatch('getNewWords', text)
-                    .then(() => {
+                    .then(words => {
                         this.errorMessage = '';
-                        this.$router.push({name: 'addTranslation'});
-                    })
-                    .catch(() => {
-                        this.errorMessage = 'Check your internet connection, please';
+                        if(words.length > 0)
+                            this.$router.push({name: 'addTranslation'});
+                        else 
+                            this.errorMessage = 'No new words were found!'
                     })
                     .finally(() => {
                         this.loading = false;

@@ -2,7 +2,7 @@ import api from "../api/addWordsApi"
 
 let state = {
     text: {
-        Name: "Star Wars",
+        Name: "",
         Content: "",
         foundWords: [
             
@@ -18,8 +18,16 @@ let mutations = {
     SET_FOUND_WORDS(state, foundWords) {
         state.text.foundWords = foundWords;
     },
-    DISCARD_WORDS(state) {
-        clearState(state);
+    DISCARD_WORDS(state, words) {
+        let {text} = state;
+        
+        if(!words)
+            text.foundWords = [];
+        else {
+            let wordsToDiscard = new Set(words);
+            text.foundWords = text.foundWords
+                .filter(w => !wordsToDiscard.has(w));
+        }
     },
 }
 
@@ -27,28 +35,20 @@ let actions = {
     getNewWords({commit}, text) {
         commit('SET_TEXT_PROPERTIES', text);
         
-        if(userAuthenticated()) {
-            const token = getToken();
-            const getWordsPromise = api.GetWordsFromText(text, token)
-                .then(words => {
-                    const newWords = words.map(word => NewWordFromContent(word));
-                    commit('SET_FOUND_WORDS', newWords);
-                });
-            
-            return getWordsPromise;
-        }
-        else {
-            return Promise.reject(new Error("User is not authenticated"));
-        }
+        const getWordsPromise = api.GetWordsFromText(text)
+            .then(words => {
+                commit('SET_FOUND_WORDS', words);
+                return words;
+            });
+        
+        return getWordsPromise;
     },
-    submitWords({commit, state}) {
-        if(userAuthenticated())
-            return api.SubmitWords(state.text)
-                .then(() => {
-                    commit('DISCARD_WORDS')
-                });
-        else 
-            return Promise.reject("User is not authenticated")
+    submitWords({commit}, wordsToSubmit) {
+        return api.SubmitWords(wordsToSubmit)
+            .then(words => {
+                commit('DISCARD_WORDS', wordsToSubmit);
+                return words;
+            });
     },
     discardWords({commit}, text) {
         return Promise.resolve(commit('DISCARD_WORDS'));
@@ -62,25 +62,6 @@ let getters = {
     textName(state) {
         return state.text.Name;
     }
-}
-
-function clearState(state) {
-    for (const prop in state.text) {
-        state.text[prop] = state.text[prop].slice(0, 0);
-    }
-}
-
-function NewWordFromContent(content) {
-    return {content: content, editing: true};
-}
-
-function userAuthenticated() {
-    const token = getToken();
-    return token != 'undefinded';
-}
-
-function getToken() {
-    return localStorage.getItem('token');
 }
 
 export default {state, mutations, actions, getters}

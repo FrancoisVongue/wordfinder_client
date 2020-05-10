@@ -26,13 +26,9 @@ namespace WordFinder_Business
         }
 
         
-        public IEnumerable<Word> GetUserWords(long id, int amount)
+        public IEnumerable<Word> GetUserWords(long userId, int amount)
         {
-            var userWords = _context.Words
-                .Include(w => w.WordTags)
-                    .ThenInclude(wt => wt.Tag)
-                .Include(w => w.Translations)
-                .Where(w => w.UserId == id)
+            var userWords = getUserWords(userId)
                 .OrderByDescending(w => w.AdditionTime)
                 .Take(amount);
             
@@ -84,10 +80,8 @@ namespace WordFinder_Business
         
         public IEnumerable<Word> SearchWords(long userId, SearchInfo info)
         {
-            var words = _context.Words
-                .Include(w => w.WordTags)
-                .Include(w => w.Topic);
-
+            var words = getUserWords(userId);
+            
             var selectedWords = words.ToList();
             selectedWords = WordSearchHandler.FilterByContent(selectedWords, info.Content).ToList();
             selectedWords = WordSearchHandler.FilterByTopics(selectedWords, info.TopicIds).ToList();
@@ -95,109 +89,36 @@ namespace WordFinder_Business
             
             return selectedWords;
         }
-        
-        public IEnumerable<string> FindNewWords(string content, long userId)
-        {
-            var foundWords = FindWords(content);
-            if(!foundWords.Any()) 
-                return new List<string>();
-            
-            var userWords = _context.Words
-                .Where(w => w.UserId == userId)
-                .Select(w => w.Content);
-            
-            var words = foundWords.Except(userWords);
 
-            return words;
+        public IEnumerable<Word> GetWordsForRepetition(long userId, int amount)
+        {
+            var userWords = getUserWords(userId);
+            
+            var wordsToRepeat = userWords
+                .OrderBy(w => w.TimesRepeated)
+                .Take(amount);
+
+            return wordsToRepeat;
         }
 
-        public Topic AddTopic(Topic receivedTopic, long userId)
+        public IEnumerable<Word> RepeatWords(long userId, IEnumerable<long> wordsIds)
         {
-            var topic = GetTopicWithName(receivedTopic.Name, userId);
-            
-            foreach (var word in receivedTopic.Words)
+            var userWords = getUserWords(userId).ToList();
+            var repeatedWords = userWords.Where(w => wordsIds.Contains(w.Id));
+            foreach (var word in repeatedWords)
             {
-                word.Topic = topic;
+                word.TimesRepeated++;
             }
 
-            _context.Words.AddRange(receivedTopic.Words);
             _context.SaveChanges();
-            
-            return receivedTopic;
-        }
-        
-        public IEnumerable<Word> GetWordsForRepetition(long userId)
-        {
-            var intervals = new int[] { 0, 1, 3, 7, 14, 30, 90, 360 };
-            var user = _context.Users.Find(userId);
-            return user.Words.Where(word =>
-                DateTime.Now - word.LastRepetitionTime > TimeSpan.FromDays(intervals[word.TimesRepeated]) ||
-                word.TimesRepeated == 0
-            );
-        }
-
-        public static string GetInContext(Word word)
-        {
-            var topic = word.Topic;
-
-            int wordIndex = topic.Content.IndexOf(word.Content, StringComparison.CurrentCultureIgnoreCase);
-            int topicLength = topic.Content.Length;
-            int startIndex = wordIndex > ContextRadius ? wordIndex - ContextRadius : 0;
-            int contextLength = ContextRadius * 2 + word.Content.Length;
-            
-            if (startIndex + contextLength > topicLength) 
-                contextLength = topicLength - startIndex;
-            string context = topic.Content.Substring(startIndex, contextLength);
-            
-            return context;
-        }
-
-        private IEnumerable<string> FindWords(string content)
-        {
-            if(content == null)
-                return new List<string>();
-            
-            var pattern = new Regex(@"[\-a-z]{3,}", RegexOptions.IgnoreCase);
-            MatchCollection matches = pattern.Matches(content);
-
-            var words = matches
-                .Select(match => match.Value.ToLower())
-                .Distinct();
-
-            return words;
-        }
-
-        private Topic GetTopicWithName(string topicName, long userId)
-        {
-            var topic = _context.Users.Find(userId)
-                .Topics
-                .FirstOrDefault(t => t.Name == topicName);
-            
-            if (topic == null)
-            {
-                topic = _context.Topics.Add(new Topic()
-                {
-                    Name = topicName,
-                    UserId = userId
-                }).Entity;
-            }
-            
-            return topic;
-        }
-
-        private User getUserById(long userId)
-        {
-            var user = _context.Users.Find(userId);
-            return user;
+            return repeatedWords;
         }
 
         public Word UpdateWord(long userId, Word updatedWord)
         {
-            var originalWord = _context.Words
-                .Include(w => w.WordTags)
-                .Include(w => w.Topic)
-                .Include(w => w.Translations)
-                .FirstOrDefault(w => w.Id == updatedWord.Id && w.UserId == userId);
+            var originalWord = getUserWords(userId)
+                .FirstOrDefault(w => w.Id == updatedWord.Id);
+            
             if (originalWord == null)
                 throw new SecurityException("Attempt to update invalid word.");
             
@@ -205,10 +126,10 @@ namespace WordFinder_Business
             if (!String.IsNullOrWhiteSpace(updatedWord.Content))
                 originalWord.Content = updatedWord.Content;
 
-            AddTags();
-            AddTranslations();
+            UpdateTags();
+            UpdateTranslations();
 
-            void AddTranslations()
+            void UpdateTranslations()
             {
                 // todo: make it for every single word
                 if (updatedWord.Translations != null && updatedWord.Translations.Any())
@@ -223,7 +144,7 @@ namespace WordFinder_Business
                 }
             }
 
-            void AddTags()
+            void UpdateTags()
             {
                 if (updatedWord.WordTags != null && updatedWord.WordTags.Any())
                 {
@@ -244,10 +165,67 @@ namespace WordFinder_Business
             return originalWord;
         }
 
-        private IQueryable<Tag> getUserTags(long userID)
+        public IEnumerable<Word> FindNewWords(long userId, long topicId)
         {
-            var tags = _context.Tags.Where(t => t.UserId == userID);
+            var topic = _context.Topics.Find(topicId);
+            var foundWords = WordSearchHandler.FindWordsInText(topic.Content);
+            var userWords = getUserWords(userId).Select(w => w.Content);
+            var topicFromDb = GetTopicFromDatabase(userId, topic);
+
+            var words = foundWords
+                .Except(userWords, StringComparer.OrdinalIgnoreCase)
+                .Select(w => new Word() {Content = w, Topic = topicFromDb});
+
+            return words;
+        }
+
+        public static string GetInContext(Word word)
+        {
+            var topic = word.Topic;
+
+            int wordIndex = topic.Content.IndexOf(word.Content, StringComparison.CurrentCultureIgnoreCase);
+            int topicLength = topic.Content.Length;
+            int startIndex = wordIndex > ContextRadius ? wordIndex - ContextRadius : 0;
+            int contextLength = ContextRadius * 2 + word.Content.Length;
+            
+            if (startIndex + contextLength > topicLength) 
+                contextLength = topicLength - startIndex;
+            string context = topic.Content.Substring(startIndex, contextLength);
+            
+            return context;
+        }
+
+        public Topic GetTopicFromDatabase(long userId, Topic topic)
+        {
+            var topicFromDb = _context.Topics
+                .FirstOrDefault(t => t.Name == topic.Name && t.UserId == userId);
+            
+            if (topicFromDb == null)
+            {
+                topic.UserId = userId;
+                topicFromDb = _context.Topics.Add(topic).Entity;
+                _context.SaveChanges();
+            }
+            
+            return topicFromDb;
+        }
+
+        private IQueryable<Tag> getUserTags(long userId)
+        {
+            var tags = _context.Tags.Where(t => t.UserId == userId);
             return tags;
+        }
+
+        private IQueryable<Word> getUserWords(long userId)
+        {
+            var userWords = _context.Words
+                .Include(w => w.WordTags)
+                    .ThenInclude(wt => wt.Tag)
+                .Include(w => w.Translations)
+                .Include(w => w.Topic)
+                .Where(w => w.UserId == userId);
+
+            return userWords;
         }
     }
 }

@@ -2,21 +2,24 @@
     <div class="window">
         <p class="display-4">My words</p>
         <div class="">
-            <form class="row form-inline align-items-start">
+            <form class="row form-inline align-items-end">
                 <div class="col-md-4">
                     <searchField
+                            @focus="stopSearch"
                             @finished-typing="searchWords"
                             :config="searchConfigs.word"/>
                 </div>
                 
                 <div class="col-md-4">
                     <searchField
+                            @focus="stopSearch"
                             @finished-typing="searchWords"
                             :config="searchConfigs.tags"/>
                 </div>
                 
                 <div class="col-md-4">
                     <searchField
+                            @focus="stopSearch"
                             @finished-typing="searchWords"
                             :config="searchConfigs.topics"/>
                 </div>
@@ -30,9 +33,11 @@
                 </div>
             </div>
         </template>
-        <template v-else-if="WordsForCurrentPage.length">
-            <Word v-for="word in WordsForCurrentPage" :key="word.id" :word.sync="word"/>
-            <pagination :pagination-info.sync="pagination"/>
+        <template v-else-if="wordsList.length > 0">
+            <pageOfWords :words = "wordsList" :pageNumber.sync = "page"/>
+        </template>
+        <template v-else>
+            <p class="display-4">Not a single word was found :(</p>
         </template>
     </div>
 </template>
@@ -40,78 +45,71 @@
 <script>
     import {mapGetters} from 'vuex'
     import searchField from "../common/SearchField";
-    import Word from '../common/Word'
-    import pagination from '../common/Pagination'
+    import pageOfWords from '@/components/pageOfWords/pageOfWords'
 
     export default {
         name: "myWordsWindow",
-        components: {searchField, Word, pagination},
+        components: {searchField, pageOfWords},
         data() {
             return {
                 searchConfigs: {
                     word: {
                         placeholder: "input word",
-                        tokens: ["hello", "world", "nice", "extracurricular"],
-                        CSV: false
+                        tokens: [],
+                        content: '',
                     },
                     tags: {
                         placeholder: "input tags",
-                        tokens: ["greeting", "home", "work"],
-                        CSV: true
+                        tokens: [],
+                        chosenTokens: [],
                     },
                     topics: {
                         placeholder: "input topics",
-                        tokens: ["hellsing", "matrix", "mr.nobody"],
-                        CSV: true
-                    },
+                        tokens: [],
+                        chosenTokens: [],
+                    }
                 },
-                pagination: {
-                    page: 1,
-                    perPage: 5,
-                    items: []
-                },
-                loading: true
+                page: 1,
+                wordsList: [],
+                loading: true,
+                requestSendLatency: null
             }
         },
         methods: {
             searchWords() {
-                this.loading = true;
-                this.$store.dispatch('getMyWords')
-                    .then(words => {
-                        this.pagination.items = words;
-                        this.loading = false;
-                    });
-                // todo: update the page
+                this.requestSendLatency = setTimeout(() => {
+                    this.loading = true;
+                    this.$store.dispatch('getMyWords')
+                        .then(this.updateWordList);
+                }, 300)
+            },
+            updateWordList(words) {
+                this.wordsList = words;
+                this.page = 1;
+                this.loading = false;
+            },
+            setTokens(user) {
+                this.searchConfigs.word.tokens = user.words.map(w => w.content);
+                this.searchConfigs.tags.tokens = user.tags.map(t => t.name);
+                this.searchConfigs.topics.tokens = user.topics.map(t => t.name);
+                console.log(this.searchConfigs)
+            },
+            stopSearch() {
+                clearTimeout(this.requestSendLatency);
             }
         },
         mounted () {
-            this.$store.dispatch('getWordsInfo')
-                .then(info => {
-                    this.searchConfigs.word.tokens = info.words;
-                    this.searchConfigs.tags.tokens = info.tags;
-                    this.searchConfigs.topics.tokens = info.topics;
-                });
             this.$store.dispatch('getMyWords')
-                .then(words => {
-                    this.pagination.items = words;
-
-                    this.loading = false;
-                });
+                .then(this.updateWordList);
+                
+            this.setTokens(this.userInfo);
         },
         computed: {
-            WordsForCurrentPage() {
-                const start = (this.pagination.page - 1) * this.pagination.perPage;
-                const end = start + this.pagination.perPage;
-                const words = this.pagination.items.slice(start, end);
-
-                return words;
-            }
+            ...mapGetters(['userInfo'])
         }
     };
 </script>
 
 <style lang="scss" scoped>
-    .form-control:focus {
-        outline: none;
-    }
+    
 </style>

@@ -13,13 +13,14 @@ namespace WordFinder_Domain.Models
         
         public long UserId { get; set; }
         
+        [Required]
         [MinLength(2, ErrorMessage = "Text length can not be less than 2 characters")]
         [StringLength(50, ErrorMessage = "Text length can not be greater than 50 characters")]
         public string Name { get; set; }
         
-        [StringLength(50_000, ErrorMessage = "Text content can not exceed 50,000 characters")]
+        [Required]
+        [StringLength(200_000, ErrorMessage = "Text content can not exceed 200,000 characters")]
         public string Content { get; set; }
-        
         
 
         public User User { get; set; }

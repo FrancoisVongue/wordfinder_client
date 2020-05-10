@@ -4,7 +4,8 @@
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <router-link to="/" class="navbar-brand">WordFinder</router-link>
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        data-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -19,8 +20,9 @@
                         <li class="{nav-item: true, active: currentWindow == myWords}">
                             <router-link class="nav-link" :to="{name: 'myWords'}">
                                 My words
-                                <span class="badge badge-primary" v-if="userInfo.words && userInfo.words.length > 0">
-                                    {{userInfo.words.length}}
+                                <span class="badge badge-primary"
+                                    v-if="userWordsInfo.length > 0">
+                                    {{userWordsInfo.length}}
                                 </span>
                             </router-link>
                         </li>
@@ -42,7 +44,7 @@
                         <template v-else>
                             <li class="nav-item">
                                 <router-link class="nav-link" :to="{name: 'myWords'}">
-                                    {{userInfo.firstName}}
+                                    {{userName}}
                                 </router-link>
                             </li>
                             <li class="nav-item">
@@ -56,10 +58,10 @@
             </nav>
         </header>
 
-        <main class="currentWindow" v-if="!authLoading">
+        <main class="currentWindow" v-show="!authLoading">
             <router-view></router-view>
         </main>
-        <main class="currentWindow" v-else>
+        <main class="currentWindow" v-if="authLoading">
             <div class="d-flex justify-content-center auth_spinner align-items-center">
                 <div class="spinner-grow" role="status">
                     <span class="sr-only">Loading...</span>
@@ -75,14 +77,18 @@
         name: 'app',
         props: ['currentWindow'],
         beforeCreate() {
-            this.$store.dispatch("verifyUser")
-                .then(auth => {
-                    if (auth) this.$router.push({name: 'myWords'});
-                    console.log('logged - ' + auth);
+            this.$store.dispatch("signInWithToken")
+                .then(success => {
+                    if (success) {
+                        this.$router.push({name: "myWords"});
+                    } else {
+                        if(this.$router.currentRoute.name != 'signIn')
+                            this.$router.push({name: "signIn"}).catch();
+                    }
                 });
         },
         computed: {
-            ...mapGetters(['authLoading', 'authenticated', 'userInfo'])
+            ...mapGetters(['authLoading', 'authenticated', 'userWordsInfo', 'userName'])
         },
         methods: {
         }

@@ -59,6 +59,8 @@ namespace WordFinder.Controllers
             User user = _service.GetUserByCredentials(credentials);
             if (user != null)
             {
+                var token = _service.CreateTokenForUser(user);
+                HttpContext.Response.Headers["x-token"] = token;
                 UserDTO mappedUser = _mapper.Map<User, UserDTO>(user);
                 return Ok(mappedUser);
             }

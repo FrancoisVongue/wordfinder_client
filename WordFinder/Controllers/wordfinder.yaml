@@ -18,17 +18,8 @@ paths:
             schema:
               $ref: '#/components/schemas/User'
       responses: 
-        200: 
-          description: successfully registered user 
-          headers:
-            x-token: 
-              schema:
-                description: jwt token
-                type: string
-          content: 
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/User'
+        200:
+          $ref: '#/components/responses/User'
         400: 
           description: Invalid request body
           content: {}
@@ -176,13 +167,22 @@ paths:
           description: User is not authenticated
           content: {}
         404:
-          description: User not found
+          description: Word not found
           content: {}
   /words/repeat:
     get:
       summary: get words to repeat
       description: Returns an array of Words to be repeated
       operationId: wordsToRepeat
+      parameters:
+        - name: number
+          in: query
+          required: false
+          description: number of words
+          schema:
+            type: integer
+            minimum: 0
+            default: 10
       responses:
         200:
           description: words were found successfuly
@@ -254,7 +254,7 @@ paths:
   /text/words:
     get:
       summary: Find words from text
-      description: Takes text and returns an array of words
+      description: Takes text adds it to db and returns an array of words from the text
       operationId: findWords
       requestBody: 
         description: Gets string that is text content
@@ -280,46 +280,24 @@ paths:
                   words:
                     type: array
                     description: an array of words
-                    items: 
-                      type: string 
+                    items:
+                      $ref: '#/components/schemas/Word'
         401:
           description: User is not authenticated
           content: {}
         404:
           description: Words were not found
           content: {}
-  /text:
-    post:
-      summary: Add text with translated words
-      description: |
-        takes text with full content and words with
-        translations and tags
-      operationId: addText
-      requestBody: 
-        description: Text with content, name and words 
-        content: 
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Text'
-      responses: 
-        200: 
-          description: successfully added text 
-          content: 
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/Text'
-        400: 
-          description: Invalid request body
-          content: {}
-        401:
-          description: User is not authenticated
-          content: {}
     
-                
 components:
   responses:
     User:
-      description: user object 
+      description: user object
+      headers:
+        x-token:
+          schema:
+            description: jwt token
+            type: string
       content: 
         application/json:
           schema:
@@ -412,10 +390,6 @@ components:
           type: string
         Name: 
           type: string
-        Words:
-          type: array
-          items:
-            $ref: '#/components/schemas/Word'
     TagInfo:
       type: object
       properties:

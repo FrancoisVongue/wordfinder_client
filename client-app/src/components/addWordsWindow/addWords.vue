@@ -1,41 +1,38 @@
 <template>
-<ValidationObserver v-slot="{ failed, handleSubmit }">
-    <form @submit.prevent="handleSubmit(submitWords)">
+    <form>
         <p class="display-4">Add new words!</p>
         <p class="display-4">Found {{foundWords.length}} words in Text: "{{textName}}"</p>
-        <word v-for="(word, index) in foundWords"
-              :key="index"
-              :word.sync="word"/>
-        <button type="submit" class="btn mr-2 btn-primary">Submit</button>
-        <button class="btn btn-secondary" @click="discardWords">Cancel</button>
+        <p>If you don't want to repeat a word, just leave the translation field empty.</p>
+        
+        <pageOfWords :words="foundWords" :fresh="true"
+            @discard="discardWords"
+            @submit="submitWords"/>
     </form>
-</ValidationObserver>
 </template>
 
 <script>
     import word from '../common/Word'
-    import {ValidationObserver} from 'vee-validate'
+    import business from '../common/business/addWords'
+    import pageOfWords from '@/components/pageOfWords/pageOfWords'
     import {mapGetters} from 'vuex'
-
+    import Vue from 'vue'
     export default {
         name: "addTranslation",
-        components: {word, ValidationObserver},
-        data() {
-            return {
-                words: []
-            }
-        },
-        created() {
-            this.words = [...this.foundWords];
-        },
+        components: {pageOfWords},
         methods: {
-            submitWords() {
-                this.$store.dispatch('submitWords', this.words);
+            submitWords(words) {
+                business.submitWords(words)
+                    .then(() => {
+                        if(!this.foundWords.length)
+                            this.$router.push({name: 'myWords'}) 
+                    });
             },
             discardWords() {
-                this.words = [];
-                this.$store.dispatch('discardWords')
-                    .then(() => this.$router.push({name: 'supplyText'}));
+                business.discardWords()
+                    .then(_ => {
+                        this.words = [];
+                        this.$router.push({name: "supplyText"})
+                    });
             }
         },
         computed: {
