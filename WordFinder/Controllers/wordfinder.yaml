@@ -18,17 +18,8 @@ paths:
             schema:
               $ref: '#/components/schemas/User'
       responses: 
-        200: 
-          description: successfully registered user 
-          headers:
-            x-token: 
-              schema:
-                description: jwt token
-                type: string
-          content: 
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/User'
+        200:
+          $ref: '#/components/responses/User'
         400: 
           description: Invalid request body
           content: {}
@@ -301,7 +292,12 @@ paths:
 components:
   responses:
     User:
-      description: user object 
+      description: user object
+      headers:
+        x-token:
+          schema:
+            description: jwt token
+            type: string
       content: 
         application/json:
           schema:

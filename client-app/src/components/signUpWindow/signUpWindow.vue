@@ -1,6 +1,7 @@
 <template>
 	<div class="window">
 		<p class="display-4">Registration</p>
+        <error-message :content="errorMessage"/>
         <ValidationObserver v-slot="{ failed, handleSubmit }">
             <form @submit.prevent="handleSubmit(signUp)">
 
@@ -58,6 +59,7 @@
 
 <script>
     import InputField from "../common/InputField";
+    import errorMessage from '@/components/common/errorMessage'
     import fieldConfig from "../common/fieldConfig/signUp"
     import business from "../common/business/signUp"
     import Vue from 'vue'
@@ -68,7 +70,7 @@
 
     export default {
         name: "signUpWindow",
-        components: { ValidationObserver, InputField },
+        components: { ValidationObserver, InputField, errorMessage },
         data() {
             return {
                 firstNameField: fieldConfig.firstNameField,
@@ -76,7 +78,8 @@
                 loginField: fieldConfig.loginField,
                 emailField: fieldConfig.emailField,
                 passwordField: fieldConfig.passwordField,
-                lexiconSize: 0,
+                lexiconSize: 100,
+                errorMessage: ''
             }
         },
         computed: {
@@ -84,8 +87,11 @@
         },
         methods: {
             signUp() {
-                business.signUp()
-                    .then(_ => this.$router.push({name: "myWords"}));
+                business.signUp(this.lexiconSize)
+                    .then(_ => this.$router.push({name: "myWords"}))
+                    .catch(error => {
+                        this.errorMessage = error.message;
+                    });
             }
         }
     }

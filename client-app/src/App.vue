@@ -58,10 +58,10 @@
             </nav>
         </header>
 
-        <main class="currentWindow" v-if="!authLoading">
+        <main class="currentWindow" v-show="!authLoading">
             <router-view></router-view>
         </main>
-        <main class="currentWindow" v-else>
+        <main class="currentWindow" v-if="authLoading">
             <div class="d-flex justify-content-center auth_spinner align-items-center">
                 <div class="spinner-grow" role="status">
                     <span class="sr-only">Loading...</span>
@@ -82,7 +82,8 @@
                     if (success) {
                         this.$router.push({name: "myWords"});
                     } else {
-                        this.$router.push({name: "signIn"});
+                        if(this.$router.currentRoute.name != 'signIn')
+                            this.$router.push({name: "signIn"}).catch();
                     }
                 });
         },

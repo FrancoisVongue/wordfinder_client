@@ -31,13 +31,24 @@ namespace WordFinder_Business
 
         public User Register(User user)
         {
+            var userWords = user.Words;
+            user.Words = null;
             user.Salt = PasswordHandler.getSalt(SaltLength);
             user.Password = PasswordHandler.getHashed(user.Salt + user.Password);
-            user.Words = null;
             
             var addedUser = _context.Users.Add(user).Entity;
+            userWords = userWords.Select(w =>
+            {
+                w.UserId = addedUser.Id;
+                w.Translations = new[] {new Translation() {Content = "translation required"}};
+                w.Familiar = true;
+                return w;
+            });
+            _context.Words.AddRange(userWords);
             _context.SaveChanges();
-            
+
+            addedUser.Words = userWords;
+
             return addedUser;
         }
 

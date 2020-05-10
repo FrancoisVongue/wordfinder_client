@@ -6,7 +6,7 @@ export default {
         name: 'First name',
         rules: 'alpha|required|max:20',
         placeholder: 'Input your first name, please',
-        value: ''
+        value: 'Francois'
     },
     secondNameField: {
         id: 'secondName_create',
@@ -15,7 +15,7 @@ export default {
         name: 'Second name',
         rules: 'alpha|max:30',
         placeholder: 'Input your second name, please',
-        value: ''
+        value: 'Vongue'
     },
     loginField: {
         id: 'login_create',
@@ -24,7 +24,7 @@ export default {
         name: 'Login',
         rules: 'min:5|max:14|required',
         placeholder: 'Input your login, please',
-        value: ''
+        value: 'hellatsugoi'
     },
     emailField: {
         id: 'email_create',
@@ -33,7 +33,7 @@ export default {
         name: 'Email',
         rules: 'required|email',
         placeholder: 'Input your email, please',
-        value: ''
+        value: 'francoisvongue@gmail.com'
     },
     passwordField: {
         id: 'password_create',
@@ -42,7 +42,7 @@ export default {
         name: 'Password',
         rules: 'diversity:5|min:6|max:20|required',
         placeholder: 'Input your password, please',
-        value: ''
+        value: 'silikon'
     },
     get passwordRepeatField() {
         return {
@@ -52,7 +52,7 @@ export default {
             name: 'Repeat password',
             rules: 'required|sameas:' + this.passwordField.value,
             placeholder: 'Repeat your password, please',
-            value: ''
+            value: 'silikon'
         }
     }
 }

@@ -4,43 +4,50 @@ import test from './test'
 axios.interceptors.response.use(response => response,
     error => Promise.reject(error.response) );
 
-// export default {
-//     SignUp(user) {
-//         return axios({
-//             method: 'post',
-//             url: 'user',
-//             data: user,
-//         });
-//     },
-//     SignIn(credentials) {
-//         return axios({
-//             method: 'post',
-//             url: 'user/signin',
-//             data: credentials,
-//         }).then(response => response.headers["x-token"]);
-//     },
-//     VerifyUser(token) {
-//         return axios({
-//             method: 'post',
-//             url: 'user/verify',
-//             headers: {'Authorization': `bearer ${token}`}
-//         });
-//     }
-// }
+export default {
+    SignUp(user) {
+        return axios({
+            method: 'post',
+            url: 'user',
+            data: user,
+        });
+    },
+    // SignIn(credentials) {
+    //     return axios({
+    //         method: 'post',
+    //         url: 'user/signin',
+    //         data: credentials,
+    //     }).then(response => response.headers["x-token"]);
+    // },
+    SignInWithToken() { 
+        const token = localStorage.getItem('token');
+        
+        if(!token)
+            return Promise.reject();
+            
+        return axios({
+            method: 'get',
+            url: 'user',
+            headers: {
+                Authorization: "Bearer " + token
+            }
+        });
+    }
+}
 
 
 /*test*/
-export default {
-    SignUp(user) {
-        test.user.token = "sdf235325asfg242t";
-        return new Promise(_ => setTimeout(_, 400, test.user));
-    },
-    SignIn(credentials) {
-        test.user.token = "sdf235325asfg242t";
-        return Promise.resolve(test.user);
-    },
-    SignInWithToken(token) { 
-        test.user.token = "sdf235325asfg242t";
-        return Promise.resolve(test.user);
-    }
-}
+// export default {
+//     SignUp(user) {
+//         test.user.token = "sdf235325asfg242t";
+//         return new Promise(_ => setTimeout(_, 400, test.user));
+//     },
+//     SignIn(credentials) {
+//         test.user.token = "sdf235325asfg242t";
+//         return Promise.resolve(test.user);
+//     },
+//     SignInWithToken(token) { 
+//         test.user.token = "sdf235325asfg242t";
+//         return Promise.resolve(test.user);
+//     }
+// }

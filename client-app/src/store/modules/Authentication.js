@@ -3,7 +3,6 @@
 let state = {
     authenticated: false,
     loading: false,
-    authentication_error: '',
     user: {
         id: null,
         token: null,
@@ -21,33 +20,30 @@ let mutations = {
     SET_LOADING(state, isLoading) {
         state.loading = isLoading;
     },
+    SET_TOKEN(_, token) {
+        localStorage.setItem('token', token);  
+    },
     SET_USER(state, user) {
         state.authenticated = true;
         state.user = user;
-        localStorage.setItem('token', user.token);
     },
     DISCARD_USER(state) {
-        localStorage.setItem('token', null);
+        localStorage.clear('token');
         state.authenticated = false;
         state.user = GetEmptyUser();
-    },
-    SET_USER_UNSET_LOADING(state, user) {
-        state.loading = false;
-        state.authenticated = true;
-        state.user = user;
-    },
+    }
 }
 
 let actions = {
     signInWithToken({commit, state}) {
         commit('SET_LOADING', true);
-        const signInPromise = api.SignInWithToken(localStorage.getItem('token'))
+        const signInPromise = api.SignInWithToken()
             .then(user => {
-                commit('SET_USER_UNSET_LOADING', user);
+                commit('SET_USER', user);
                 return true;
             })
             .catch(_ => {
-                state.authentication_error = "failed to authenticate with a token";
+                commit('SET_LOADING', false);
                 return false;
             });
             
@@ -56,8 +52,16 @@ let actions = {
     signUp({commit}, user) {
         commit('SET_LOADING', true);
         const signUpPromise = api.SignUp(user)
-            .then(user => {
-                commit('SET_USER_UNSET_LOADING', user);
+            .then(({data: user, headers}) => {
+                commit('SET_USER', user);
+                commit('SET_TOKEN', headers['x-token']);
+                return user;
+            })
+            .catch(({data}) => {
+                throw new Error(data.message);
+            })
+            .finally(_ => {
+                commit('SET_LOADING', false);
             });
             
         return signUpPromise;
@@ -93,7 +97,6 @@ let getters = {
         return state.user.firstName;
     },
     userInfo(state) {
-        console.log(state.user);
         return state.user;
     }
 }
