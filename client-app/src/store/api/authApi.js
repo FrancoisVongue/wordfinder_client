@@ -2,7 +2,12 @@
 import test from './test'
 
 axios.interceptors.response.use(response => response,
-    error => Promise.reject(error.response.data) );
+    error => {
+        let err = error.response.data;
+        if(err.indexOf('proxy'))
+            err = "Please, check your connection to the internet."
+        return Promise.reject(err);
+    } );
 
 export default {
     SignUp(user) {
