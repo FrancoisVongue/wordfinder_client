@@ -2,7 +2,9 @@
     <div class="window">
         <p class="display-4">My words</p>
         <div class="">
-            <form class="row form-inline align-items-end">
+            <form class="row form-inline align-items-end" 
+                @submit.prevent="searchWords">
+                
                 <div class="col-md-4">
                     <searchField
                             @focus="stopSearch"
@@ -89,10 +91,9 @@
                 this.loading = false;
             },
             setTokens(user) {
-                this.searchConfigs.word.tokens = user.words.map(w => w.content);
-                this.searchConfigs.tags.tokens = user.tags.map(t => t.name);
-                this.searchConfigs.topics.tokens = user.topics.map(t => t.name);
-                console.log(this.searchConfigs)
+                this.searchConfigs.word.tokens = user.words;
+                this.searchConfigs.tags.tokens = user.tags;
+                this.searchConfigs.topics.tokens = user.topics;
             },
             stopSearch() {
                 clearTimeout(this.requestSendLatency);

@@ -1,9 +1,9 @@
 <template>
     <div class="input_wrapper">
         <div class="token__container">
-            <span v-for="token in selected" :key="token" 
+            <span v-for="token in selected" :key="token.id" 
                 class="badge badge-pill badge-secondary token">
-                {{token}}
+                {{token.name || token.content}}
                 <button class="delete-token" @mouseup="removeToken(token)">x</button>
             </span>
         </div>
@@ -13,6 +13,7 @@
                ref="input"
                @focus="focus"
                @blur="search"
+               @keyup.enter="search"
                @input="checkMatches"
                @keyup.delete="checkMatches"/>
         <ul :class="{input_matches: true, input_show: matches.length > 0}">
@@ -43,22 +44,27 @@
         },
         methods: {
             checkMatches() {
-                this.matches = 
-                    business.checkMatches(this.inputString, this.config.tokens)
-                        .filter(match => !~this.selected.indexOf(match));
+                let tokens = this.config.tokens.map(t => t.name || t.content);
+                let selected = this.selected.map(s => s.name || s.content);
+                this.matches = business.checkMatches(this.inputString, tokens)
+                        .filter(match => !~selected.indexOf(match));
             },
             addToken(value) {
                 this.inputString = '';
-                this.selected.push(value);
+                let match = this.config.tokens
+                    .find(t => t.name == value || t.content == value);
+                this.selected.push(match);
             },
             removeToken(value) {
                 this.selected.splice(this.selected.indexOf(value), 1);
             },
-            search() { 
+            search(e) { 
+                e.preventDefault();
+                
                 setTimeout(() => {
                     this.inputString = '';
                     this.matches = [];
-                }, 100);
+                }, 90);
                 this.$emit('finished-typing'); 
             },
             focus() { 

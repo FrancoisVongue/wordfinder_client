@@ -24,21 +24,30 @@ export default {
             data: credentials,
         });
     },
-    SignInWithToken() { 
-        const token = localStorage.getItem('token');
+    // SignInWithToken() { 
+    //     const token = localStorage.getItem('token');
         
-        if(!token) {
-            return Promise.reject(new Error("You have to login again :("));
-        }
+    //     if(!token) {
+    //         return Promise.reject(new Error("You have to login again :("));
+    //     }
             
-        return axios({
-            method: 'get',
-            url: 'user',
-            headers: {
-                Authorization: "Bearer " + token
+    //     return axios({
+    //         method: 'get',
+    //         url: 'user',
+    //         headers: {
+    //             Authorization: "Bearer " + token
+    //         }
+    //     });
+    // }
+        SignInWithToken(token) { 
+            let result = {
+                data: test.user,
+                headers: {
+                    'x-token': 'sdfsdfsdfsdf'
+                }
             }
-        });
-    }
+            return Promise.resolve(result);
+        }
 }
 
 
@@ -52,8 +61,4 @@ export default {
 //         test.user.token = "sdf235325asfg242t";
 //         return Promise.resolve(test.user);
 //     },
-//     SignInWithToken(token) { 
-//         test.user.token = "sdf235325asfg242t";
-//         return Promise.resolve(test.user);
-//     }
 // }
