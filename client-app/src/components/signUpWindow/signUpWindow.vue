@@ -89,8 +89,8 @@
             signUp() {
                 business.signUp(this.lexiconSize)
                     .then(_ => this.$router.push({name: "myWords"}))
-                    .catch(error => {
-                        this.errorMessage = error.message;
+                    .catch(errorMessage => {
+                        this.errorMessage = errorMessage;
                     });
             }
         }

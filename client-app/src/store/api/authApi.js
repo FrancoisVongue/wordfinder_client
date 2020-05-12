@@ -2,7 +2,13 @@
 import test from './test'
 
 axios.interceptors.response.use(response => response,
-    error => Promise.reject(error.response) );
+    error => {
+        console.log(error);
+        let err = error.response.data;
+        if(err.indexOf('proxy'))
+            err = "Please, check your connection to the internet."
+        return Promise.reject(err);
+    } );
 
 export default {
     SignUp(user) {
@@ -12,18 +18,19 @@ export default {
             data: user,
         });
     },
-    // SignIn(credentials) {
-    //     return axios({
-    //         method: 'post',
-    //         url: 'user/signin',
-    //         data: credentials,
-    //     }).then(response => response.headers["x-token"]);
-    // },
+    SignIn(credentials) {
+        return axios({
+            method: 'post',
+            url: 'user/login',
+            data: credentials,
+        });
+    },
     SignInWithToken() { 
         const token = localStorage.getItem('token');
         
-        if(!token)
-            return Promise.reject();
+        if(!token) {
+            return Promise.reject(new Error("You have to login again :("));
+        }
             
         return axios({
             method: 'get',
@@ -33,6 +40,15 @@ export default {
             }
         });
     }
+        // SignInWithToken(token) { 
+        //     let result = {
+        //         data: test.user,
+        //         headers: {
+        //             'x-token': 'sdfsdfsdfsdf'
+        //         }
+        //     }
+        //     return Promise.resolve(result);
+        // }
 }
 
 
@@ -46,8 +62,4 @@ export default {
 //         test.user.token = "sdf235325asfg242t";
 //         return Promise.resolve(test.user);
 //     },
-//     SignInWithToken(token) { 
-//         test.user.token = "sdf235325asfg242t";
-//         return Promise.resolve(test.user);
-//     }
 // }

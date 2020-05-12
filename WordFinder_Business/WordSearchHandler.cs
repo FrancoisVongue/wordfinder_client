@@ -27,10 +27,16 @@ namespace WordFinder_Business
         public static IEnumerable<Word> FilterByContent(IEnumerable<Word> words, string content)
         {
             if (!String.IsNullOrWhiteSpace(content))
-                return words.Where(w =>
+            {
+                var wordsByContent = words.Where(w =>
                     LongestCommonSubsequence(w.Content, content) == content.Length);
+                
+                return wordsByContent;
+            }
             else
+            {
                 return words;
+            }
         }
         
         public static IEnumerable<Word> FilterByTopics(IEnumerable<Word> words, IEnumerable<long> topicIds)

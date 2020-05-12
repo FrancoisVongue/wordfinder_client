@@ -35,16 +35,18 @@ let mutations = {
 }
 
 let actions = {
-    signInWithToken({commit, state}) {
+    signInWithToken({commit}) {
         commit('SET_LOADING', true);
         const signInPromise = api.SignInWithToken()
-            .then(user => {
+            .then(({data: user}) => {
                 commit('SET_USER', user);
-                return true;
+                return user;
             })
-            .catch(_ => {
+            .catch(response => {
+                throw new Error(response.message);
+            })
+            .finally(_ => {
                 commit('SET_LOADING', false);
-                return false;
             });
             
         return signInPromise;
@@ -57,9 +59,6 @@ let actions = {
                 commit('SET_TOKEN', headers['x-token']);
                 return user;
             })
-            .catch(({data}) => {
-                throw new Error(data.message);
-            })
             .finally(_ => {
                 commit('SET_LOADING', false);
             });
@@ -69,8 +68,13 @@ let actions = {
     signIn({commit}, credentials) {
         commit('SET_LOADING', true);
         const signInPromise =  api.SignIn(credentials)
-            .then(user => {
-                commit('SET_USER_UNSET_LOADING', user);
+            .then(({data: user, headers}) => {
+                commit('SET_USER', user);
+                commit('SET_TOKEN', headers['x-token']);
+                return user;
+            })
+            .finally(_ => {
+                commit('SET_LOADING', false);
             });
         
         return signInPromise;

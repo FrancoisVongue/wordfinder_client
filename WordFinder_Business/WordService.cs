@@ -37,24 +37,29 @@ namespace WordFinder_Business
 
         public IEnumerable<Word> AddWords(long userId, IEnumerable<Word> words)
         {
-            var addedWords = new List<Word>();
+            var allTags = new List<string>();
+            foreach (var w in words)
+            {
+                var tags = w.WordTags.Select(wt => wt.Tag.Name);
+                allTags.AddRange(tags);
+            }
+            addTagsByName(userId, allTags);
+            var tagsFromDb = getTagsByName(userId, allTags);
             
             foreach (var word in words)
             {
                 word.UserId = userId;
-                word.Topic = _context.Topics.Find(word.Topic.Id);
+                word.Topic = _context.Topics.Find(word.Topic?.Id);
                 
                 foreach (var wt in word.WordTags)
                 {
-                    wt.Tag = _context.Tags.Find(wt.TagId);
+                    var tagFromDb = tagsFromDb.FirstOrDefault(t => t.Name == wt.Tag.Name);
+                    wt.TagId = tagFromDb.Id;
                 }
-
-                var addedWord = _context.Words.Add(word).Entity;
-                addedWords.Add(addedWord);
             }
-            
+            _context.AddRange(words);
             _context.SaveChanges();
-            return addedWords;
+            return words;
         }
         
         public IEnumerable<Tag> AddTags(long userId, IEnumerable<Tag> tags)
@@ -131,7 +136,6 @@ namespace WordFinder_Business
 
             void UpdateTranslations()
             {
-                // todo: make it for every single word
                 if (updatedWord.Translations != null && updatedWord.Translations.Any())
                 {
                     var originalTranslations = String.Join("", originalWord.Translations
@@ -209,6 +213,21 @@ namespace WordFinder_Business
             
             return topicFromDb;
         }
+        
+        public Tag GetTagFromDatabase(long userId, Tag tag)
+        {
+            var tagFromDb = _context.Tags
+                .FirstOrDefault(t => t.Name == tag.Name && t.UserId == userId);
+            
+            if (tagFromDb == null)
+            {
+                tag.UserId = userId;
+                tagFromDb = _context.Tags.Add(tag).Entity;
+                _context.SaveChanges();
+            }
+            
+            return tagFromDb;
+        }
 
         private IQueryable<Tag> getUserTags(long userId)
         {
@@ -226,6 +245,30 @@ namespace WordFinder_Business
                 .Where(w => w.UserId == userId);
 
             return userWords;
+        }
+
+        private IEnumerable<Tag> getTagsByName(long userId, IEnumerable<string> tagNames)
+        {
+            var tags = _context
+                .Tags
+                .Where(t => t.UserId == userId)
+                .Where(t => tagNames.Contains(t.Name));
+            return tags;
+        }
+
+        private IEnumerable<Tag> addTagsByName(long userId, IEnumerable<string> tagNames)
+        {
+            var existingTags = getTagsByName(userId, tagNames);
+            var existingTagNames = existingTags.Select(t => t.Name);
+            
+            var tagsToAdd = tagNames
+                .Where(tn => !existingTagNames.Contains(tn))
+                .Select(tn =>new Tag() {Name = tn, UserId = userId});
+            
+            _context.AddRange(tagsToAdd);
+            _context.SaveChanges();
+
+            return tagsToAdd;
         }
     }
 }

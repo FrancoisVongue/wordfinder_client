@@ -32,7 +32,7 @@
          public void GetWordsForRepetition_WhenCalled_ReturnsOnlyThoseThatNeedToBeRepeated()
          {
              var options = new DbContextOptionsBuilder<ApiContext>()
-                 .UseInMemoryDatabase(databaseName: "Add_to_database")
+                 .UseInMemoryDatabase(databaseName: "Get_for_repetition")
                  .Options;
              
              using (var context = new ApiContext(options))
@@ -59,7 +59,7 @@
          public void RepeatWords_WhenCalled_IncrementsRepetitionTimes()
          {
              var options = new DbContextOptionsBuilder<ApiContext>()
-                 .UseInMemoryDatabase(databaseName: "Add_to_database")
+                 .UseInMemoryDatabase(databaseName: "Repeat_words")
                  .Options;
              
              using (var context = new ApiContext(options))

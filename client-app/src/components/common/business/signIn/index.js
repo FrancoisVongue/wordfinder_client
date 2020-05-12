@@ -1,11 +1,13 @@
+import credentialsFields from '../../fieldConfig/signIn'
+import store from '../../../../store'
+
 export default {
-    async signIn() {
+    signIn() {
         const credentials = {
-            login: this.loginField.value,
-            password: this.passwordField.value
+            login: credentialsFields.loginField.value,
+            password: credentialsFields.passwordField.value
         };
         
-        await this.$store.dispatch('signIn', credentials);
-        this.$router.push({name:'myWords'});
+        return store.dispatch('signIn', credentials);
     }
 }

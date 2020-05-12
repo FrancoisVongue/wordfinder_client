@@ -1,9 +1,9 @@
 <template>
     <div class="input_wrapper">
         <div class="token__container">
-            <span v-for="token in selected" :key="token" 
+            <span v-for="token in selected" :key="token.id" 
                 class="badge badge-pill badge-secondary token">
-                {{token}}
+                {{token.name}}
                 <button class="delete-token" @mouseup="removeToken(token)">x</button>
             </span>
         </div>
@@ -13,6 +13,7 @@
                ref="input"
                @focus="focus"
                @blur="search"
+               @keyup.enter="search"
                @input="checkMatches"
                @keyup.delete="checkMatches"/>
         <ul :class="{input_matches: true, input_show: matches.length > 0}">
@@ -43,22 +44,41 @@
         },
         methods: {
             checkMatches() {
-                this.matches = 
-                    business.checkMatches(this.inputString, this.config.tokens)
-                        .filter(match => !~this.selected.indexOf(match));
+                let tokens = this.config.tokens.map(t => t.name);
+                if(this.config.free_query)
+                    tokens = this.config.tokens.map(t => t.content);
+                    
+                let selected = this.selected.map(s => s.name);
+                this.matches = business.checkMatches(this.inputString, tokens)
+                        .filter(match => !~selected.indexOf(match));
             },
             addToken(value) {
-                this.inputString = '';
-                this.selected.push(value);
+                if(!this.config.free_query) {
+                    this.inputString = '';
+                    
+                    let match = this.config.tokens
+                        .find(t => t.name == value);
+                    this.selected.push(match);
+                    this.config.chosenTokens = [...this.selected];
+                } else {
+                    this.inputString = value;
+                    this.config.content = this.inputString;
+                }
             },
             removeToken(value) {
                 this.selected.splice(this.selected.indexOf(value), 1);
+                if(!this.config.free_query) 
+                    this.config.chosenTokens = [...this.selected];
             },
-            search() { 
+            search(e) {
                 setTimeout(() => {
-                    this.inputString = '';
+                    if(this.config.free_query)
+                        this.config.content = this.inputString;
+                     else 
+                        this.inputString = '';
+                    
                     this.matches = [];
-                }, 100);
+                }, 90);
                 this.$emit('finished-typing'); 
             },
             focus() { 

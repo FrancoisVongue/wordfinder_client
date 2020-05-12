@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security;
+using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WordFinder_Business;
@@ -67,9 +70,17 @@ namespace WordFinder.Controllers
             return Ok(mappedTags);
         }
         
-        [HttpGet("specific")]
+        [HttpPost("specific")]
         public ActionResult GetSpecificWords(SearchInfo info)
         {
+            HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+
+            using (StreamReader stream = new StreamReader(HttpContext.Request.Body))
+            {
+                string body = stream.ReadToEnd();
+                Console.WriteLine(body);
+            }
+            
             var _userId = JWThandler.GetUserId(GetToken());
             var foundWords = _service.SearchWords(_userId, info);
 
