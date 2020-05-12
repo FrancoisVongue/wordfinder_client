@@ -3,6 +3,7 @@ import test from './test'
 
 axios.interceptors.response.use(response => response,
     error => {
+        console.log(error);
         let err = error.response.data;
         if(err.indexOf('proxy'))
             err = "Please, check your connection to the internet."
@@ -24,30 +25,30 @@ export default {
             data: credentials,
         });
     },
-    // SignInWithToken() { 
-    //     const token = localStorage.getItem('token');
+    SignInWithToken() { 
+        const token = localStorage.getItem('token');
         
-    //     if(!token) {
-    //         return Promise.reject(new Error("You have to login again :("));
-    //     }
-            
-    //     return axios({
-    //         method: 'get',
-    //         url: 'user',
-    //         headers: {
-    //             Authorization: "Bearer " + token
-    //         }
-    //     });
-    // }
-        SignInWithToken(token) { 
-            let result = {
-                data: test.user,
-                headers: {
-                    'x-token': 'sdfsdfsdfsdf'
-                }
-            }
-            return Promise.resolve(result);
+        if(!token) {
+            return Promise.reject(new Error("You have to login again :("));
         }
+            
+        return axios({
+            method: 'get',
+            url: 'user',
+            headers: {
+                Authorization: "Bearer " + token
+            }
+        });
+    }
+        // SignInWithToken(token) { 
+        //     let result = {
+        //         data: test.user,
+        //         headers: {
+        //             'x-token': 'sdfsdfsdfsdf'
+        //         }
+        //     }
+        //     return Promise.resolve(result);
+        // }
 }
 
 

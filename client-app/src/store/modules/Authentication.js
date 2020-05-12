@@ -38,9 +38,8 @@ let actions = {
     signInWithToken({commit}) {
         commit('SET_LOADING', true);
         const signInPromise = api.SignInWithToken()
-            .then(({data: user, headers}) => {
+            .then(({data: user}) => {
                 commit('SET_USER', user);
-                commit('SET_TOKEN', headers['x-token']);
                 return user;
             })
             .catch(response => {

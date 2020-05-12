@@ -3,7 +3,7 @@
         <div class="token__container">
             <span v-for="token in selected" :key="token.id" 
                 class="badge badge-pill badge-secondary token">
-                {{token.name || token.content}}
+                {{token.name}}
                 <button class="delete-token" @mouseup="removeToken(token)">x</button>
             </span>
         </div>
@@ -44,25 +44,39 @@
         },
         methods: {
             checkMatches() {
-                let tokens = this.config.tokens.map(t => t.name || t.content);
-                let selected = this.selected.map(s => s.name || s.content);
+                let tokens = this.config.tokens.map(t => t.name);
+                if(this.config.free_query)
+                    tokens = this.config.tokens.map(t => t.content);
+                    
+                let selected = this.selected.map(s => s.name);
                 this.matches = business.checkMatches(this.inputString, tokens)
                         .filter(match => !~selected.indexOf(match));
             },
             addToken(value) {
-                this.inputString = '';
-                let match = this.config.tokens
-                    .find(t => t.name == value || t.content == value);
-                this.selected.push(match);
+                if(!this.config.free_query) {
+                    this.inputString = '';
+                    
+                    let match = this.config.tokens
+                        .find(t => t.name == value);
+                    this.selected.push(match);
+                    this.config.chosenTokens = [...this.selected];
+                } else {
+                    this.inputString = value;
+                    this.config.content = this.inputString;
+                }
             },
             removeToken(value) {
                 this.selected.splice(this.selected.indexOf(value), 1);
+                if(!this.config.free_query) 
+                    this.config.chosenTokens = [...this.selected];
             },
-            search(e) { 
-                e.preventDefault();
-                
+            search(e) {
                 setTimeout(() => {
-                    this.inputString = '';
+                    if(this.config.free_query)
+                        this.config.content = this.inputString;
+                     else 
+                        this.inputString = '';
+                    
                     this.matches = [];
                 }, 90);
                 this.$emit('finished-typing'); 

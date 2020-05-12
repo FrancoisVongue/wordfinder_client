@@ -1,22 +1,20 @@
 import axios from 'axios'
 import test from './test'
 
-// export default {
-//     getMyWords(token) {
-//         return axios({
-//             method: 'get',
-//             url: 'words',
-//             headers: {'Authorization': `bearer ${token}`}
-//         });
-//     }
-// }
-
-/*test*/
 export default {
-    GetUserWords(amount) {
-        const token = localStorage.getItem('token');
-        return new Promise(_ => {
-            setTimeout(_, 500, test.words);
+    GetUserWords(words) {
+        return axios({
+            method: 'get',
+            url: 'words',
+            headers: {'Authorization': `bearer ${localStorage.getItem('token')}`}
+        });
+    },
+    GetSpecificWords(config) {
+        return axios({
+            method: 'post',
+            url: 'words/specific',
+            headers: {'Authorization': `bearer ${localStorage.getItem('token')}`},
+            data: config
         });
     }
 }

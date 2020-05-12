@@ -59,6 +59,7 @@
                         placeholder: "input word",
                         tokens: [],
                         content: '',
+                        free_query: true
                     },
                     tags: {
                         placeholder: "input tags",
@@ -81,7 +82,16 @@
             searchWords() {
                 this.requestSendLatency = setTimeout(() => {
                     this.loading = true;
-                    this.$store.dispatch('getMyWords')
+                    let tagIds = this.searchConfigs.tags.chosenTokens.map(t => t.id);
+                    let topicIds = this.searchConfigs.topics.chosenTokens.map(t => t.id);
+                    let wordContent = this.searchConfigs.word.content;
+                    let searchConfig = {
+                        Content: wordContent,
+                        TagIds : tagIds,
+                        TopicIds : topicIds
+                    };
+                    
+                    this.$store.dispatch('searchMyWords', searchConfig)
                         .then(this.updateWordList);
                 }, 300)
             },

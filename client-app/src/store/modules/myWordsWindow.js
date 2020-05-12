@@ -14,9 +14,18 @@ const actions = {
     getMyWords(context) {
         const wordsToShow = 25;
         const wordsPromise = api.GetUserWords(wordsToShow)
-            .then(words => {
-                context.commit('SET_WORDS', words);
-                return words;
+            .then(({data}) => {
+                context.commit('SET_WORDS', data);
+                return data;
+            });
+        
+        return wordsPromise;
+    },
+    searchMyWords(context, config) {
+        const wordsPromise = api.GetSpecificWords(config)
+            .then(({data}) => {
+                context.commit('SET_WORDS', data);
+                return data;
             });
         
         return wordsPromise;
