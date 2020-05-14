@@ -2,7 +2,9 @@
     <form>
         <p class="display-4">Add new words!</p>
         <p class="display-4">Found {{foundWords.length}} words in Text: "{{textName}}"</p>
-        <p>If you don't want to repeat a word, just leave the translation field empty.</p>
+        <p class="alert alert-secondary">
+            If you don't want to repeat a word, just leave the translation field empty
+        </p>
         
         <pageOfWords :words="foundWords" :fresh="true"
             @discard="discardWords"

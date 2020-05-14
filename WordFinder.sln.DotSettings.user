@@ -67,21 +67,7 @@
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=bdf01f0c_002D5e06_002D4710_002Da738_002Dc6aab3e59257/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="FindWordsInText_WhenPassedTextContent_ReturnsUniqueWords" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Or&gt;&#xD;
-    &lt;Or&gt;&#xD;
-      &lt;Or&gt;&#xD;
-        &lt;TestAncestor&gt;&#xD;
-          &lt;TestId&gt;NUnit3x::E46DD7B1-40A7-4C99-B93F-DCAB94CE71D5::.NETCoreApp,Version=v2.1::WordFinder_BusinessTests.WordSearchHandlerTests.FindWordsInText_WhenPassedTextContent_ReturnsUniqueWords&lt;/TestId&gt;&#xD;
-        &lt;/TestAncestor&gt;&#xD;
-        &lt;TestAncestor&gt;&#xD;
-          &lt;TestId&gt;NUnit3x::E46DD7B1-40A7-4C99-B93F-DCAB94CE71D5::.NETCoreApp,Version=v2.1::WordFinder_BusinessTests.WordServiceTest.RepeatWords_WhenCalled_IncrementsRepetitionTimes&lt;/TestId&gt;&#xD;
-        &lt;/TestAncestor&gt;&#xD;
-      &lt;/Or&gt;&#xD;
-      &lt;TestAncestor&gt;&#xD;
-        &lt;TestId&gt;NUnit3x::E46DD7B1-40A7-4C99-B93F-DCAB94CE71D5::.NETCoreApp,Version=v2.1::WordFinder_BusinessTests.WordServiceTest.GetTopicFromDatabase_WhenCalled_ReturnsTopicFromTheDatabase&lt;/TestId&gt;&#xD;
-      &lt;/TestAncestor&gt;&#xD;
-    &lt;/Or&gt;&#xD;
-    &lt;TestAncestor&gt;&#xD;
-      &lt;TestId&gt;NUnit3x::E46DD7B1-40A7-4C99-B93F-DCAB94CE71D5::.NETCoreApp,Version=v2.1::WordFinder_BusinessTests.WordServiceTest.GetTopicFromDatabase_IfThereIsNoTopicWithTheSameName_AddsNewTopicToDb&lt;/TestId&gt;&#xD;
-    &lt;/TestAncestor&gt;&#xD;
+    &lt;Project Location="F:\practice\wordfinder\WordFinder_BusinessTests" Presentation="&amp;lt;WordFinder_BusinessTests&amp;gt;" /&gt;&#xD;
+    &lt;Project Location="F:\practice\wordfinder\WordFinder_DomainTests" Presentation="&amp;lt;WordFinder_DomainTests&amp;gt;" /&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

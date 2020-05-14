@@ -41,15 +41,17 @@ namespace WordFinder_Business
             foreach (var w in words)
             {
                 var tags = w.WordTags.Select(wt => wt.Tag.Name);
+                var topic = w.Topic.Name;
                 allTags.AddRange(tags);
             }
             addTagsByName(userId, allTags);
             var tagsFromDb = getTagsByName(userId, allTags);
+            var topicsFromDb = _context.Topics.ToList();
             
             foreach (var word in words)
             {
                 word.UserId = userId;
-                word.Topic = _context.Topics.Find(word.Topic?.Id);
+                word.Topic = topicsFromDb.FirstOrDefault(t => t.Name == word.Topic?.Name);
                 
                 foreach (var wt in word.WordTags)
                 {
@@ -169,18 +171,13 @@ namespace WordFinder_Business
             return originalWord;
         }
 
-        public IEnumerable<Word> FindNewWords(long userId, long topicId)
+        public Topic AddTopic(long userId, Topic topic)
         {
-            var topic = _context.Topics.Find(topicId);
-            var foundWords = WordSearchHandler.FindWordsInText(topic.Content);
-            var userWords = getUserWords(userId).Select(w => w.Content);
-            var topicFromDb = GetTopicFromDatabase(userId, topic);
+            topic.UserId = userId;
+            var t = _context.Topics.Add(topic).Entity;
+            _context.SaveChanges();
 
-            var words = foundWords
-                .Except(userWords, StringComparer.OrdinalIgnoreCase)
-                .Select(w => new Word() {Content = w, Topic = topicFromDb});
-
-            return words;
+            return t;
         }
 
         public static string GetInContext(Word word)
@@ -199,22 +196,37 @@ namespace WordFinder_Business
             return context;
         }
 
-        public Topic GetTopicFromDatabase(long userId, Topic topic)
+        public IEnumerable<Word> FindNewWords(long userId, Topic topic)
+        {
+            var foundWords = WordSearchHandler.FindWordsInText(topic.Content);
+            var userWords = getUserWords(userId).Select(w => w.Content);
+
+            var words = foundWords
+                .Except(userWords, StringComparer.OrdinalIgnoreCase)
+                .Select(w => new Word() {Content = w, Topic = new Topic(){Name = topic.Name}});
+
+            return words;
+        }
+
+        private Topic GetTopicFromDatabase(long userId, Topic topic)
         {
             var topicFromDb = _context.Topics
                 .FirstOrDefault(t => t.Name == topic.Name && t.UserId == userId);
-            
-            if (topicFromDb == null)
+            bool exists = topicFromDb != null;
+
+            if (exists)
+                topicFromDb.Content += ";;;;;;" + topic.Content;
+            else
             {
                 topic.UserId = userId;
                 topicFromDb = _context.Topics.Add(topic).Entity;
-                _context.SaveChanges();
             }
+            _context.SaveChanges();
             
             return topicFromDb;
         }
-        
-        public Tag GetTagFromDatabase(long userId, Tag tag)
+
+        private Tag GetTagFromDatabase(long userId, Tag tag)
         {
             var tagFromDb = _context.Tags
                 .FirstOrDefault(t => t.Name == tag.Name && t.UserId == userId);

@@ -11,7 +11,7 @@ let state = {
 }
 
 let mutations = {
-    SET_TEXT_PROPERTIES(state, text) {
+    SET_TEXT(state, text) {
         state.text.Name = text.Name;
         state.text.Content = text.Content;
     },
@@ -33,12 +33,12 @@ let mutations = {
 
 let actions = {
     getNewWords({commit}, text) {
-        commit('SET_TEXT_PROPERTIES', text);
+        commit('SET_TEXT', text);
         
         const getWordsPromise = api.GetWordsFromText(text)
-            .then(words => {
-                commit('SET_FOUND_WORDS', words);
-                return words;
+            .then(({data}) => {
+                commit('SET_FOUND_WORDS', data);
+                return data.length;
             });
         
         return getWordsPromise;

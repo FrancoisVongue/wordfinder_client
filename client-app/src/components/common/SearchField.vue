@@ -13,7 +13,7 @@
                ref="input"
                @focus="focus"
                @blur="search"
-               @keyup.enter="search"
+               @keyup.enter="blur"
                @input="checkMatches"
                @keyup.delete="checkMatches"/>
         <ul :class="{input_matches: true, input_show: matches.length > 0}">
@@ -79,11 +79,24 @@
                     
                     this.matches = [];
                 }, 90);
+                
                 this.$emit('finished-typing'); 
             },
             focus() { 
                 this.checkMatches();
                 this.$emit('focus');
+            },
+            blur() {
+                this.$refs.input.blur();
+            },
+            sameInputDeny(f) {
+                let input;
+                return (newInput) => {
+                    if(input != newInput) {
+                        f();
+                        input = newInput;
+                    }
+                } 
             }
         }
     }

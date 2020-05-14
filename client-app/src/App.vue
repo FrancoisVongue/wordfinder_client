@@ -90,22 +90,19 @@
         beforeCreate() {
             this.$store.dispatch("signInWithToken")
                 .then(_ => {
-                    this.$router.push({name: "myWords"});
+                    const routeName = this.$router.currentRoute.name;
+                    if(routeName == 'signIn' || routeName == 'signUp')
+                        this.$router.push({name: "myWords"});
                 })
                 .catch(error => {
                     this.errorMessage = error.message;
-                    this.doLater(() => {
+                    this.setTimeout(() => {
                         this.errorMessage = ''
                     }, 6000);
                     
                     if(this.$router.currentRoute.name != 'signIn')
                         this.$router.push({name: "signIn"}); 
                 });
-        },
-        methods: {
-            doLater(f, time) {
-                setTimeout(f, time);
-            }            
         },
         computed: {
             ...mapGetters([

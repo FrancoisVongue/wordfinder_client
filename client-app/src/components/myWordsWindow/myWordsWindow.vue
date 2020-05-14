@@ -91,8 +91,12 @@
                         TopicIds : topicIds
                     };
                     
-                    this.$store.dispatch('searchMyWords', searchConfig)
-                        .then(this.updateWordList);
+                    if(this.empty(searchConfig))
+                        this.$store.dispatch('getMyWords')
+                            .then(this.updateWordList);
+                    else 
+                        this.$store.dispatch('searchMyWords', searchConfig)
+                            .then(this.updateWordList);
                 }, 300)
             },
             updateWordList(words) {
@@ -107,6 +111,9 @@
             },
             stopSearch() {
                 clearTimeout(this.requestSendLatency);
+            },
+            empty(o) {
+                return [...Object.values(o)].every(v => !v || v.length == 0);
             }
         },
         mounted () {
