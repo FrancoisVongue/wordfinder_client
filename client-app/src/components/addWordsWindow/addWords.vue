@@ -1,7 +1,10 @@
 <template>
     <form>
         <p class="display-4">Add new words!</p>
-        <p class="display-4">Found {{foundWords.length}} words in Text: "{{textName}}"</p>
+        <p class="display-4">
+            Found {{foundWords.length}} new word{{foundWords.length > 1 ? "s" : ''}}
+            in Text: "{{textName}}"
+        </p>
         <p class="alert alert-secondary">
             If you don't want to repeat a word, just leave the translation field empty
         </p>

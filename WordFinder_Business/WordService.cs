@@ -17,6 +17,8 @@ namespace WordFinder_Business
     {
         private const int ContextRadius = 10;
 
+        private const string TopicDelimiter = " >>>  <<< ";
+
         private ApiContext _context;
 
         public WordService() {}
@@ -171,15 +173,6 @@ namespace WordFinder_Business
             return originalWord;
         }
 
-        public Topic AddTopic(long userId, Topic topic)
-        {
-            topic.UserId = userId;
-            var t = _context.Topics.Add(topic).Entity;
-            _context.SaveChanges();
-
-            return t;
-        }
-
         public static string GetInContext(Word word)
         {
             var topic = word.Topic;
@@ -198,24 +191,30 @@ namespace WordFinder_Business
 
         public IEnumerable<Word> FindNewWords(long userId, Topic topic)
         {
+            var topicFromDb = AddTopic(userId, topic);
             var foundWords = WordSearchHandler.FindWordsInText(topic.Content);
             var userWords = getUserWords(userId).Select(w => w.Content);
 
             var words = foundWords
                 .Except(userWords, StringComparer.OrdinalIgnoreCase)
-                .Select(w => new Word() {Content = w, Topic = new Topic(){Name = topic.Name}});
+                .Select(w => new Word() {Content = w, Topic = topicFromDb});
 
             return words;
         }
 
-        private Topic GetTopicFromDatabase(long userId, Topic topic)
+        private Topic AddTopic(long userId, Topic topic)
         {
-            var topicFromDb = _context.Topics
-                .FirstOrDefault(t => t.Name == topic.Name && t.UserId == userId);
+            var topicFromDb = _context
+                .Users
+                    .Include(u => u.Topics)
+                .FirstOrDefault(u => u.Id == userId)?
+                .Topics?
+                .FirstOrDefault(t => t.Name == topic.Name);
+            
             bool exists = topicFromDb != null;
 
             if (exists)
-                topicFromDb.Content += ";;;;;;" + topic.Content;
+                topicFromDb.Content += TopicDelimiter + topic.Content;
             else
             {
                 topic.UserId = userId;

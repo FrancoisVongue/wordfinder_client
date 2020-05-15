@@ -4,7 +4,7 @@ export default {
         type: 'text',
         smallText: '',
         name: 'Text name',
-        rules: 'alpha|required|min:3',
+        rules: 'alpha_spaces|required|min:3',
         placeholder: 'Input the name of the text, plese',
         value: ''
     },
