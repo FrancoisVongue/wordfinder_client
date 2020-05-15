@@ -54,7 +54,7 @@
                 this.$store.dispatch('getNewWords', text)
                     .then(wordsAmount => {
                         if(wordsAmount > 0)
-                            this.$router.push({name: 'addTranslation'});
+                            this.$router.push({name: 'addWords'});
                         else 
                             this.errorMessage = 'No new words were found!'
                     })
