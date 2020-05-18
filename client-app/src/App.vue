@@ -26,6 +26,11 @@
                                 </span>
                             </router-link>
                         </li>
+                        <li class="{nav-item: true, active: currentWindow == repeatWords}">
+                            <router-link class="nav-link" :to="{name: 'repeatWords'}">
+                                Repeat words
+                            </router-link>
+                        </li>
                     </ul>
                     
                     <ul class="navbar-nav">

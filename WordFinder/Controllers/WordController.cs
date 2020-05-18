@@ -109,7 +109,7 @@ namespace WordFinder.Controllers
         }
         
         [HttpGet("repeat")]
-        public ActionResult GetWordsForRepetition([FromQuery(Name = "amount")] int number = 10)
+        public ActionResult GetWordsForRepetition([FromQuery(Name = "amount")] int number = 5)
         {
             var _userId = JWThandler.GetUserId(GetToken());
             var wordsToRepeat = _service.GetWordsForRepetition(_userId, number);

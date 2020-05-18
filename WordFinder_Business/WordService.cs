@@ -53,7 +53,7 @@ namespace WordFinder_Business
             foreach (var word in words)
             {
                 word.UserId = userId;
-                word.Topic = topicsFromDb.FirstOrDefault(t => t.Name == word.Topic?.Name);
+                word.Topic = topicsFromDb.FirstOrDefault(t => t.Id == word.Topic?.Id);
                 
                 foreach (var wt in word.WordTags)
                 {
@@ -103,7 +103,8 @@ namespace WordFinder_Business
         {
             var userWords = getUserWords(userId);
             
-            var wordsToRepeat = userWords
+            var wordsToRepeat = userWords    
+                .Where(w => w.Translations.Any() && !w.Familiar)
                 .OrderBy(w => w.TimesRepeated)
                 .Take(amount);
 
@@ -260,21 +261,24 @@ namespace WordFinder_Business
 
         private IEnumerable<Tag> getTagsByName(long userId, IEnumerable<string> tagNames)
         {
-            var tags = _context
-                .Tags
-                .Where(t => t.UserId == userId)
-                .Where(t => tagNames.Contains(t.Name));
+            var user = _context.Users
+                    .Include(u => u.Tags)
+                .FirstOrDefault(u => u.Id == userId);
+            
+            var tags = user.Tags?
+                .Where(t => tagNames.Contains(t.Name)) ?? new List<Tag>();
+                
             return tags;
         }
 
         private IEnumerable<Tag> addTagsByName(long userId, IEnumerable<string> tagNames)
         {
-            var existingTags = getTagsByName(userId, tagNames);
-            var existingTagNames = existingTags.Select(t => t.Name);
+            var existingTags = getTagsByName(userId, tagNames)
+                .Select(t => t.Name);
             
             var tagsToAdd = tagNames
-                .Where(tn => !existingTagNames.Contains(tn))
-                .Select(tn =>new Tag() {Name = tn, UserId = userId});
+                .Where(tn => !existingTags.Contains(tn))
+                .Select(tn => new Tag() {Name = tn, UserId = userId});
             
             _context.AddRange(tagsToAdd);
             _context.SaveChanges();

@@ -1,5 +1,6 @@
 import addWordsWindow from './addWordsWindow'
 import myWordsWindow from './myWordsWindow'
+import repeatWordsWindow from './repeatWordsWindow'
 import auth from "./authentication"
 import store from '../store/index'
 import test from './test'
@@ -13,6 +14,7 @@ const routes = [
         ...test,
     addWordsWindow,
     myWordsWindow,
+    repeatWordsWindow,
         ...auth,
     { path: '*', component: home }
 ];

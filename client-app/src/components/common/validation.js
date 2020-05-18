@@ -36,7 +36,7 @@ extend('sameas', {
 });
 extend('CSV', {
     validate(value) {
-        const regex = /[\w\-\s]{2,}(,\s?[\w\-\s]{2,})*/g;
+        const regex = /[\w\-\sА-я]{2,}(,\s?[\w\-\sА-я]{2,})*/g;
         const result = regex.exec(value);
         
         return result && result[0].length == value.length;

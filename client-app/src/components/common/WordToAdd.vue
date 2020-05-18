@@ -1,24 +1,64 @@
 <template>
-    <div class="form-group row justify-content-center">
-            
+    <div class="container-fluid border word form-group row justify-content-center">
         <div class="col-sm-4">
-            <input-field :field-data.sync="contentField"/>
+            <ValidationProvider :name="'Content field of ' + word.content" 
+                rules="alpha_dash|required|min:3" 
+                v-slot="{errors}">
+                <label :for="word.content + 'content'">Word</label>
+                <input 
+                    type="text" class="form-control" 
+                    :id="word.content + 'content'" 
+                    placeholder="word"
+                    v-model="word.content">
+                <small :class="{error: errors.length > 0}" 
+                    class="info form-text validation_info">
+                    {{errors[0]}}
+                </small>
+            </ValidationProvider>
         </div>
     
         <div class="col-sm-4">
-            <input-field :field-data.sync="tagField"/>
+            <ValidationProvider :name="'Tags field of ' + word.content"
+                rules="CSV" 
+                v-slot="{errors}">
+                
+                <label :for="word.content + 'tags'">Tags</label>
+                <input 
+                    type="text" class="form-control" 
+                    :id="word.content + 'tags'" 
+                    placeholder="tags"
+                    v-model="word.tagsField">
+                <small :class="{error: errors.length > 0}" 
+                    class="info form-text validation_info">
+                    {{errors[0] || "Tags to assign"}}
+                </small>
+            </ValidationProvider>
         </div>
         
         <div class="col-sm-4">
-            <input-field :field-data.sync="translationField"/>
+            <ValidationProvider :name="'Translations field of ' + word.content" 
+                rules="CSV" 
+                v-slot="{errors}">
+                
+                <label :for="word.content + 'translations'">Translations</label>
+                <input 
+                    type="text" class="form-control" 
+                    :id="word.content + 'translations'" 
+                    placeholder="translations"
+                    v-model="word.translationsField">
+                <small :class="{error: errors.length > 0}" 
+                    class="info form-text validation_info">
+                    {{errors[0] || "Translations"}}
+                </small>
+            </ValidationProvider>
         </div>
 
         <div class="col-sm-12 text-center">
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" 
-                    id="dont_repeat"
-                    v-model="familiar">
-                <label class="custom-control-label" for="dont_repeat">
+                    :id="'dont_repeat' + word.content"
+                    v-model="word.familiar">
+                <label class="custom-control-label" :for="'dont_repeat' + word.content">
                     Don't repeat!
                 </label>
             </div>
@@ -27,14 +67,13 @@
 </template>
 
 <script>
-    import InputField from '../common/InputField'
     import fieldConfig from '../common/fieldConfig/wordToAdd'
-    import { ValidationObserver } from 'vee-validate'
+    import ValidationProvider from '../common/validation'
     
     export default {
         name: 'Word',
         props: ['word'],
-        components: {InputField, ValidationObserver},
+        components: {ValidationProvider},
         data() {
             return {
                 contentField: fieldConfig.contentField(this.word),
@@ -67,20 +106,6 @@
             background-color: #0062cc;
             color: ghostwhite;
             font-weight: bolder;
-        }
-    }
-
-    .edit_button {
-        position: absolute;
-        right: 0;
-        
-        &-change, 
-        &-save {
-            bottom: 0;
-        }
-        
-        &-discard {
-            top: 0;
         }
     }
 </style>

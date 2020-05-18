@@ -12,11 +12,20 @@ export default {
             }
         });
     },
-    SubmitWords(text) {
+    getWordsForRepetition() {
+        return axios({
+            method: 'get',
+            url: '/words/repeat',
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+    },
+    SubmitWords(words) {
         return axios({
             method: 'post',
-            url: 'words/text',
-            data: text,
+            url: 'words',
+            data: words,
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             }

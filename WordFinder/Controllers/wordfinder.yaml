@@ -84,8 +84,8 @@ paths:
           description: User is not authenticated
           content: {}
     post:
-      summary: Add new words
-      description: Add words without text
+      summary: Add words
+      description: Add new words
       operationId: addWords
       requestBody: 
         description: Array of words to add
