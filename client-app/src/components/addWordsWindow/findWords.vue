@@ -1,7 +1,7 @@
 <template>
     <ValidationObserver v-slot="{ failed, handleSubmit }">
         <p class="display-4">Find new words!</p>
-        <small class="info form-text error validation_info" v-if="errorMessage.length > 0">{{errorMessage}}</small>
+        <error-message :content="errorMessage"/>
         <form @submit.prevent="handleSubmit(getWords)">
             <div class="row">
                 <div class="form-group col-md-6">
@@ -30,45 +30,31 @@
     import {mapGetters} from 'vuex'
     import InputField from '../common/InputField'
     import {ValidationObserver} from 'vee-validate'
+    import fieldConfig from '../common/fieldConfig/findWords'
+    import errorMessage from '@/components/common/errorMessage'
 
     export default {
         name: "findWords",
         data() {
             return {
-                NameField: {
-                    id: 'text-name_input',
-                    type: 'text',
-                    smallText: '',
-                    name: 'Text name',
-                    rules: 'alpha|required|min:3',
-                    placeholder: 'Input the name of the text, plese',
-                    value: ''
-                },
-                ContentField: {
-                    id: 'text-content_input',
-                    type: 'textarea',
-                    smallText: 'content of the text',
-                    name: 'Text content',
-                    rules: 'required|min:4',
-                    placeholder: 'Input text, please',
-                    value: ''
-                },                
+                NameField: fieldConfig.NameField,
+                ContentField: fieldConfig.ContentField,                
                 loading: false,
                 errorMessage: ''
             }
         },
         methods: {
             getWords() {
+                this.errorMessage = '';
                 this.loading = true;
                 const text = {
                     Name: this.NameField.value,
                     Content: this.ContentField.value
                 }
                 this.$store.dispatch('getNewWords', text)
-                    .then(words => {
-                        this.errorMessage = '';
-                        if(words.length > 0)
-                            this.$router.push({name: 'addTranslation'});
+                    .then(wordsAmount => {
+                        if(wordsAmount > 0)
+                            this.$router.push({name: 'addWords'});
                         else 
                             this.errorMessage = 'No new words were found!'
                     })
@@ -77,7 +63,7 @@
                     })
             }
         },
-        components: { ValidationObserver, InputField },
+        components: { ValidationObserver, InputField, errorMessage },
         
     }
 </script>

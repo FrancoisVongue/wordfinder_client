@@ -9,8 +9,8 @@ export default {
     props: (route) => ({currentWindow: route.name}),
     children: [
         {
-            name: 'addTranslation',
-            path: 'add-translation',
+            name: 'addWords',
+            path: 'add-words',
             component: addTranslation,
         },
         {
@@ -19,7 +19,7 @@ export default {
             component: findWords,
             beforeEnter(to, from, next) {
                 if(store.getters.foundWords.length > 0)
-                    next('/add-translation');
+                    next('/add-words');
                 else 
                     next();
             }

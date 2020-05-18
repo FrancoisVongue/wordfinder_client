@@ -51,8 +51,8 @@
         },
         methods: {
             submit() {
-                this.pagination.itemsAmount -= this.WordsForCurrentPage.length;
-                this.$emit('submit', this.WordsForCurrentPage);
+                console.log(this.WordsForCurrentPage);
+                //this.$emit('submit', this.WordsForCurrentPage);
             },
             discardWords() {
                 this.$emit('discard');

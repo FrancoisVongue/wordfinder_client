@@ -17,6 +17,8 @@ namespace WordFinder_Business
     {
         private const int ContextRadius = 10;
 
+        private const string TopicDelimiter = " >>>  <<< ";
+
         private ApiContext _context;
 
         public WordService() {}
@@ -41,15 +43,17 @@ namespace WordFinder_Business
             foreach (var w in words)
             {
                 var tags = w.WordTags.Select(wt => wt.Tag.Name);
+                var topic = w.Topic.Name;
                 allTags.AddRange(tags);
             }
             addTagsByName(userId, allTags);
             var tagsFromDb = getTagsByName(userId, allTags);
+            var topicsFromDb = _context.Topics.ToList();
             
             foreach (var word in words)
             {
                 word.UserId = userId;
-                word.Topic = _context.Topics.Find(word.Topic?.Id);
+                word.Topic = topicsFromDb.FirstOrDefault(t => t.Id == word.Topic?.Id);
                 
                 foreach (var wt in word.WordTags)
                 {
@@ -99,7 +103,8 @@ namespace WordFinder_Business
         {
             var userWords = getUserWords(userId);
             
-            var wordsToRepeat = userWords
+            var wordsToRepeat = userWords    
+                .Where(w => w.Translations.Any() && !w.Familiar)
                 .OrderBy(w => w.TimesRepeated)
                 .Take(amount);
 
@@ -169,20 +174,6 @@ namespace WordFinder_Business
             return originalWord;
         }
 
-        public IEnumerable<Word> FindNewWords(long userId, long topicId)
-        {
-            var topic = _context.Topics.Find(topicId);
-            var foundWords = WordSearchHandler.FindWordsInText(topic.Content);
-            var userWords = getUserWords(userId).Select(w => w.Content);
-            var topicFromDb = GetTopicFromDatabase(userId, topic);
-
-            var words = foundWords
-                .Except(userWords, StringComparer.OrdinalIgnoreCase)
-                .Select(w => new Word() {Content = w, Topic = topicFromDb});
-
-            return words;
-        }
-
         public static string GetInContext(Word word)
         {
             var topic = word.Topic;
@@ -199,22 +190,43 @@ namespace WordFinder_Business
             return context;
         }
 
-        public Topic GetTopicFromDatabase(long userId, Topic topic)
+        public IEnumerable<Word> FindNewWords(long userId, Topic topic)
         {
-            var topicFromDb = _context.Topics
-                .FirstOrDefault(t => t.Name == topic.Name && t.UserId == userId);
+            var topicFromDb = AddTopic(userId, topic);
+            var foundWords = WordSearchHandler.FindWordsInText(topic.Content);
+            var userWords = getUserWords(userId).Select(w => w.Content);
+
+            var words = foundWords
+                .Except(userWords, StringComparer.OrdinalIgnoreCase)
+                .Select(w => new Word() {Content = w, Topic = topicFromDb});
+
+            return words;
+        }
+
+        private Topic AddTopic(long userId, Topic topic)
+        {
+            var topicFromDb = _context
+                .Users
+                    .Include(u => u.Topics)
+                .FirstOrDefault(u => u.Id == userId)?
+                .Topics?
+                .FirstOrDefault(t => t.Name == topic.Name);
             
-            if (topicFromDb == null)
+            bool exists = topicFromDb != null;
+
+            if (exists)
+                topicFromDb.Content += TopicDelimiter + topic.Content;
+            else
             {
                 topic.UserId = userId;
                 topicFromDb = _context.Topics.Add(topic).Entity;
-                _context.SaveChanges();
             }
+            _context.SaveChanges();
             
             return topicFromDb;
         }
-        
-        public Tag GetTagFromDatabase(long userId, Tag tag)
+
+        private Tag GetTagFromDatabase(long userId, Tag tag)
         {
             var tagFromDb = _context.Tags
                 .FirstOrDefault(t => t.Name == tag.Name && t.UserId == userId);
@@ -249,21 +261,24 @@ namespace WordFinder_Business
 
         private IEnumerable<Tag> getTagsByName(long userId, IEnumerable<string> tagNames)
         {
-            var tags = _context
-                .Tags
-                .Where(t => t.UserId == userId)
-                .Where(t => tagNames.Contains(t.Name));
+            var user = _context.Users
+                    .Include(u => u.Tags)
+                .FirstOrDefault(u => u.Id == userId);
+            
+            var tags = user.Tags?
+                .Where(t => tagNames.Contains(t.Name)) ?? new List<Tag>();
+                
             return tags;
         }
 
         private IEnumerable<Tag> addTagsByName(long userId, IEnumerable<string> tagNames)
         {
-            var existingTags = getTagsByName(userId, tagNames);
-            var existingTagNames = existingTags.Select(t => t.Name);
+            var existingTags = getTagsByName(userId, tagNames)
+                .Select(t => t.Name);
             
             var tagsToAdd = tagNames
-                .Where(tn => !existingTagNames.Contains(tn))
-                .Select(tn =>new Tag() {Name = tn, UserId = userId});
+                .Where(tn => !existingTags.Contains(tn))
+                .Select(tn => new Tag() {Name = tn, UserId = userId});
             
             _context.AddRange(tagsToAdd);
             _context.SaveChanges();

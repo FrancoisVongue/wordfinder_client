@@ -27,6 +27,11 @@ let mutations = {
         state.authenticated = true;
         state.user = user;
     },
+    SET_USER_INFO(state, {tags, topics, words}) {
+        state.user.topics = topics;
+        state.user.tags = tags;
+        state.user.words = words;
+    },
     DISCARD_USER(state) {
         localStorage.clear('token');
         state.authenticated = false;
@@ -78,6 +83,26 @@ let actions = {
             });
         
         return signInPromise;
+    },
+    updateUserInfo({state, commit}, addedWords) {
+        const unique = (s = new Set()) => v => s.has(v) ? false : (s.add(v), true);
+        
+        const uniqueTag = unique();
+        const uniqueTopic = unique();
+        
+        const {tags, topics, words} = state.user;
+        
+        const info = {};
+        info.tags = addedWords.map(w => w.tags).reduce((b,v) => b.concat(v), [])
+            .concat(tags)
+            .filter(t => uniqueTag(t.name));
+        info.topics = addedWords.map(w => w.topic)
+            .concat(topics)
+            .filter(t => uniqueTopic(t.name));
+        info.words = addedWords.concat(words)
+            .map(w => ({id: w.id, content: w.content}));
+            
+        commit('SET_USER_INFO', info);
     },
     logOut({commit}) {
         return new Promise(resolve => {

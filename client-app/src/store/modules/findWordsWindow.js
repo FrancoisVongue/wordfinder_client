@@ -11,43 +11,41 @@ let state = {
 }
 
 let mutations = {
-    SET_TEXT_PROPERTIES(state, text) {
+    SET_TEXT(state, text) {
         state.text.Name = text.Name;
         state.text.Content = text.Content;
     },
     SET_FOUND_WORDS(state, foundWords) {
         state.text.foundWords = foundWords;
     },
-    DISCARD_WORDS(state, words) {
-        let {text} = state;
-        
-        if(!words)
-            text.foundWords = [];
-        else {
-            let wordsToDiscard = new Set(words);
-            text.foundWords = text.foundWords
-                .filter(w => !wordsToDiscard.has(w));
-        }
+    DISCARD_WORDS({text}) {
+        text.foundWords = [];
     },
 }
 
 let actions = {
     getNewWords({commit}, text) {
-        commit('SET_TEXT_PROPERTIES', text);
+        commit('SET_TEXT', text);
         
         const getWordsPromise = api.GetWordsFromText(text)
-            .then(words => {
-                commit('SET_FOUND_WORDS', words);
-                return words;
+            .then(({data}) => {
+                commit('SET_FOUND_WORDS', data);
+                return data.length;
             });
         
         return getWordsPromise;
     },
+    getWordsForRepetition({commit}) {
+        return api.getWordsForRepetition()
+            .then(({data}) => {
+                return data;
+            });
+    },
     submitWords({commit}, wordsToSubmit) {
         return api.SubmitWords(wordsToSubmit)
-            .then(words => {
-                commit('DISCARD_WORDS', wordsToSubmit);
-                return words;
+            .then(({data}) => {
+                commit('DISCARD_WORDS');
+                return data;
             });
     },
     discardWords({commit}, text) {

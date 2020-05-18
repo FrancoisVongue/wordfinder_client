@@ -84,8 +84,8 @@ paths:
           description: User is not authenticated
           content: {}
     post:
-      summary: Add new words
-      description: Add words without text
+      summary: Add words
+      description: Add new words
       operationId: addWords
       requestBody: 
         description: Array of words to add
@@ -252,7 +252,7 @@ paths:
           description: Invalid request body
           content: {}
   /text/words:
-    get:
+    post:
       summary: Find words from text
       description: Takes text adds it to db and returns an array of words from the text
       operationId: findWords
