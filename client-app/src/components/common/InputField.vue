@@ -7,6 +7,7 @@
             :placeholder="fieldData.placeholder"
             v-model="fieldData.value"/>
         <input v-else
+            @input="inputEvent"
             :type="fieldData.type" class="form-control" 
             :id="fieldData.id" 
             :placeholder="fieldData.placeholder"
@@ -23,7 +24,12 @@
     export default {
         name: 'inputField',
         props: ['fieldData'],
-        components: {ValidationProvider}
+        components: {ValidationProvider},
+        methods: {
+            inputEvent() {
+                this.$emit('input');
+            }
+        }
     }
 </script>
 
