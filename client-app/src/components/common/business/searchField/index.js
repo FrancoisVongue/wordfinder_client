@@ -44,10 +44,10 @@ export default {
         return distanceVector[s2.length];
     },
     relativeEditDistance(v, s1) {
-        let edResult = this.editDistance(s1, v);
-        let approximation = (s1.length - edResult) / v.length;
-        //console.log(`relED for ${s1} and ${v} is ${approximation}`);
-        //console.log(`edResult for ${s1} is ${edResult}`);
-        return approximation;
+        let distance = this.editDistance(s1, v);
+        let approximation = s1.length - distance;
+        let percentageApproximation = approximation / s1.length;
+        let relativeApproximation = percentageApproximation / v.length;
+        return relativeApproximation;
     }
 }

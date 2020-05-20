@@ -21,6 +21,16 @@ export default {
             }
         });
     },
+    repeatWords(words) {
+        return axios({
+            method: 'post',
+            url: '/words/repeat',
+            data: words.map(w => w.id),
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+    },
     SubmitWords(words) {
         return axios({
             method: 'post',

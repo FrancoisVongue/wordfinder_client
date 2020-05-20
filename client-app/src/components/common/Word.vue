@@ -37,8 +37,15 @@
                 </button>
                 <button type="button" class="btn btn-sm btn-primary
                     edit_button edit_button-save"
+                    :disabled="failed"
                     @click="handleSubmit(saveChanges)">
-                    Save changes
+                    <span v-if="!loading">Save changes</span>
+                    <template v-else>
+                        <span>Loading...</span>
+                        <span class="spinner-grow spinner-grow-sm"
+                            role="status" aria-hidden="true">
+                        </span>
+                </template>
                 </button>
             </template>
         </ValidationObserver>
@@ -77,7 +84,8 @@
                 tagField: fieldConfig.tagField(this.word),
                 translationField: fieldConfig.translationField(this.word),
                 editing: this.fresh,
-                familiar: this.word.familiar
+                familiar: this.word.familiar,
+                loading: false
             }
         },
         created() {
@@ -100,8 +108,10 @@
                 this.word.translations = 
                     business.CSVtoArrayOfObjects(this.translationField.value, "content");
                 this.word.familiar = this.familiar;
-
-                this.editing = false;
+                
+                this.loading = true;
+                this.$store.dispatch('editWord', this.word)
+                    .then(_ => this.editing = this.loading = false);
             },
             discardChanges(e) { 
                 this.editing = false;

@@ -25,7 +25,7 @@
             </div>
             
             <button type="submit" class="btn mr-2 btn-primary">
-                Submit
+                {{correctInput ? 'Next' : 'Submit'}}
             </button>
         </form>
     </div>
@@ -37,39 +37,51 @@ export default {
     data() {
         return {
             words: [],
-            loading: true,
+            loading: false,
             failed: false
+        }
+    },
+    computed: {
+        correctInput() {
+            return this.words.every(w => w.repeatCorrect);
         }
     },
     methods: {
         submitWords() {
-            this.check();
-            
-            this.words = this.words.map(w => {
-                w.repeatError = w.repeatField != w.content ? ' - ' + w.content : '';
-                w.repeatCorrect = w.repeatError ? '' : ' - ✓';
-                return w;
-            });
-            
-            console.log(this.words);
-        },
-        check() {
-            return this.failed = !this.words.every(w => w.repeatField == w.content);
-        } 
-    },
-    beforeMount() {
-        this.$store.dispatch('getWordsForRepetition')
-            .then(words => {
-                this.words = words.map(w => {
-                    w.repeatHint = w.translations.map(t => t.content).join(', ');
-                    w.repeatField = '';
-                    w.repeatError = '';
-                    w.repeatCorrect = '';
+            if(this.correctInput) {
+                this.loading = true;
+                this.$store.dispatch('repeatWords', this.words)
+                    .then(this.setUp)
+                    .then(_ => this.loading = false);
+            } 
+            else {
+                this.failed = !this.correctCheck();
+                
+                this.words = this.words.map(w => {
+                    w.repeatError = w.repeatField != w.content ? ' - ' + w.content : '';
+                    w.repeatCorrect = w.repeatError ? '' : ' - ✓';
                     return w;
                 });
-                
-                this.loading = false;
+            }
+        },
+        correctCheck() {
+            return this.words.every(w => w.repeatField == w.content);
+        },
+        setUp(words) {
+            this.words = words.map(w => {
+                w.repeatHint = w.translations.map(t => t.content).join(', ');
+                w.repeatField = '';
+                w.repeatError = '';
+                w.repeatCorrect = '';
+                return w;
             });
+        }
+    },
+    beforeMount() {
+        this.loading = true;
+        this.$store.dispatch('getWordsForRepetition')
+            .then(this.setUp)
+            .then(_ => this.loading = false);
     }
 }
 </script>
