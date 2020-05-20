@@ -16,5 +16,13 @@ export default {
             headers: {'Authorization': `bearer ${localStorage.getItem('token')}`},
             data: config
         });
+    },
+    EditWord(word) {
+        return axios({
+            method: 'patch',
+            url: 'words/word',
+            headers: {'Authorization': `bearer ${localStorage.getItem('token')}`},
+            data: word
+        });
     }
 }

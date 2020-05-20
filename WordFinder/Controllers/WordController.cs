@@ -88,8 +88,8 @@ namespace WordFinder.Controllers
             return Ok(mappedWords); 
         }
 
-        [HttpPatch("word/{id}")]
-        public ActionResult UpdateWord(long id, WordDTO word)
+        [HttpPatch("word")]
+        public ActionResult UpdateWord(WordDTO word)
         {
             if (!ModelState.IsValid) 
                 return BadRequest("Invalid word format");

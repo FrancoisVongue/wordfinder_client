@@ -89,7 +89,7 @@
         components: {errorMessage},
         data() {
             return {
-                errorMessage: 'hello'      
+                errorMessage: ''      
             }
         },
         beforeCreate() {

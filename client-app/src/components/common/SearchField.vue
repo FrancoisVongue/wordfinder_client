@@ -69,6 +69,7 @@
                 this.selected.splice(this.selected.indexOf(value), 1);
                 if(!this.config.free_query) 
                     this.config.chosenTokens = [...this.selected];
+                this.search();
             },
             search(e) {
                 setTimeout(() => {

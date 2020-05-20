@@ -7,6 +7,10 @@
             :placeholder="fieldData.placeholder"
             v-model="fieldData.value"/>
         <input v-else
+            @input="inputEvent"
+            @blur="blur"
+            ref='textInput'
+            @keydown.tab="complete"
             :type="fieldData.type" class="form-control" 
             :id="fieldData.id" 
             :placeholder="fieldData.placeholder"
@@ -23,7 +27,20 @@
     export default {
         name: 'inputField',
         props: ['fieldData'],
-        components: {ValidationProvider}
+        components: {ValidationProvider},
+        methods: {
+            inputEvent() {
+                this.$emit('input');
+            },
+            complete(e) {
+                e.preventDefault();
+                this.$emit('complete');
+                this.$refs.textInput.blur();
+            },
+            blur() {
+                this.$emit('blur');
+            }
+        }
     }
 </script>
 

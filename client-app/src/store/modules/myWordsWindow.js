@@ -29,6 +29,14 @@ const actions = {
             });
         
         return wordsPromise;
+    },
+    editWord(_, word) {
+        const wordsPromise = api.EditWord(word)
+            .then(({data}) => {
+                return data;
+            });
+        
+        return wordsPromise;
     }
 }
 

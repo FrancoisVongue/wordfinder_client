@@ -103,9 +103,10 @@ namespace WordFinder_Business
         {
             var userWords = getUserWords(userId);
             
-            var wordsToRepeat = userWords    
+            var wordsToRepeat = userWords
                 .Where(w => w.Translations.Any() && !w.Familiar)
                 .OrderBy(w => w.TimesRepeated)
+                .ThenByDescending(w => w.AdditionTime)
                 .Take(amount);
 
             return wordsToRepeat;
@@ -119,59 +120,34 @@ namespace WordFinder_Business
             {
                 word.TimesRepeated++;
             }
-
+            
             _context.SaveChanges();
-            return repeatedWords;
+            return GetWordsForRepetition(userId, wordsIds.Count());
         }
 
         public Word UpdateWord(long userId, Word updatedWord)
         {
             var originalWord = getUserWords(userId)
                 .FirstOrDefault(w => w.Id == updatedWord.Id);
-            
             if (originalWord == null)
                 throw new SecurityException("Attempt to update invalid word.");
-            
-            
             if (!String.IsNullOrWhiteSpace(updatedWord.Content))
                 originalWord.Content = updatedWord.Content;
 
-            UpdateTags();
-            UpdateTranslations();
-
-            void UpdateTranslations()
+            originalWord.Familiar = updatedWord.Familiar;
+            
+            originalWord.WordTags = new List<WordTag>();
+            var tagNames = updatedWord.WordTags.Select(wt => wt.Tag.Name);
+            addTagsByName(userId, tagNames);
+            var tags = getTagsByName(userId, tagNames);
+            foreach (var tag in tags)
             {
-                if (updatedWord.Translations != null && updatedWord.Translations.Any())
-                {
-                    var originalTranslations = String.Join("", originalWord.Translations
-                        .Select(t => t.Content));
-                    var newTranslations = String.Join("", updatedWord.Translations
-                        .Select(t => t.Content));
-                
-                    if(originalTranslations != newTranslations)
-                        originalWord.Translations = updatedWord.Translations;
-                }
-            }
-
-            void UpdateTags()
-            {
-                if (updatedWord.WordTags != null && updatedWord.WordTags.Any())
-                {
-                    var updatedWordTags = updatedWord.WordTags.Select(wt =>
-                    {
-                        wt.WordId = originalWord.Id;
-                        wt.TagId = wt.Tag.Id;
-                        wt.Tag = getUserTags(userId).FirstOrDefault(t => t.Id == wt.TagId);
-                        wt.Word = originalWord;
-                        return wt;
-                    }).ToList();
-                    
-                    originalWord.WordTags = updatedWordTags;
-                }
+                _context.WordTags.Add(new WordTag() {WordId = originalWord.Id, TagId = tag.Id});
             }
             
+            originalWord.Translations = updatedWord.Translations;
             _context.SaveChanges();
-            return originalWord;
+            return _context.Words.Find(originalWord.Id);
         }
 
         public static string GetInContext(Word word)

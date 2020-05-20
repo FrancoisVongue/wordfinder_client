@@ -122,6 +122,9 @@ let getters = {
     userWordsInfo(state) {
         return state.user.words;
     },
+    userTopicsInfo(state) {
+        return state.user.topics;
+    },
     userName(state) {
         return state.user.firstName;
     },

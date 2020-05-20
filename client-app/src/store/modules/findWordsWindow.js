@@ -35,8 +35,14 @@ let actions = {
         
         return getWordsPromise;
     },
-    getWordsForRepetition({commit}) {
+    getWordsForRepetition() {
         return api.getWordsForRepetition()
+            .then(({data}) => {
+                return data;
+            });
+    },
+    repeatWords(_, words) {
+        return api.repeatWords(words)
             .then(({data}) => {
                 return data;
             });
