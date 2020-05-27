@@ -45,9 +45,11 @@ export default {
     },
     relativeEditDistance(v, s1) {
         let distance = this.editDistance(s1, v);
-        let approximation = s1.length - distance;
-        let percentageApproximation = approximation / s1.length;
-        let relativeApproximation = percentageApproximation / v.length;
-        return relativeApproximation;
+        
+        let approximation = s1.length - distance; // how much moved towards a word
+        let percentageApproximation = approximation / s1.length; // how much you moved, relative to the word length
+        //let relativeApproximation = percentageApproximation / v.length; // how much you moved relative both to word and input length
+        // relativeApprox shows how many percents to a words gives you each keystroke in your input
+        return percentageApproximation;
     }
 }

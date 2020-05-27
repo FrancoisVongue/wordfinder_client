@@ -8,8 +8,7 @@ namespace WordFinder_Repository
         public static void Configure(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Tag>()
-                .HasIndex(t => t.Name)
-                .IsUnique();
+                .HasIndex(t => t.Name);
         }
     }
 }

@@ -21,13 +21,11 @@ namespace WordFinder.Controllers
     public class WordsController : ControllerBase
     {
         private readonly WordService _service;
-        private readonly UserService _userService;
         private readonly IMapper _mapper;
 
-        public WordsController(WordService service, UserService userService, IMapper mapper)
+        public WordsController(WordService service, IMapper mapper)
         {
             _service = service;
-            _userService = userService;
             _mapper = mapper;
         }
         
@@ -135,7 +133,7 @@ namespace WordFinder.Controllers
             if (!ModelState.IsValid)
                 return BadRequest("Invalid text format");
             
-            var _userId = _userService.GetUserByToken(GetToken()).Id;
+            var _userId = JWThandler.GetUserId(GetToken());
             var words = _service.FindNewWords(_userId, topic);
             var mappedWords = _mapper.Map<IEnumerable<Word>, IEnumerable<WordDTO>>(words);
             

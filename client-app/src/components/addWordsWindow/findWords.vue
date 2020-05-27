@@ -73,8 +73,11 @@
                     })
             },
             getToolTip() {
-                const value = fieldConfig.NameField.value;
                 const topics = this.userTopicsInfo.map(t => t.name);
+                const value = fieldConfig.NameField.value;
+                if(!topics.length || !value.length)
+                    return;
+                
                 const relED = business.relativeEditDistance.bind(business);
                 
                 const relEditDistanceFromValue = businessFP.curryLast(relED)(value);
@@ -83,7 +86,7 @@
                     .sort((a, b) => b[0] - a[0]);
                 const setClose = _ => {
                     const close = findClose();
-                    //console.table(close);
+                    console.table(close);
                     fieldConfig.NameField.name = findClose()[0][1]
                 }
                 const stutterFind = businessFP.stutter(setClose, 350, this.searchTimer);
