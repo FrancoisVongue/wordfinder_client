@@ -7,7 +7,8 @@ export default {
             name: 'Word',
             rules: 'alpha_dash|required|min:3',
             placeholder: 'Input the word, please',
-            value: ''
+            value: '',
+            disabled: true
         }
     },
     tagField(word) {

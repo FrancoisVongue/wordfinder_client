@@ -30,7 +30,7 @@ namespace WordFinder.Controllers
         }
         
         [HttpGet]
-        public ActionResult GetUserWords([FromQuery(Name = "amount")] int amount = 10)
+        public ActionResult GetUserWords([FromQuery(Name = "amount")] int amount = 50)
         {
             var _userId = JWThandler.GetUserId(GetToken());
             var words = _service.GetUserWords(_userId, amount);

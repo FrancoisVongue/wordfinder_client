@@ -89,6 +89,7 @@ let actions = {
         
         const uniqueTag = unique();
         const uniqueTopic = unique();
+        const uniqueWord = unique();
         
         const {tags, topics, words} = state.user;
         
@@ -99,8 +100,10 @@ let actions = {
         info.topics = addedWords.map(w => w.topic)
             .concat(topics)
             .filter(t => uniqueTopic(t.name));
-        info.words = addedWords.concat(words)
-            .map(w => ({id: w.id, content: w.content}));
+        info.words = addedWords
+            .concat(words)
+            .map(w => ({id: w.id, content: w.content}))
+            .filter(w => uniqueWord(w.content));
             
         commit('SET_USER_INFO', info);
     },

@@ -32,9 +32,18 @@ namespace WordFinder_Business
         {
             var userWords = getUserWords(userId)
                 .OrderByDescending(w => w.AdditionTime)
+                .ToList();
+
+            var notFamiliar = userWords
+                .Where(w => !w.Familiar)
                 .Take(amount);
+            var countNF = notFamiliar.Count();
+
+            if (countNF < amount)
+                notFamiliar = notFamiliar.Concat(userWords.Where(w => w.Familiar).Take(amount - countNF));
             
-            return userWords;
+
+            return notFamiliar;
         }
 
         public IEnumerable<Word> AddWords(long userId, IEnumerable<Word> words)

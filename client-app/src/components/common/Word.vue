@@ -111,7 +111,9 @@
                 
                 this.loading = true;
                 this.$store.dispatch('editWord', this.word)
-                    .then(_ => this.editing = this.loading = false);
+                    .then(w => this.$store.dispatch('updateUserInfo', [w]))
+                    .then(_ => this.editing = this.loading = false)
+                    .then(_ => this.$emit('updatedWord'));
             },
             discardChanges(e) { 
                 this.editing = false;

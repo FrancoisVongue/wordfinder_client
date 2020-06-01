@@ -38,6 +38,8 @@
           <e p="20200416050102_addedFamiliarToWord.Designer.cs" t="Include" />
           <e p="20200423170817_removedOrderFromTranslation.cs" t="Include" />
           <e p="20200423170817_removedOrderFromTranslation.Designer.cs" t="Include" />
+          <e p="20200601133128_finale.cs" t="Include" />
+          <e p="20200601133128_finale.Designer.cs" t="Include" />
           <e p="ApiContextModelSnapshot.cs" t="Include" />
         </e>
         <e p="obj" t="ExcludeRecursive">

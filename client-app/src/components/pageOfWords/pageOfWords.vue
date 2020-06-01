@@ -1,6 +1,7 @@
 <template>
     <ValidationObserver v-slot="{ failed, handleSubmit }">
         <Word v-for="word in WordsForCurrentPage" 
+             @updatedWord="updatedWord"
             :key="word.additionTime" :word.sync="word" :fresh="fresh"/>
         <pagination :pagination-info.sync="pagination"/>
         <template v-if="fresh">
@@ -50,6 +51,9 @@
             }
         },
         methods: {
+            updatedWord() {
+                this.$emit("updatedWord");
+            },
             submit() {
                 console.log(this.WordsForCurrentPage);
                 //this.$emit('submit', this.WordsForCurrentPage);

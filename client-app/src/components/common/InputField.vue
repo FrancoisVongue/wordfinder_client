@@ -2,11 +2,13 @@
     <ValidationProvider :name="fieldData.name" :rules="fieldData.rules" v-slot="{errors}">
     <label :for="fieldData.id">{{fieldData.name}}</label>
         <textarea v-if="fieldData.type == 'textarea'"
+            :disabled="fieldData.disabled"
             class="form-control"
             :id="fieldData.id" 
             :placeholder="fieldData.placeholder"
             v-model="fieldData.value"/>
         <input v-else
+            :disabled="fieldData.disabled"
             @input="inputEvent"
             @blur="blur"
             ref='textInput'

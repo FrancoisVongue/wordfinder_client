@@ -36,7 +36,9 @@
             </div>
         </template>
         <template v-else-if="wordsList.length > 0">
-            <pageOfWords :words = "wordsList" :pageNumber.sync = "page"/>
+            <pageOfWords
+                @updatedWord="setTokens" 
+                :words = "wordsList" :pageNumber.sync = "page"/>
         </template>
         <template v-else>
             <p class="display-4">Not a single word was found :(</p>
@@ -100,14 +102,14 @@
                 }, 300)
             },
             updateWordList(words) {
-                this.wordsList = words;
+                this.wordsList = words.sort(w => w.familiar ? 1 : -1);
                 this.page = 1;
                 this.loading = false;
             },
-            setTokens(user) {
-                this.searchConfigs.word.tokens = user.words;
-                this.searchConfigs.tags.tokens = user.tags;
-                this.searchConfigs.topics.tokens = user.topics;
+            setTokens() {
+                this.searchConfigs.word.tokens = this.userInfo.words;
+                this.searchConfigs.tags.tokens = this.userInfo.tags;
+                this.searchConfigs.topics.tokens = this.userInfo.topics;
             },
             stopSearch() {
                 clearTimeout(this.requestSendLatency);
@@ -120,7 +122,7 @@
             this.$store.dispatch('getMyWords')
                 .then(this.updateWordList);
                 
-            this.setTokens(this.userInfo);
+            this.setTokens();
         },
         computed: {
             ...mapGetters(['userInfo'])

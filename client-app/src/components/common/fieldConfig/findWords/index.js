@@ -4,7 +4,7 @@ export default {
         type: 'text',
         smallText: '',
         name: 'Text name',
-        rules: 'alpha_spaces|required|min:3',
+        rules: 'required|min:2',
         placeholder: 'Input the name of the text, plese',
         value: ''
     },
@@ -13,7 +13,7 @@ export default {
         type: 'textarea',
         smallText: 'content of the text',
         name: 'Text content',
-        rules: 'required|min:4',
+        rules: 'required|min:3',
         placeholder: 'Input text, please',
         value: ''
     }
